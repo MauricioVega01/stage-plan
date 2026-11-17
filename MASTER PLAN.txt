@@ -1,0 +1,342 @@
+MASTER PLAN OFICIAL: STAGE PLAN (v3.1)
+Sistema Web Responsivo (Mobile-First) de Planificación Logística, Dimensionamiento Eléctrico y Distribución Espacial para Eventos en Formato DJ
+
+======================================================================
+1. RESUMEN EJECUTIVO Y PROPUESTA DE VALOR
+======================================================================
+STAGE PLAN es una aplicación web responsiva (Mobile-First) diseñada para operadores técnicos, productores de eventos y DJs en Chile. Su objetivo es automatizar la pre-producción logística de montajes en recintos cerrados, parcelas o espacios abiertos, eliminando el cálculo empírico ("a ojo") que provoca caídas de tensión, sobrecargas eléctricas, cortes imprevistos, déficit de cableado o fallas de cobertura acústica.
+
+El sistema procesa las dimensiones del espacio y los requerimientos del rider técnico aplicando fórmulas de ingeniería eléctrica (con referencia a la normativa chilena de la SEC: Pliegos Técnicos Normativos RIC vigentes, y la NCh Elec. 4/2003 solo como antecedente histórico; la correspondencia exacta entre cada pliego y cada fórmula está pendiente de verificación, ver sección 14), acústica (ley del inverso del cuadrado y pérdidas SPL) y dimensionamiento de amplificación. Como resultado emite un Reporte Operativo, un Checklist de Materiales, un Protocolo de Montaje y un Layout 2D.
+
+Enfoque de uso (decisión de diseño Online-First): STAGE PLAN es una herramienta de PRE-PRODUCCIÓN. Se utiliza antes del evento, desde el hogar, estudio u oficina con conexión a internet, para diseñar y validar el montaje. Para el trabajo en terreno, donde la señal móvil en parcelas o recintos aislados puede ser nula o inestable, el sistema genera en el cliente un REPORTE DESCARGABLE (PDF y texto estructurado) que el técnico lleva en su teléfono y consulta sin conexión. Así se obtiene la integridad de una base de datos centralizada sin la complejidad ni las inconsistencias de una sincronización offline.
+
+Principio de diseño: todos los factores de ingeniería (factor de potencia, margen de holgura, caída de tensión admisible, capacidad del circuito, distancia de primera fila, factor de uso) son PARÁMETROS CONFIGURABLES con valores por defecto documentados, nunca constantes ocultas en el código.
+
+======================================================================
+2. ANÁLISIS DE STAKEHOLDERS Y LEVANTAMIENTO DE INFORMACIÓN
+======================================================================
+Cliente / Usuario objetivo: "Productora y Arriendo de Audio DISTORSIONCL SPA" (representado por un técnico de sonido e iluminador independiente en la Región Metropolitana).
+
+Stakeholders:
+- Operador técnico / DJ (usuario principal): configura el rider, ejecuta cálculos y usa el reporte en el montaje.
+- Productor de eventos (usuario secundario): consume el reporte y el listado de materiales para compras o arriendos.
+- Dueño o administrador del recinto (afectado indirecto): impone restricciones de empalme eléctrico, horarios y límites de presión sonora.
+- Desarrollador (responsable único): arquitectura, programación, pruebas y despliegue.
+- Instalador eléctrico autorizado SEC (validador externo): el sistema asesora la pre-producción, pero NO reemplaza su certificación en terreno.
+
+Plan de levantamiento y validación:
+1. Entrevista semi-estructurada al operador técnico sobre fallas frecuentes en terreno (generadores kVA vs. kW, caídas de tensión en alargadores extensos, recintos con empalmes limitados).
+2. Observación directa y registro fotográfico/logístico de un montaje real (tiempos de armado, distribución de líneas, disposición de subwoofers y satélites).
+3. Recolección de 3 a 5 montajes históricos reales (rider, medidas del recinto, fuente de energía y resultado operativo) que servirán como casos de validación del motor de cálculo.
+4. Confirmación con el cliente de su flujo de trabajo: planificación previa con conexión y uso del PDF descargado durante la carga y el montaje.
+5. Contraste de fórmulas y tablas de conductores con los pliegos RIC vigentes de la SEC y, idealmente, revisión por un instalador autorizado.
+
+======================================================================
+3. ALCANCE DEL PROYECTO (DEFINICIÓN DEL MVP)
+======================================================================
+3.1 LO QUE INCLUYE (Core del sistema)
+- Aplicación web responsiva (Mobile-First), accesible desde cualquier navegador móvil o de escritorio, con arquitectura Online-First y persistencia centralizada en PostgreSQL.
+- Autenticación segura y gestión de sesiones mediante JSON Web Tokens (JWT).
+- Registro y gestión de recintos: superficie (m2), ancho, profundidad, altura de techo, tipo de entorno y distancia crítica al tablero eléctrico.
+- Motor de cálculo eléctrico, acústico y logístico (calc-engine), contenido en el paquete compartido @stageplan/shared. El backend es la única fuente de verdad (valida entradas, ejecuta el cálculo oficial y persiste resultados); el frontend importa el mismo paquete solo para previsualización inmediata.
+- Distinción estricta entre potencia activa (kW) y aparente (kVA), con factor de potencia configurable (0,8 por defecto en generadores portátiles).
+- Cálculo de corriente en Amperios con factor de potencia de la carga, margen de holgura y advertencias por corriente de arranque.
+- Audio Activo vs. Pasivo: impedancia equivalente por canal (serie/paralelo), potencia recomendada del amplificador con headroom, y separación entre potencia de amplificación y consumo real de red.
+- Selección de sección de cable (mm2) según DOS criterios, caída de tensión y ampacidad; se adopta el más exigente.
+- Inventario de soportes y distribución: subwoofers a piso, atriles para tops, pole mounts sobre subwoofers, alargadores y zapatillas industriales con tomas de reserva.
+- Análisis SPL según sensibilidad, potencia y distancia, con evaluación entre la primera fila y el fondo para sugerir refuerzos (delay/fill).
+- Layout 2D interactivo en SVG (cabina DJ, subwoofers a piso, tops en atriles y punto de suministro eléctrico).
+- Reporte Operativo generado y descargado en el cliente (PDF y texto estructurado) con checklist, protocolo de montaje, alertas, disclaimer SEC, versión del motor y fecha.
+- Historial centralizado de cálculos versionados para auditoría y reutilización de recintos.
+
+3.2 LO QUE EXCLUYE (Fuera de alcance deliberado)
+- Operación offline de la aplicación (Service Workers con caché de datos, IndexedDB, sincronización diferida y resolución de conflictos): descartada por arquitectura Online-First. La disponibilidad en terreno sin señal se resuelve con el PDF descargado en pre-producción.
+- Bandas en vivo o múltiples instrumentos (baterías, amplificadores de guitarra/bajo, microfonía multicanal, monitoreo individual): el proyecto se acota a formato DJ y eventos electrónicos con punto de control centralizado.
+- Procesamiento digital de señal (DSP) en tiempo real o control remoto de ecualizadores y consolas.
+- Cálculo de redes trifásicas con balanceo de fases (escalabilidad futura).
+- Diseño o certificación legal de instalaciones eléctricas definitivas.
+
+3.3 PRIORIZACIÓN MoSCoW GLOBAL
+- Must Have: HU01 (autenticación y aislamiento de cuenta), HU02 (dimensiones y cableado), HU03 (carga eléctrica, kW/kVA y audio activo/pasivo).
+- Should Have: HU04 (inventario de soportes), HU05 (SPL y Layout 2D), HU06 (reporte descargable), HU07 (historial).
+- Could Have: HU08 (compartir reporte por enlace de solo lectura con expiración), modo oscuro, plantillas de riders predefinidos, cálculo trifásico básico.
+- Won't Have (en esta versión): procesamiento de audio en vivo, soporte para bandas multi-instrumentales, integración por hardware DMX/MIDI, simulación acústica 3D de reverberación, sincronización offline.
+
+======================================================================
+4. REQUERIMIENTOS DE SEGURIDAD (TI Y OPERACIONAL)
+======================================================================
+4.1 Seguridad operacional (prevención de riesgos eléctricos)
+- Margen de holgura no acumulativo: factor configurable (20% por defecto) sobre la potencia continua total estimada. La corriente de arranque y la holgura NO se multiplican entre sí: el sistema evalúa el criterio más exigente y documenta el desglose en el reporte.
+- Doble escenario de consumo: las alertas de sobrecarga de circuito y generador se evalúan en modo CONSERVADOR (factor de uso 1,0), porque el disyuntor reacciona a picos y calentamiento acumulado. El reporte muestra además el consumo promedio musical (factor de uso 0,5) como dato informativo.
+- Advertencia de cableado en el reporte: "Desenrolle completamente los alargadores en carrete; un cable enrollado bajo carga se sobrecalienta y reduce su capacidad de corriente."
+- Disclaimer obligatorio, visible en la interfaz y estampado en cada PDF: "El sistema es una herramienta de estimación de pre-producción y no reemplaza la verificación ni la certificación de una instalación eléctrica realizada por un instalador eléctrico autorizado por la SEC (Superintendencia de Electricidad y Combustibles)."
+- Trazabilidad algorítmica: cada cálculo guarda versión semántica del motor (engine_version), parámetros aplicados, fecha exacta e ID del autor.
+- Semáforo de alertas:
+  Informativa (azul/verde): uso > 70% y <= 90% de la capacidad del circuito o generador.
+  Advertencia (amarillo): uso > 90% y <= 100%.
+  Crítica (rojo): uso > 100% del disyuntor o de los kW reales del generador, o impedancia inferior al mínimo soportado por el amplificador.
+
+4.2 Seguridad TI y privacidad
+- Autenticación y sesiones: access token JWT de corta duración, mantenido en memoria del cliente; refresh token en cookie httpOnly, Secure y SameSite. Contraseñas con hash y sal (bcrypt o argon2). Tráfico cifrado por HTTPS (TLS 1.2 o superior).
+- Control de acceso por propietario (mitigación de IDOR): todos los endpoints validan que el owner_id del recinto o cálculo coincida con el usuario del token.
+- Datos privados: direcciones exactas, nombres de clientes y configuraciones de recintos son privados por defecto y no indexables.
+- Validación isomórfica con esquemas Zod compartidos en cliente (Vue.js) y servidor (Node.js): solo valores numéricos positivos dentro de rangos físicos reales (superficie 1 a 100.000 m2, distancia al tablero 1 a 500 m, potencia RMS 1 a 50.000 W, impedancia 2 a 16 ohm).
+- Blindaje de API: Rate Limiting contra fuerza bruta, consultas parametrizadas con Prisma ORM, cabeceras seguras (helmet) y CORS restringido al dominio del frontend.
+- Continuidad: respaldos diarios automatizados de PostgreSQL con retención mínima de 7 días y verificación periódica de restauración.
+- Cumplimiento en Chile: tratamiento de datos personales conforme a la Ley 19.628 y a la Ley 21.719 (fecha de plena vigencia por confirmar en la BCN antes de citarla), con consentimiento explícito, finalidad acotada y eliminación definitiva de cuenta y registros.
+
+======================================================================
+5. MOTOR DE CÁLCULO: ESPECIFICACIÓN TÉCNICA (calc-engine)
+======================================================================
+Los parámetros marcados con (*) son configurables por el usuario. Se indican los valores por defecto.
+
+5.1 Potencia, consumo de red y generadores
+- Potencia real disponible (kW) = Potencia aparente del generador (kVA) x FP_gen. (*) FP_gen = 0,8.
+- Consumo eléctrico de amplificación (desde la red), calculado sobre la potencia RMS demandada por las cajas conectadas, no sobre la potencia máxima del amplificador:
+  P_entrada_red = (P_RMS_cajas / Eficiencia) x Factor_de_uso
+  (*) Eficiencia clase D = 0,80 (configurable a 0,60 para clase AB).
+  (*) Factor de uso: 1,0 en modo conservador (usado para alertas) y 0,5 en modo promedio musical (informativo).
+- Para cajas activas e iluminación se prioriza el consumo nominal declarado en la placa del fabricante.
+- Potencia de diseño: P_diseño = P_total_estimada x (1 + holgura). (*) Holgura = 20%.
+- Condición de aprobación del generador: P_diseño (kW) <= kVA_generador x FP_gen.
+
+5.2 Corriente y capacidad de circuito
+- Corriente nominal monofásica (220 V): I_nominal = P_total_estimada / (V x FP_carga).
+  V = 220 V. (*) FP_carga = 1,0 para cargas resistivas o fuentes con PFC activo (configurable a 0,85 para cargas reactivas sin corrección).
+- Corriente de diseño: I_diseño = I_nominal x (1 + holgura), comparada con la capacidad del disyuntor. (*) Capacidad por defecto = 10 A (configurable a 10, 16, 20, 25 o 32 A).
+- Factor de arranque (*): alerta independiente para equipos con alta corriente de irrupción (transformadores toroidales, máquinas de humo, motores), recomendando disyuntor curva C o D, sin distorsionar el cálculo térmico continuo.
+
+5.3 Audio pasivo vs. activo
+- Impedancia equivalente por canal (Z_eq):
+  Serie: Z_eq = Z1 + Z2 + ... + Zn.
+  Paralelo: Z_eq = 1 / (1/Z1 + 1/Z2 + ... + 1/Zn).
+- Se contrasta Z_eq con la impedancia mínima estable del amplificador (*) (4 ohm por defecto; configurable a 2 ohm). Si Z_eq es menor, Alerta Crítica por riesgo de protección térmica o cortocircuito en la etapa de potencia.
+- Potencia recomendada del amplificador por canal: P_amp = P_RMS_conectada_al_canal x Factor_de_headroom.
+  (*) Headroom = 1,5 (configurable entre 1,2 y 2,0), especificada a la Z_eq resultante e indicando el número de canales requeridos.
+- Audio activo: omite impedancia y amplificador externo; contabiliza el consumo en Watts/Amperios y la cantidad de tomas necesarias.
+
+5.4 Selección de cableado (doble criterio; se adopta el mayor)
+- Criterio 1, caída de tensión:
+  S_dV = (2 x rho x L x I_diseño) / dV_max
+  rho cobre = 0,0175 ohm.mm2/m a 20 C ((*) 0,0215 para operación exigente a 70 C).
+  L = distancia en metros del tablero a la carga (el factor 2 contempla ida y retorno).
+  dV_max = (*) 3% de 220 V = 6,6 V.
+- Criterio 2, ampacidad. Tabla de referencia para cordones flexibles en servicio móvil (VALORES PROVISORIOS, a validar con el pliego RIC vigente antes de la versión final; la tabla es editable en el motor):
+  hasta 15 A: 1,5 mm2 | hasta 21 A: 2,5 mm2 | hasta 28 A: 4 mm2
+  hasta 36 A: 6 mm2 | hasta 50 A: 10 mm2 | hasta 66 A: 16 mm2
+- Resolución comercial: se toma el máximo entre S_dV y la sección por ampacidad y se redondea hacia arriba a la sección comercial (1,5 / 2,5 / 4 / 6 / 10 / 16 mm2).
+- Entregables: sección comercial, metraje sugerido (L x 1,10), caída de tensión real en V y %, criterio determinante, y advertencia de desenrollar completamente los carretes.
+
+5.5 Análisis acústico (SPL y cobertura)
+- SPL en campo libre: SPL(d) = Sensibilidad (dB @ 1W/1m) + 10 x log10(P_RMS) - 20 x log10(d).
+- El motor calcula el SPL a 1 m, en la primera fila real ((*) d_ref = 4 m por defecto) y en el fondo de la audiencia (d_fondo).
+- Se recomienda refuerzo (delay / front-fill) cuando:
+  a) la caída entre la primera fila y el fondo supera (*) 10 dB (la caída teórica es de 6 dB por cada duplicación de distancia, por lo que un umbral de 6 dB se activaría en casi cualquier salón de más de 8 m; el valor es configurable y puede ajustarse a 6 dB para un criterio más estricto);
+  b) el SPL en el fondo cae bajo el SPL objetivo de pista ((*) 98 dB por defecto para formato DJ); o
+  c) la profundidad supera (*) 20 m en exterior o 30 m en salón cerrado (pérdida de agudos por absorción atmosférica).
+- El reporte advierte que en recintos cerrados las reflexiones y la reverberación reducen la atenuación teórica de campo libre.
+
+5.6 Inventario de soportes, hardware y secuencia operativa
+- Subwoofers: "Ubicación: Piso" (acoplamiento acústico y estabilidad).
+- Atriles requeridos = N_tops - N_tops montados en pole mount sobre sub.
+- Zapatillas y distribución: tomas totales requeridas por el rider (cabina DJ, activos/amplificadores, luminarias), con al menos 1 toma libre por zapatilla.
+- Protocolo de montaje en 5 pasos: posicionamiento a piso, elevación de tops, tendido eléctrico (cables totalmente desenrollados), señal de audio, y regla de encendido/apagado seguro.
+
+5.7 Versionado
+- Cada cálculo almacena: versión del motor (semver), parámetros de entrada, parámetros configurables usados, resultados, alertas y fecha.
+
+======================================================================
+6. ESPECIFICACIÓN DE REQUERIMIENTOS
+======================================================================
+6.1 Requerimientos funcionales (RF)
+RF01 Autenticación de usuarios: registro, inicio y cierre de sesión seguros mediante credenciales cifradas y JWT.
+RF02 Gestión de recintos: crear, consultar, editar y eliminar recintos (ancho, largo, altura, superficie en m2, tipo de entorno, distancia crítica al empalme eléctrico).
+RF03 Configuración técnica del rider: sistema de sonido (activo/pasivo), potencias RMS, impedancias, sensibilidad, cantidad de subwoofers y tops, modalidad de soporte (atril o pole mount), iluminación, fuente de poder (red 220 V o generador en kVA) y parámetros de ingeniería.
+RF04 Motor de cálculo unificado: kW/kVA, corriente de diseño con holgura, impedancia y amplificación pasiva, sección de cable por caída de tensión y ampacidad, inventario de soportes y SPL.
+RF05 Layout 2D: plano esquemático interactivo en SVG a escala, con cabina DJ, subwoofers a piso, tops en atriles, líneas de delay y tablero eléctrico.
+RF06 Descarga de reporte operativo: generación en el cliente y descarga del informe (PDF y texto estructurado) con semáforo eléctrico, checklist, protocolo de montaje, alertas y disclaimer SEC, legible sin conexión.
+RF07 Historial y trazabilidad: almacenar y listar cálculos por recinto con fecha y engine_version, permitiendo duplicar una configuración previa.
+
+6.2 Requerimientos no funcionales (RNF) medibles
+RNF01 Rendimiento del cálculo: el endpoint de cálculo responde en menos de 1 s en el percentil 95.
+RNF02 Rendimiento web: primera carga en menos de 3 s en conexión 4G estándar; operaciones CRUD de la API en menos de 500 ms en el percentil 95.
+RNF03 Disponibilidad: uptime mensual >= 99,0% en producción (medido en plan pagado o, como mínimo, durante la ventana de demostración y evaluación).
+RNF04 Compatibilidad: últimas 2 versiones de Chrome, Safari, Edge y Firefox; sin desbordamiento horizontal desde 360 px de ancho.
+RNF05 Usabilidad: un operador nuevo completa recinto, rider y descarga del PDF en menos de 5 minutos.
+RNF06 Seguridad de acceso: cero endpoints de negocio sin JWT válido; 100% de las consultas filtradas por propietario autenticado.
+RNF07 Precisión: resultados de calc-engine coincidentes con los casos de prueba de la sección 7 con tolerancia de +/- 1%.
+RNF08 Mantenibilidad: cobertura de pruebas unitarias de calc-engine >= 90%.
+RNF09 Respaldo: copia diaria automática de PostgreSQL con retención mínima de 7 días.
+RNF10 Portabilidad: el PDF es autocontenido y 100% legible en un smartphone en modo avión.
+
+======================================================================
+7. HISTORIAS DE USUARIO (MoSCoW) Y CRITERIOS DE ACEPTACIÓN VERIFICABLES
+======================================================================
+HU01 (Must) Autenticación y aislamiento de cuenta
+Como productor de eventos, quiero iniciar sesión de forma segura para que mis recintos y configuraciones queden resguardados en mi cuenta privada.
+Criterios: valida formato de correo y longitud de contraseña; rechaza credenciales incorrectas con mensaje genérico; emite JWT al autenticar; bloquea temporalmente la cuenta tras 5 intentos fallidos consecutivos; responde HTTP 403/404 si un usuario consulta por URL un recinto de otro usuario.
+
+HU02 (Must) Dimensiones del recinto y cálculo de cableado
+Como operador técnico, quiero ingresar las medidas del salón y la distancia al tablero para obtener el metraje de alargadores y la sección comercial en mm2 sin sufrir caídas de tensión.
+Criterios: Zod rechaza valores negativos, cero o fuera de rango; entrega metraje con 10% de holgura, sección comercial, caída real en V y %, e indica el criterio determinante.
+Caso de prueba: carga 1.800 W, 220 V, L = 30 m, holgura 20%, caída máxima 3% (6,6 V) => corriente nominal 8,18 A; corriente de diseño 9,82 A; sección teórica por caída de tensión 1,56 mm2 (supera los 1,5 mm2 de ampacidad); sección comercial 2,5 mm2; metraje sugerido 33 m; caída real con 2,5 mm2: 4,12 V (1,87%).
+
+HU03 (Must) Carga eléctrica, kW/kVA y dimensionamiento de audio
+Como técnico de sonido, quiero configurar audio activo/pasivo y la fuente (muro o generador en kVA) para obtener la corriente de diseño, el amplificador requerido y alertas de sobrecarga.
+Criterios: convierte kVA a kW reales según el factor de potencia; calcula impedancia equivalente y potencia de amplificador por canal; calcula el consumo de red sobre la demanda RMS de las cajas (escenario conservador y promedio); alerta roja crítica si se supera el circuito o el generador.
+Casos de prueba:
+ (a) Circuito: 2.000 W en enchufe de 10 A (220 V) => 9,09 A nominal; con holgura 20% = 10,91 A => ALERTA CRÍTICA.
+ (b) Generador: 5 kVA (FP 0,8 = 4,0 kW) con carga de 3,5 kW => diseño 4,2 kW => ALERTA CRÍTICA de sobrecarga.
+ (c) Audio pasivo: 2 cajas de 400 W RMS / 8 ohm en paralelo en un canal => 4 ohm, 800 W RMS en el canal, amplificador recomendado 1.200 W RMS @ 4 ohm (factor 1,5); consumo de red: 500 W en promedio musical (eficiencia 0,80, factor de uso 0,5) y 1.000 W en escenario conservador (factor de uso 1,0).
+
+HU04 (Should) Inventario de soportes y disposición a piso
+Como encargado logístico, quiero que el sistema asigne los subwoofers a piso y descuente los tops montados en pole mount para que el listado de atriles sea exacto.
+Criterios: todo subwoofer aparece como "Ubicación: Piso"; atriles = tops - tops en pole mount.
+Caso de prueba: 2 subwoofers y 4 tops (2 en pole mount sobre los subwoofers) => 2 subwoofers a piso, 2 pole mounts y 2 atriles trípode.
+
+HU05 (Should) Cobertura SPL y Layout 2D
+Como productor técnico, quiero un esquema 2D y conocer la caída de SPL a lo largo del recinto para decidir si necesito cajas de refuerzo.
+Criterios: plano SVG proporcional con simbología clara; calcula SPL a 1 m, primera fila (4 m) y fondo; emite alerta de refuerzo si la caída primera fila-fondo supera el umbral (10 dB por defecto), si el fondo cae bajo el SPL objetivo, o si se excede la distancia máxima de agudos.
+Caso de prueba: sensibilidad 98 dB @ 1W/1m, 500 W, fondo a 16 m => SPL a 1 m = 125,0 dB; primera fila (4 m) = 113,0 dB; fondo (16 m) = 100,9 dB (caída de 24,1 dB desde 1 m y de 12,1 dB desde la primera fila, que supera el umbral de 10 dB => se recomienda refuerzo delay).
+
+HU06 (Should) Descarga de reporte operativo y protocolo de montaje
+Como jefe de montaje, quiero descargar el reporte en PDF antes de salir al evento para seguir el checklist y el orden de conexión aunque no haya señal móvil.
+Criterios: "Exportar Reporte" genera en el navegador un PDF y una versión texto con: semáforo eléctrico, checklist de equipos/cables/atriles, secuencia de montaje en 5 pasos, alertas acústicas, advertencia de cables desenrollados, disclaimer SEC, fecha y versión del motor.
+
+HU07 (Should) Historial y reutilización de recintos
+Como productor recurrente, quiero consultar y duplicar cálculos de eventos anteriores para no ingresar desde cero un salón ya visitado.
+Criterios: tabla histórica ordenada por fecha con versión del motor; permite abrir el detalle de un cálculo o clonarlo para editar su rider. (La API se entrega en el Hito 3 y la interfaz en el Hito 4.)
+
+HU08 (Could) Compartir reporte por enlace temporal
+Como productor, quiero generar un enlace de solo lectura de mi reporte para que el dueño del recinto o el proveedor del generador lo revise sin crear una cuenta.
+Criterios: token único de lectura con expiración configurable y revocación manual por el propietario.
+
+======================================================================
+8. ESTRATEGIA DE PRUEBAS Y VALIDACIÓN DE CALIDAD
+======================================================================
+- TDD en el motor: pruebas unitarias con Vitest sobre calc-engine antes de construir la interfaz, automatizando todos los casos numéricos de HU02 a HU05.
+- Pruebas de valores límite: rechazo de entradas nulas, negativas, cero, texto no numérico, impedancias menores a 2 ohm y distancias mayores a 500 m.
+- Validación empírica: ejecución de los 3 a 5 montajes históricos de "DISTORSIONCL SPA", comprobando que calibres, alertas de generador y potencias sugeridas coincidan con la operación exitosa en terreno.
+- Pruebas de seguridad e integración: rutas protegidas con JWT y pruebas cruzadas entre dos usuarios para certificar ausencia de IDOR (RNF06).
+- Pruebas de rendimiento básicas sobre RNF01 y RNF02.
+- Prueba de portabilidad: descarga del PDF en un teléfono real y apertura en modo avión (RNF10).
+- Revisión de fórmulas, tabla de ampacidad y reporte por un instalador eléctrico autorizado, si es posible.
+
+======================================================================
+9. MODELO DE CASOS DE USO Y MATRIZ DE TRAZABILIDAD
+======================================================================
+Actor principal: Operador técnico / Productor de eventos (DJ).
+
+CU01 Autenticar usuario y gestionar sesión.
+CU02 Registrar, consultar y editar recinto.
+CU03 Configurar rider técnico y parámetros de ingeniería.
+CU04 Ejecutar motor de cálculo (calc-engine).
+CU05 Visualizar Layout 2D y descargar Reporte Operativo.
+CU06 Consultar historial de cálculos y clonar configuraciones.
+CU07 Generar enlace compartido de solo lectura (Could Have).
+
+Matriz (RF | Historia | Caso de uso | RNF vinculados):
+RF01 | HU01 | CU01 | RNF02, RNF06
+RF02 | HU02 | CU02 | RNF02, RNF04, RNF06
+RF03 | HU03, HU04 | CU03 | RNF04, RNF05
+RF04 | HU02, HU03, HU04, HU05 | CU04 | RNF01, RNF07, RNF08
+RF05 | HU05 | CU05 | RNF04, RNF05
+RF06 | HU06 | CU05 | RNF05, RNF10
+RF07 | HU07 (y HU08 como Could) | CU06, CU07 | RNF03, RNF06, RNF09
+
+======================================================================
+10. ARQUITECTURA Y STACK TECNOLÓGICO JUSTIFICADO
+======================================================================
+10.1 Capas y tecnologías
+- Frontend: Vue.js 3 (Composition API) + Vite + Pinia + TailwindCSS.
+  Justificación: buen rendimiento móvil, reactividad limpia para formularios técnicos y empaquetado liviano para cumplir RNF02.
+- Motor y validación compartidos: paquete TypeScript @stageplan/shared, que contiene el módulo calc-engine y los esquemas Zod.
+  Justificación: funciones puras sin dependencia de base de datos ni DOM. El backend ejecuta el cálculo oficial y auditable; el frontend previsualiza sin duplicar fórmulas.
+- Backend: Node.js + Express en TypeScript, arquitectura por capas (rutas, controladores, servicios, acceso a datos), con jsonwebtoken, bcrypt, helmet y express-rate-limit.
+  Justificación: un único lenguaje en todo el proyecto, menor carga cognitiva para un desarrollador individual y esquemas Zod compartidos.
+- Persistencia: PostgreSQL con Prisma ORM.
+  Justificación: aplicación centralizada y multiusuario; integridad referencial, concurrencia real, respaldos confiables, tipado estático y migraciones versionadas.
+- Gráficos y reportes (en cliente): SVG nativo reactivo para el Layout 2D y jsPDF para el PDF.
+  Justificación: evita navegadores headless en el servidor, ahorra memoria y asegura descarga instantánea.
+
+10.2 Estructura del repositorio (monorepo con npm workspaces)
+
+stageplan/
+  package.json                 (workspaces: ["packages/*"])
+  packages/
+    shared/                    (@stageplan/shared)
+      src/
+        schemas.ts             (validadores Zod: Venue, Rider, EngineeringParams)
+        calc-engine/
+          electrical.ts        (kW/kVA, Amperios, caída de tensión, ampacidad)
+          acoustics.ts         (impedancia, power pasivo, SPL)
+          inventory.ts         (subwoofers a piso, atriles, zapatillas)
+        index.ts
+      tests/                   (Vitest, cobertura >= 90%)
+    backend/
+      prisma/schema.prisma     (User, Venue, RiderCalculation, SharedLink)
+      src/
+        middlewares/           (auth JWT, validación de propietario, rate limit)
+        controllers/           (usa @stageplan/shared y persiste en PostgreSQL)
+        server.ts
+    frontend/
+      src/
+        components/            (RiderForm.vue, LayoutSvg2D.vue, OperationalReport.vue)
+        services/              (cliente HTTP Axios, generador jsPDF)
+        views/                 (usa @stageplan/shared para previsualización)
+
+10.3 Despliegue e infraestructura
+- Hosting en PaaS gestionado (Render o Railway) con PLAN PAGADO BÁSICO (los planes gratuitos suspenden el servicio por inactividad y comprometen RNF01, RNF02 y RNF03), conectado a GitHub, con PostgreSQL administrado, HTTPS automático y variables de entorno fuera del repositorio.
+- Integración continua: ejecución automática de las pruebas de @stageplan/shared antes de aprobar cualquier despliegue.
+- Monitoreo básico de disponibilidad (objetivo RNF03).
+
+======================================================================
+11. GESTIÓN DEL PROYECTO Y METODOLOGÍA
+======================================================================
+11.1 Comparativa de metodologías
+- Cascada (Waterfall): secuencial y rígida. Inadecuada: los ajustes de interfaz y calibración de fórmulas requieren retroalimentación continua.
+- Scrum: roles y ceremonias grupales. Inadecuada: en un desarrollo unipersonal genera burocracia sin valor productivo.
+- XP: exige pair programming y pruebas intensivas. Parcialmente inadecuada: el pair programming es inviable, pero se adopta su disciplina de TDD.
+- Kanban + TDD: flujo visual continuo, WIP limitado y entregas incrementales. Óptima para un desarrollador individual.
+
+11.2 Justificación y reglas del tablero
+"Se selecciona Kanban apoyado por un tablero visual en GitHub Projects con WIP máximo de 2 tareas. Al tratarse de un desarrollo unipersonal enfocado en un MVP de ingeniería bajo arquitectura Online-First, Kanban maximiza el tiempo efectivo de programación y elimina la fricción ceremonial de Scrum. Se combina con TDD (tomado de XP) e hitos semanales fechados para cumplir el calendario académico."
+Columnas: Backlog -> In Progress (WIP máx. 2) -> Testing / Validación -> Done.
+Definition of Done: ninguna tarjeta del motor de cálculo pasa de Testing a Done sin aprobar el 100% de las pruebas con los casos numéricos de la sección 7.
+
+11.3 Hitos (ajustar las semanas al calendario real del ramo)
+- Hito 1 (semanas 1-2): levantamiento con el cliente, documentación de 3 a 5 montajes reales, esquema Prisma y prototipo Mobile-First.
+- Hito 2 (semanas 3-5): calc-engine con TDD (fórmulas eléctricas y acústicas), cobertura >= 90% (HU02, HU03).
+- Hito 3 (semanas 6-7): backend Express, autenticación JWT, protección anti-IDOR, PostgreSQL, API de historial y despliegue temprano en la nube (HU01 y API de HU07).
+- Hito 4 (semanas 8-9): frontend Vue con validación Zod, inventario, Layout 2D en SVG e interfaz de historial (HU04, HU05, interfaz de HU07).
+- Hito 5 (semana 10): generador PDF en cliente, protocolo de montaje, pruebas en modo avión y validación de casos históricos con el cliente (HU06).
+- Hito 6 (semana 11): pruebas de rendimiento (RNF01, RNF02), afinamiento visual, enlaces compartidos si hay tiempo (HU08) y preparación de la defensa.
+
+======================================================================
+12. MATRIZ DE RIESGOS Y MITIGACIÓN
+======================================================================
+R1 (Alto) Error matemático en dimensionamiento que induzca sobrecarga en terreno: TDD estricto, contraste con montajes reales, validación de tablas con la norma vigente y trazabilidad de versión.
+R2 (Medio) Falta de señal móvil en parcelas o recintos aislados: flujo de pre-producción online más PDF autocontenido (RF06, RNF10).
+R3 (Medio) Sobrecarga de trabajo para un único desarrollador: exclusión explícita de offline y bandas en vivo, SVG nativo y PDF en cliente.
+R4 (Alto) Uso del reporte como sustituto de una certificación eléctrica: disclaimer SEC visible en la interfaz y en cada PDF.
+R5 (Medio) Exposición de datos privados de recintos: autorización por owner_id, HTTPS, hash de contraseñas y pruebas cruzadas.
+R6 (Medio) Caída del servidor o pérdida de datos: PaaS en plan pagado, monitoreo, respaldos diarios y prueba de restauración.
+R7 (Medio) Tablas normativas o referencias citadas incorrectamente: marcar como provisorias, verificar con los pliegos RIC y con un instalador autorizado.
+
+======================================================================
+13. CRITERIOS DE ÉXITO Y ACEPTACIÓN FINAL DEL MVP
+======================================================================
+- Exactitud algorítmica: 100% de los casos de la sección 7 automatizados con desviación <= +/- 1%.
+- Validación con usuario real: el representante de "DISTORSIONCL SPA" evalúa al menos 3 configuraciones de eventos reales y confirma coherencia de cables, potencia de generador/amplificador y listado de atriles.
+- Operatividad sin red: un PDF exportado se abre y se lee completo en un teléfono sin datos móviles ni Wi-Fi.
+- Seguridad: cero vulnerabilidades críticas de control de acceso (IDOR) o inyección en las pruebas de la API.
+- Niveles de servicio: verificación documentada de RNF01 a RNF10.
+
+======================================================================
+14. PENDIENTES DE VERIFICACIÓN ANTES DE LA ENTREGA FINAL
+======================================================================
+- Confirmar con los pliegos técnicos RIC de la SEC el número y contenido que respalda cada fórmula (caída de tensión, ampacidad) antes de citarlos por número.
+- Validar la tabla de ampacidad para cordones flexibles en servicio móvil (valores actuales provisorios).
+- Confirmar en la BCN la fecha de plena vigencia de la Ley 21.719.
+- Ajustar las semanas de los hitos al calendario real del ramo.
+- Definir el plan de hosting pagado que se usará durante la evaluación.
