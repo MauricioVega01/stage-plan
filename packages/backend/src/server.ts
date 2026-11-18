@@ -39,7 +39,7 @@ app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     service: 'STAGE PLAN Backend API',
-    version: '3.1.0',
+    version: '4.1.0',
     timestamp: new Date().toISOString(),
   });
 });

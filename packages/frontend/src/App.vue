@@ -790,10 +790,151 @@
             </div>
           </div>
 
-          <!-- Innovación 2: Calculadora de Impedancia en Paralelo para Equipos Pasivos (Speakon Ohms) -->
+          <!-- ===================================================================== -->
+          <!-- HU06 / CU-05: CONSTRUCTOR DE ILUMINACIÓN, EFECTOS (HUMO/LÁSER) Y DMX -->
+          <!-- ===================================================================== -->
+          <div class="bg-[#0b0b10] border-2 border-fuchsia-800/70 rounded-2xl p-5 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+              <div>
+                <h3 class="text-base font-black text-fuchsia-300 font-mono uppercase">
+                  💡 Iluminación, Efectos (Humo / Láser) y Cableado Físico DMX
+                </h3>
+                <p class="text-xs text-zinc-400">
+                  Suma los Watts reales al consumo total (Línea 3) y calcula cables DMX físicos saliendo desde <span class="text-fuchsia-300 font-mono font-bold">DMX OUT</span> en cabina.
+                </p>
+              </div>
+              <div class="text-xs font-mono bg-fuchsia-950/60 border border-fuchsia-700 text-fuchsia-200 px-3 py-1.5 rounded-lg font-bold">
+                {{ lightingDmxAnalysis.totalFixtureUnits }} eq. · {{ lightingDmxAnalysis.totalLightingWatts }}W · {{ lightingDmxAnalysis.totalDmxCablesCount }} cables DMX
+              </div>
+            </div>
+
+            <!-- Botones rápidos de Presets de Iluminación / Humo -->
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-mono uppercase text-zinc-400 font-bold block">Agregar rápido en 1 clic:</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button
+                  v-for="preset in lightingPresets"
+                  :key="preset.key"
+                  type="button"
+                  @click="addLightingPreset(preset)"
+                  class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold border transition cursor-pointer"
+                  :class="preset.isThermalLoad
+                    ? 'bg-orange-950/60 hover:bg-orange-900 border-orange-600 text-orange-200'
+                    : 'bg-zinc-900 hover:bg-fuchsia-950/70 border-zinc-700 hover:border-fuchsia-500 text-zinc-200'"
+                  :title="preset.shortNote"
+                >
+                  + {{ preset.name }} ({{ preset.nominalWatts }}W)
+                </button>
+              </div>
+            </div>
+
+            <!-- Lista editable de lotes de iluminación / humo -->
+            <div v-if="lightingBatches.length === 0" class="text-xs font-mono text-zinc-500 bg-zinc-950 border border-dashed border-zinc-800 rounded-xl p-4 text-center">
+              Sin luces ni máquinas de humo agregadas. Pulsa cualquier botón de arriba para sumar focos PAR, cabezas móviles, láser o máquina de humo.
+            </div>
+
+            <div v-else class="space-y-2.5">
+              <div
+                v-for="(lb, idx) in lightingBatches"
+                :key="lb.id"
+                class="bg-[#14141d] border rounded-xl p-3.5 space-y-3"
+                :class="lb.isThermalLoad ? 'border-orange-600/80' : 'border-zinc-800'"
+              >
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono font-black px-2 py-0.5 rounded" :class="lb.isThermalLoad ? 'bg-orange-950 text-orange-300 border border-orange-600' : 'bg-fuchsia-950 text-fuchsia-300 border border-fuchsia-700'">
+                      {{ lb.isThermalLoad ? '🔥 L3 TÉRMICA' : '💡 L3 LUCES' }}
+                    </span>
+                    <input
+                      v-model="lb.name"
+                      type="text"
+                      class="bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-1 text-sm text-white font-bold focus:outline-none focus:border-fuchsia-500"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    @click="removeLightingBatch(idx)"
+                    class="text-xs font-mono text-red-400 hover:text-red-300 px-2 py-1 rounded bg-red-950/40 border border-red-900 cursor-pointer"
+                  >
+                    ✕ Quitar
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Cantidad</label>
+                    <input
+                      v-model.number="lb.quantity"
+                      type="number"
+                      min="1"
+                      max="32"
+                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-2 text-sm text-white font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-amber-300 mb-1">Watts (c/u)</label>
+                    <input
+                      v-model.number="lb.nominalWatts"
+                      type="number"
+                      min="10"
+                      max="5000"
+                      class="w-full bg-[#0c0c12] border border-amber-700 rounded-lg px-2.5 py-2 text-sm text-amber-300 font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Ubicación Física</label>
+                    <select
+                      v-model="lb.zone"
+                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2 py-2 text-xs text-white font-mono cursor-pointer"
+                    >
+                      <option value="TRUSS_LEFT">Trípode / Truss Izq</option>
+                      <option value="CENTER_BOOTH">Frente / Cabina</option>
+                      <option value="TRUSS_RIGHT">Trípode / Truss Der</option>
+                      <option value="FLOOR">Piso (Humo / FX)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-fuchsia-300 mb-1">Cable DMX</label>
+                    <select
+                      v-model="lb.dmxConnector"
+                      class="w-full bg-[#0c0c12] border border-fuchsia-700 rounded-lg px-2 py-2 text-xs text-fuchsia-200 font-mono cursor-pointer"
+                    >
+                      <option value="DMX_3PIN">DMX 3-Pin (Estándar)</option>
+                      <option value="DMX_5PIN">DMX 5-Pin (Pro)</option>
+                      <option value="NONE">Sin DMX (Manual/Auto)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Peso c/u (kg)</label>
+                    <input
+                      v-model.number="lb.unitWeightKg"
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="100"
+                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-2 text-sm text-zinc-200 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alertas instantáneas de Humo / Láser / Conectores DMX -->
+            <div v-if="lightingDmxAnalysis.alerts.length > 0" class="space-y-1.5">
+              <div
+                v-for="(al, i) in lightingDmxAnalysis.alerts"
+                :key="`la-${i}`"
+                class="text-xs font-mono bg-orange-950/50 border border-orange-600 text-orange-200 rounded-lg px-3 py-2"
+              >
+                {{ al }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Innovación 2: Calculadora de Impedancia en Paralelo para Equipos Pasivos (Speakon Ohms) + Power Externo -->
           <div
-            v-if="passiveImpedanceAudit.hasPassiveUnits"
-            class="p-5 rounded-2xl border-2 space-y-3 font-mono transition"
+            v-if="passiveImpedanceAudit.hasPassiveUnits || djSetupAnalysis.powerAmpsRequired.length > 0"
+            class="p-5 rounded-2xl border-2 space-y-4 font-mono transition"
             :class="
               passiveImpedanceAudit.status === 'DANGER_PROTECT_SHORT'
                 ? 'bg-red-950/50 border-red-500 text-red-100'
@@ -805,10 +946,10 @@
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span class="text-xs font-black uppercase tracking-wider block">
-                  🔌 Asistente de Impedancia y Cableado Speakon (Unidades Pasivas Detectadas)
+                  🔌 Power Externo Requerido, Salidas Speakon y Conexión al Mixer (Unidades Pasivas)
                 </span>
                 <h4 class="text-sm sm:text-base font-black text-white mt-0.5">
-                  Carga Mínima por Canal de Amplificador: {{ passiveImpedanceAudit.minImpedanceOhms }} Ω
+                  Carga Mínima por Canal de Amplificador: {{ passiveImpedanceAudit.minImpedanceOhms ?? 8 }} Ω
                 </h4>
               </div>
               <select
@@ -819,8 +960,153 @@
                 <option value="PARALLEL_SPEAKON_LINK">Modo Puente Paralelo (Speakon Link encadenado en 1 canal)</option>
               </select>
             </div>
-            <p class="text-xs sm:text-sm leading-relaxed">{{ passiveImpedanceAudit.technicalDirective }}</p>
-            <p class="text-xs opacity-90 border-t border-white/15 pt-2">🔧 {{ passiveImpedanceAudit.speakonRoutingNote }}</p>
+            <p v-if="passiveImpedanceAudit.hasPassiveUnits" class="text-xs sm:text-sm leading-relaxed">{{ passiveImpedanceAudit.technicalDirective }}</p>
+            <p v-if="passiveImpedanceAudit.hasPassiveUnits" class="text-xs opacity-90 border-t border-white/15 pt-2">🔧 {{ passiveImpedanceAudit.speakonRoutingNote }}</p>
+
+            <!-- Tarjetas desplegadas automáticamente por cada Power requerido (Tops Pasivos / Subs Pasivos / Retorno Pasivo) -->
+            <div v-if="djSetupAnalysis.powerAmpsRequired.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-white/15">
+              <div
+                v-for="amp in djSetupAnalysis.powerAmpsRequired"
+                :key="amp.id"
+                class="bg-[#0e1218] border border-cyan-700/70 rounded-xl p-3.5 space-y-1.5 text-xs"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-black text-cyan-300">{{ amp.title }}</span>
+                  <span class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-200 border border-cyan-700 font-black">
+                    {{ amp.recommendedAmpWattsPerChannel }}W/ch @ {{ amp.loadImpedanceOhms }}Ω
+                  </span>
+                </div>
+                <div class="text-zinc-300"><strong>Entradas Power:</strong> {{ amp.requiredInputs }}</div>
+                <div class="text-zinc-300"><strong>Salidas Power:</strong> {{ amp.requiredOutputs }} ({{ amp.recommendedMinChannels }} canal/es)</div>
+                <div class="text-amber-300 bg-black/40 border border-zinc-800 rounded p-2">
+                  <strong>🔗 Conexión al Mixer:</strong> {{ amp.mixerConnectionChain }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================================== -->
+          <!-- SETUP CABINA DJ (CDJ/XDJ + LINK ETHERNET) Y CAJAS DE RETORNO (BOOTH)  -->
+          <!-- ===================================================================== -->
+          <div class="bg-[#0e1116] border-2 border-cyan-800/70 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <h3 class="text-base font-black text-cyan-300 uppercase">
+                  🎛️ Cabina DJ (CDJ / XDJ + Link Ethernet) y Cajas de Retorno (Booth)
+                </h3>
+                <p class="text-xs text-zinc-400">
+                  Calcula cables RCA/Coaxial, cables Ethernet RJ45 (y Switch si usas 3–4 CDJs), salidas BOOTH TRS y alimentación en Z1.
+                </p>
+              </div>
+              <span class="text-xs bg-cyan-950 border border-cyan-700 text-cyan-200 px-3 py-1 rounded-lg font-bold">
+                Cabina + Retorno: {{ djSetupAnalysis.djBoothTotal220vWatts + djSetupAnalysis.boothMonitorsTotal220vWatts }}W
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Panel Izquierdo: CDJs / XDJs / Mixer -->
+              <div class="bg-[#141822] border border-zinc-800 rounded-xl p-4 space-y-3 text-xs">
+                <div class="font-black text-white uppercase">1. Reproductores y Mixer DJ</div>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Tipo de Setup</label>
+                    <select
+                      v-model="djSetup.setupMode"
+                      @change="if (djSetup.setupMode === 'ALL_IN_ONE_CONTROLLER') djSetup.playerCount = 0; else if (djSetup.playerCount === 0) djSetup.playerCount = 2; resetValidation();"
+                      class="w-full bg-[#0b0d12] border border-zinc-700 rounded-lg px-2 py-2 text-white font-bold cursor-pointer"
+                    >
+                      <option value="CDJ_XDJ_MODULAR">Mixer + CDJ / XDJ</option>
+                      <option value="ALL_IN_ONE_CONTROLLER">Controladora All-in-One</option>
+                    </select>
+                  </div>
+                  <div v-if="djSetup.setupMode === 'CDJ_XDJ_MODULAR'">
+                    <label class="block text-[11px] text-cyan-300 mb-1">Cantidad CDJ / XDJ</label>
+                    <select
+                      v-model.number="djSetup.playerCount"
+                      @change="resetValidation"
+                      class="w-full bg-[#0b0d12] border border-cyan-700 rounded-lg px-2 py-2 text-cyan-200 font-bold cursor-pointer"
+                    >
+                      <option :value="2">2× CDJ / XDJ</option>
+                      <option :value="3">3× CDJ / XDJ (Switch)</option>
+                      <option :value="4">4× CDJ / XDJ (Switch)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div v-if="djSetup.setupMode === 'CDJ_XDJ_MODULAR'" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Audio CDJ → Mixer</label>
+                    <select
+                      v-model="djSetup.playerAudioLinkType"
+                      class="w-full bg-[#0b0d12] border border-zinc-700 rounded-lg px-2 py-2 text-white cursor-pointer"
+                    >
+                      <option value="RCA_ANALOG">RCA Estéreo (CH LINE/CD)</option>
+                      <option value="DIGITAL_COAXIAL">Digital Coaxial (S/PDIF)</option>
+                    </select>
+                  </div>
+                  <div class="flex flex-col justify-center space-y-1.5 pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-zinc-200">
+                      <input type="checkbox" v-model="djSetup.linkEthernetProDj" class="accent-cyan-500 cursor-pointer" />
+                      <span>Linkear con Ethernet RJ45</span>
+                    </label>
+                    <label v-if="djSetup.linkEthernetProDj" class="flex items-center gap-2 cursor-pointer text-zinc-300">
+                      <input type="checkbox" v-model="djSetup.linkMixerToEthernet" class="accent-cyan-500 cursor-pointer" />
+                      <span>Incluir puerto LINK del Mixer</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div v-if="djSetup.setupMode === 'CDJ_XDJ_MODULAR'" class="bg-black/40 border border-zinc-800 rounded-lg p-2.5 text-[11px] text-cyan-200">
+                  🌐 Red Pro DJ Link: <strong>{{ djSetupAnalysis.ethernetCablesCount }} cable(s) Ethernet RJ45</strong>
+                  <span v-if="djSetupAnalysis.requiresEthernetSwitch" class="text-amber-300 font-bold"> + Switch Ethernet 5 puertos OBLIGATORIO</span>
+                  <span v-else-if="djSetupAnalysis.ethernetCablesCount > 0"> (conexión directa entre 2 equipos)</span>
+                </div>
+              </div>
+
+              <!-- Panel Derecho: Cajas de Retorno (Booth Monitor) -->
+              <div class="bg-[#141822] border border-zinc-800 rounded-xl p-4 space-y-3 text-xs">
+                <div class="font-black text-white uppercase">2. Cajas de Retorno (Booth Monitor DJ)</div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <label class="block text-[11px] text-zinc-400 mb-1">Cantidad</label>
+                    <select
+                      v-model.number="djSetup.boothMonitorsCount"
+                      @change="resetValidation"
+                      class="w-full bg-[#0b0d12] border border-zinc-700 rounded-lg px-2 py-2 text-white font-bold cursor-pointer"
+                    >
+                      <option :value="0">0 (Sin retorno)</option>
+                      <option :value="1">1× Retorno (Mono)</option>
+                      <option :value="2">2× Retornos (L/R)</option>
+                    </select>
+                  </div>
+                  <div v-if="djSetup.boothMonitorsCount > 0">
+                    <label class="block text-[11px] text-zinc-400 mb-1">Tipo</label>
+                    <select
+                      v-model="djSetup.boothMonitorType"
+                      @change="resetValidation"
+                      class="w-full bg-[#0b0d12] border border-zinc-700 rounded-lg px-2 py-2 text-white font-bold cursor-pointer"
+                    >
+                      <option value="ACTIVE">⚡ Activo</option>
+                      <option value="PASSIVE">🔌 Pasivo (Power)</option>
+                    </select>
+                  </div>
+                  <div v-if="djSetup.boothMonitorsCount > 0">
+                    <label class="block text-[11px] text-emerald-300 mb-1">Watts RMS c/u</label>
+                    <input
+                      v-model.number="djSetup.boothMonitorRmsWatts"
+                      type="number"
+                      min="100"
+                      max="2000"
+                      class="w-full bg-[#0b0d12] border border-emerald-700 rounded-lg px-2 py-2 text-emerald-300 font-bold"
+                    />
+                  </div>
+                </div>
+                <div v-if="djSetup.boothMonitorsCount > 0" class="bg-black/40 border border-zinc-800 rounded-lg p-2.5 text-[11px] text-zinc-300">
+                  🎛️ Conexión desde Mixer: <strong class="text-amber-300">BOOTH OUT (Jack TRS 6.3mm)</strong> → {{ djSetup.boothMonitorsCount }}× cable TRS a XLR Macho
+                  <span v-if="djSetup.boothMonitorType === 'PASSIVE'" class="text-cyan-300"> → Power Retorno → Speakon NL4</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Bloque C: Fuente de Energía y Régimen de Volumen -->
@@ -953,13 +1239,15 @@
           </span>
         </div>
 
-        <!-- Plano 2D en Gran Formato con soporte para Nodos Mixtos y Mapa de Calor SPL -->
+        <!-- Plano 2D en Gran Formato con soporte para Nodos Mixtos, Cableado, Zapatillas y DMX -->
         <LayoutSvg2D
           :venue-width="venue.widthMeters || 10"
           :venue-depth="venue.depthMeters || 16"
           :subs-count="totalSubsCount"
           :tops-count="totalTopsCount"
           :roster-nodes="hybridAnalysis.roster"
+          :power-plan="powerDistributionPlan"
+          :lighting-analysis="lightingDmxAnalysis"
         />
 
         <!-- Diagnóstico Innovador: Cuello de Botella Acústico & Ordenanza de Ruido D.S. N°38 MMA -->
@@ -1188,6 +1476,77 @@
                   : '⚠️ Peligro Acústico: Dos bajos a +6 dB simultáneos suman hasta +12 dB en el bus interno, activan el limitador rojo (+10 dB), embarran los 40–250 Hz y cancelan la fase del bombo.'
               }}
             </p>
+          </div>
+
+          <!-- HU08 / CU-07: SIMULADOR PLAN B (CONTINGENCIA EN VIVO) -->
+          <div class="bg-[#0e0c10] border-2 border-red-700/80 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <span class="text-[11px] text-red-400 font-black uppercase block">🚨 MODO CONTINGENCIA EN VIVO (HU08 / CU-07)</span>
+                <h3 class="text-base font-black text-white uppercase">Simulador "Plan B" ante Falla en Plena Fiesta</h3>
+              </div>
+              <span class="text-xs text-zinc-400">Protocolo de recuperación en &lt; 2 minutos</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              <button
+                type="button"
+                @click="activeContingencyScenario = 'GENERATOR_FAIL_TO_10A'"
+                class="px-3 py-2.5 rounded-xl text-xs font-black border text-left transition cursor-pointer"
+                :class="activeContingencyScenario === 'GENERATOR_FAIL_TO_10A' ? 'bg-red-600 text-white border-red-400' : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:border-red-500'"
+              >
+                ⚡ Murió Generador → 10A
+              </button>
+              <button
+                type="button"
+                @click="activeContingencyScenario = 'TOP_BOX_FAILURE'"
+                class="px-3 py-2.5 rounded-xl text-xs font-black border text-left transition cursor-pointer"
+                :class="activeContingencyScenario === 'TOP_BOX_FAILURE' ? 'bg-red-600 text-white border-red-400' : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:border-red-500'"
+              >
+                🔊 Falló 1 Caja Top Frontal
+              </button>
+              <button
+                type="button"
+                @click="activeContingencyScenario = 'SUB_FAILURE'"
+                class="px-3 py-2.5 rounded-xl text-xs font-black border text-left transition cursor-pointer"
+                :class="activeContingencyScenario === 'SUB_FAILURE' ? 'bg-red-600 text-white border-red-400' : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:border-red-500'"
+              >
+                🔈 Falló 1 Subwoofer
+              </button>
+              <button
+                type="button"
+                @click="activeContingencyScenario = 'LIGHTING_BREAKER_TRIP'"
+                class="px-3 py-2.5 rounded-xl text-xs font-black border text-left transition cursor-pointer"
+                :class="activeContingencyScenario === 'LIGHTING_BREAKER_TRIP' ? 'bg-red-600 text-white border-red-400' : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:border-red-500'"
+              >
+                🔥 Saltó Automático L3 Humo
+              </button>
+            </div>
+
+            <div v-if="contingencyPlan" class="bg-[#161218] border border-red-900/70 rounded-xl p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-sm font-black text-red-300">{{ contingencyPlan.title }}</span>
+                <span
+                  class="text-xs font-black px-2.5 py-1 rounded-lg border"
+                  :class="contingencyPlan.isSystemSurvivable ? 'bg-emerald-950 border-emerald-500 text-emerald-300' : 'bg-red-950 border-red-500 text-red-200'"
+                >
+                  {{ contingencyPlan.initialWatts }}W → {{ contingencyPlan.resultingWatts }}W
+                </span>
+              </div>
+              <ol class="space-y-2 text-xs">
+                <li v-for="st in contingencyPlan.steps" :key="st.order" class="bg-black/40 border border-zinc-800 rounded-lg p-2.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-white font-bold">{{ st.order }}. {{ st.action }}</span>
+                    <span v-if="st.wattsSaved" class="text-emerald-400 font-black shrink-0">-{{ st.wattsSaved }}W</span>
+                  </div>
+                  <div class="text-zinc-400 mt-0.5">{{ st.reason }}</div>
+                </li>
+              </ol>
+              <div class="text-xs bg-amber-950/40 border border-amber-700/70 text-amber-200 rounded-lg p-2.5">
+                <strong>🎛️ Directriz Mixer:</strong> {{ contingencyPlan.mixerDirective }}
+              </div>
+              <p class="text-xs text-emerald-300 font-bold">{{ contingencyPlan.recoverySummary }}</p>
+            </div>
           </div>
 
           <!-- Navegación Paso 3 -> Paso 4 -->
@@ -1495,6 +1854,196 @@
             </div>
           </div>
 
+          <!-- HU07 / CU-06: PLANILLA ESTRICTA DE ALARGADORES Y ZAPATILLAS MULTICONTACTO -->
+          <div class="bg-[#0e1014] border-2 border-emerald-700/70 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <span class="text-[11px] text-emerald-400 font-black uppercase block">🔌 HU07 / CU-06 · MONTAJE RÁPIDO SEC RIC N° 10</span>
+                <h3 class="text-base font-black text-white uppercase">Zapatillas Multicontacto, Bocas y Alargadores Exactos</h3>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs font-bold">
+                <span class="bg-emerald-950 border border-emerald-600 text-emerald-200 px-2.5 py-1 rounded-lg">
+                  {{ powerDistributionPlan.totalSocketsRequired }} Bocas totales
+                </span>
+                <span class="bg-amber-950 border border-amber-600 text-amber-200 px-2.5 py-1 rounded-lg">
+                  {{ powerDistributionPlan.totalPowerStrips10A }}× 10A · {{ powerDistributionPlan.totalPowerStrips16A }}× 16A
+                </span>
+              </div>
+            </div>
+
+            <div v-if="powerDistributionPlan.alerts.length > 0" class="space-y-1.5">
+              <div
+                v-for="(al, i) in powerDistributionPlan.alerts"
+                :key="`pa-${i}`"
+                class="text-xs bg-red-950/60 border border-red-500 text-red-200 rounded-lg px-3 py-2"
+              >
+                {{ al }}
+              </div>
+            </div>
+
+            <!-- Tabla de Zapatillas Z1..Zn -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div
+                v-for="z in powerDistributionPlan.powerStrips"
+                :key="z.id"
+                class="bg-[#151820] border rounded-xl p-3.5 space-y-1.5 text-xs"
+                :class="z.status === 'OVERLOAD' ? 'border-red-500' : z.status === 'WARNING' ? 'border-amber-500' : 'border-zinc-700'"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-white text-sm">{{ z.id }} · {{ z.label }}</span>
+                  <span class="px-2 py-0.5 rounded font-black text-[11px]" :class="z.ratingAmps === 16 ? 'bg-red-950 text-red-300 border border-red-700' : 'bg-emerald-950 text-emerald-300 border border-emerald-700'">
+                    {{ z.ratingAmps }}A ({{ z.usedSockets }}/{{ z.totalSockets }} bocas)
+                  </span>
+                </div>
+                <div class="text-zinc-300">
+                  Carga: <strong class="text-amber-300">{{ z.loadWatts }}W</strong> / Límite seguro 80%: {{ z.safeMaxWatts }}W ({{ z.usagePct }}%)
+                </div>
+                <div class="text-[11px] text-zinc-400">
+                  Conectar aquí: <span class="text-zinc-200">{{ z.connectedDevices.join(' · ') }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista consolidada de Alargadores a llevar -->
+            <div class="bg-[#090b0f] border border-zinc-800 rounded-xl p-3.5 space-y-2">
+              <div class="text-xs font-black text-amber-300 uppercase">📦 Lista Estricta de Alargadores para Bodega</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div
+                  v-for="(ext, idx) in powerDistributionPlan.extensionCordSummary"
+                  :key="`extsum-${idx}`"
+                  class="flex items-center justify-between bg-[#141720] border border-zinc-800 rounded-lg px-3 py-2"
+                >
+                  <span class="text-white font-bold">{{ ext.quantity }}× {{ ext.description }}</span>
+                  <span class="text-[11px] text-amber-300 font-black">{{ ext.crossSectionMm2 }} mm²</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-[11px] text-zinc-300">
+              <p v-for="(rec, idx) in powerDistributionPlan.recommendations" :key="`prec-${idx}`">{{ rec }}</p>
+            </div>
+          </div>
+
+          <!-- HU06 / CU-05: INVENTARIO FÍSICO DE CABLES DMX DESDE DMX OUT -->
+          <div v-if="lightingDmxAnalysis.totalFixtureUnits > 0" class="bg-[#120d16] border-2 border-fuchsia-700/70 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <span class="text-[11px] text-fuchsia-400 font-black uppercase block">🟣 HU06 / CU-05 · CABLEADO FÍSICO DESDE DMX OUT</span>
+                <h3 class="text-base font-black text-white uppercase">Iluminación ({{ lightingDmxAnalysis.totalLightingWatts }}W) y Cables DMX de Montaje</h3>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs font-bold">
+                <span class="bg-fuchsia-950 border border-fuchsia-600 text-fuchsia-200 px-2.5 py-1 rounded-lg">
+                  {{ lightingDmxAnalysis.totalDmxCablesCount }} cables ({{ lightingDmxAnalysis.totalDmxMeters }}m)
+                </span>
+                <span v-if="lightingDmxAnalysis.terminators120OhmCount > 0" class="bg-purple-950 border border-purple-600 text-purple-200 px-2.5 py-1 rounded-lg">
+                  {{ lightingDmxAnalysis.terminators120OhmCount }}× Terminador 120Ω
+                </span>
+                <span v-if="lightingDmxAnalysis.needsDmxSplitter" class="bg-amber-950 border border-amber-500 text-amber-200 px-2.5 py-1 rounded-lg">
+                  🔀 Splitter DMX sugerido
+                </span>
+              </div>
+            </div>
+
+            <div v-if="lightingDmxAnalysis.dmxCableInventory.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div
+                v-for="(item, idx) in lightingDmxAnalysis.dmxCableInventory"
+                :key="`dmxinv-${idx}`"
+                class="bg-[#1c1324] border border-fuchsia-900 rounded-lg px-3 py-2.5 space-y-0.5"
+              >
+                <div class="text-white font-black">{{ item.quantity }}× {{ item.description }}</div>
+                <div class="text-[11px] text-fuchsia-300">{{ item.kindSummary }}</div>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-[11px] text-zinc-300">
+              <p v-for="(al, idx) in lightingDmxAnalysis.alerts" :key="`dal-${idx}`" class="text-orange-300 font-bold">{{ al }}</p>
+              <p v-for="(rec, idx) in lightingDmxAnalysis.recommendations" :key="`drec-${idx}`">{{ rec }}</p>
+            </div>
+          </div>
+
+          <!-- CONEXIONES EXACTAS DE AUDIO Y RED EN CABINA DJ (MIXER / CDJ / RETORNO / POWER) -->
+          <div v-if="djSetupAnalysis.audioRoutes.length > 0" class="bg-[#0e1217] border-2 border-cyan-700/70 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <span class="text-[11px] text-cyan-400 font-black uppercase block">🎛️ FLUJO DE SEÑAL Y CONEXIONES DE AUDIO</span>
+                <h3 class="text-base font-black text-white uppercase">Setup Cabina DJ, Ethernet Pro DJ Link, Retorno y Power</h3>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs font-bold">
+                <span v-if="djSetupAnalysis.ethernetCablesCount > 0" class="bg-cyan-950 border border-cyan-600 text-cyan-200 px-2.5 py-1 rounded-lg">
+                  🌐 {{ djSetupAnalysis.ethernetCablesCount }}× RJ45 {{ djSetupAnalysis.requiresEthernetSwitch ? '+ Switch' : '' }}
+                </span>
+                <span v-if="djSetupAnalysis.trsToXlrBoothCablesCount > 0" class="bg-amber-950 border border-amber-600 text-amber-200 px-2.5 py-1 rounded-lg">
+                  🎧 {{ djSetupAnalysis.trsToXlrBoothCablesCount }}× TRS-XLR Booth
+                </span>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div
+                v-for="rt in djSetupAnalysis.audioRoutes"
+                :key="rt.id"
+                class="bg-[#141922] border border-zinc-800 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+              >
+                <div class="space-y-0.5">
+                  <div class="text-white font-black">
+                    {{ rt.quantity }}× {{ rt.cableType }} ({{ rt.lengthMeters }}m)
+                  </div>
+                  <div class="text-cyan-300 text-[11px]">
+                    {{ rt.fromPort }} → {{ rt.toPort }}
+                  </div>
+                  <div class="text-zinc-400 text-[11px]">{{ rt.note }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HU09 / CU-08: LOGÍSTICA DE VEHÍCULO, LEY DEL SACO N° 20.949 Y CHECKLIST 3 ETAPAS -->
+          <div class="bg-[#0e1116] border-2 border-cyan-700/70 rounded-2xl p-5 space-y-4 font-mono">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+              <div>
+                <span class="text-[11px] text-cyan-400 font-black uppercase block">🚚 HU09 / CU-08 · LOGÍSTICA Y ERGONOMÍA CHILE</span>
+                <h3 class="text-base font-black text-white uppercase">Peso Total, Vehículo, Ley del Saco y Checklist Operativo</h3>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs font-bold">
+                <span class="bg-cyan-950 border border-cyan-600 text-cyan-200 px-2.5 py-1 rounded-lg">
+                  ⚖️ {{ loadLogistics.grandTotalWeightKg }} kg totales
+                </span>
+                <span class="bg-zinc-900 border border-zinc-700 text-white px-2.5 py-1 rounded-lg">
+                  🚐 {{ loadLogistics.recommendedVehicle }} ({{ loadLogistics.recommendedOperatorsCount }} op.)
+                </span>
+              </div>
+            </div>
+
+            <div v-if="loadLogistics.leyDelSacoAlert" class="text-xs bg-amber-950/60 border-2 border-amber-500 text-amber-200 rounded-xl p-3 font-bold">
+              {{ loadLogistics.leyDelSacoAlert }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div
+                v-for="stage in (['PRE_DEPARTURE', 'ON_SITE_SETUP', 'TEARDOWN_5AM'] as const)"
+                :key="stage"
+                class="bg-[#141923] border border-zinc-800 rounded-xl p-3 space-y-2"
+              >
+                <div class="font-black uppercase text-[11px]" :class="stage === 'PRE_DEPARTURE' ? 'text-cyan-300' : stage === 'ON_SITE_SETUP' ? 'text-emerald-300' : 'text-amber-300'">
+                  {{ stage === 'PRE_DEPARTURE' ? '1. Salida Bodega' : stage === 'ON_SITE_SETUP' ? '2. Montaje Terreno' : '3. Retiro 5:00 AM' }}
+                </div>
+                <label
+                  v-for="task in loadLogistics.checklist.filter(c => c.stage === stage)"
+                  :key="task.id"
+                  class="flex items-start gap-2 cursor-pointer text-[11px] text-zinc-200 hover:text-white"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="!!logisticsChecks[task.id]"
+                    @change="logisticsChecks[task.id] = !logisticsChecks[task.id]"
+                    class="mt-0.5 accent-emerald-500 cursor-pointer"
+                  />
+                  <span :class="logisticsChecks[task.id] ? 'line-through text-zinc-500' : ''">{{ task.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-800">
             <button
               @click="goToStep(3)"
@@ -1556,6 +2105,17 @@ import {
   EventScheduleShift,
   AudioBox,
   VenueEnvironment,
+  LIGHTING_PRESETS,
+  calculateLightingAndDmxRig,
+  calculatePowerDistribution,
+  simulateContingencyPlan,
+  calculateLoadLogistics,
+  analyzeDjSetupAndAudioRouting,
+  type LightingBatchInput,
+  type LightingPreset,
+  type ContingencyScenario,
+  type DjSetupMode,
+  type PlayerAudioLinkType,
 } from '@stageplan/shared';
 
 type WizardStepId = 0 | 1 | 2 | 3 | 4;
@@ -1763,6 +2323,141 @@ const totalSubsPeakWatts = computed(() => {
 
 const allBatches = computed<SpeakerBatchInput[]>(() => {
   return [...topBatches.value, ...subBatches.value];
+});
+
+// 2B. HU06 / CU-05: CONSTRUCTOR DE ILUMINACIÓN, EFECTOS (HUMO/LÁSER) Y DMX FÍSICO
+const lightingPresets = LIGHTING_PRESETS;
+const lightingBatches = ref<LightingBatchInput[]>([
+  {
+    id: 'light-init-1',
+    name: 'Foco PAR LED (54x3W)',
+    fixtureType: 'PAR_LED',
+    quantity: 4,
+    nominalWatts: 120,
+    zone: 'TRUSS_LEFT',
+    dmxConnector: 'DMX_3PIN',
+    unitWeightKg: 2.5,
+    isThermalLoad: false,
+  },
+]);
+
+function addLightingPreset(preset: LightingPreset) {
+  lightingBatches.value.push({
+    id: `light-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    name: preset.name,
+    fixtureType: preset.fixtureType,
+    quantity: preset.fixtureType === 'PAR_LED' ? 2 : 1,
+    nominalWatts: preset.nominalWatts,
+    zone: preset.defaultZone,
+    dmxConnector: preset.dmxConnector,
+    unitWeightKg: preset.unitWeightKg,
+    isThermalLoad: preset.isThermalLoad,
+  });
+}
+
+function removeLightingBatch(index: number) {
+  lightingBatches.value.splice(index, 1);
+}
+
+const lightingDmxAnalysis = computed(() => {
+  return calculateLightingAndDmxRig(
+    lightingBatches.value,
+    venue.widthMeters || 10,
+    venue.depthMeters || 16,
+    220
+  );
+});
+
+const activeContingencyScenario = ref<ContingencyScenario>('GENERATOR_FAIL_TO_10A');
+const logisticsChecks = reactive<Record<string, boolean>>({});
+
+// 2C. SETUP CABINA DJ (CDJ/XDJ + ETHERNET + RETORNO BOOTH + POWER PASIVOS)
+const djSetup = reactive({
+  setupMode: 'CDJ_XDJ_MODULAR' as DjSetupMode,
+  playerCount: 2 as 0 | 2 | 3 | 4,
+  playerAudioLinkType: 'RCA_ANALOG' as PlayerAudioLinkType,
+  linkEthernetProDj: true,
+  linkMixerToEthernet: false,
+  boothMonitorsCount: 1 as 0 | 1 | 2,
+  boothMonitorType: 'ACTIVE' as 'ACTIVE' | 'PASSIVE',
+  boothMonitorRmsWatts: 300,
+  boothMonitorImpedanceOhms: 8 as 4 | 8,
+});
+
+const djSetupAnalysis = computed(() => {
+  return analyzeDjSetupAndAudioRouting({
+    setupMode: djSetup.setupMode,
+    playerCount: djSetup.playerCount,
+    playerAudioLinkType: djSetup.playerAudioLinkType,
+    linkEthernetProDj: djSetup.linkEthernetProDj,
+    linkMixerToEthernet: djSetup.linkMixerToEthernet,
+    boothMonitorsCount: djSetup.boothMonitorsCount,
+    boothMonitorType: djSetup.boothMonitorType,
+    boothMonitorRmsWatts: djSetup.boothMonitorRmsWatts,
+    boothMonitorImpedanceOhms: djSetup.boothMonitorImpedanceOhms,
+    speakerBatches: allBatches.value,
+    passiveWiringMode: passiveWiringMode.value,
+  });
+});
+
+// 2D. HU07 / CU-06: PLAN DE ALARGADORES Y ZAPATILLAS MULTICONTACTO
+const powerDistributionPlan = computed(() => {
+  return calculatePowerDistribution({
+    venueWidthMeters: venue.widthMeters || 10,
+    venueDepthMeters: venue.depthMeters || 16,
+    electricalDistanceMeters: venue.electricalDistanceMeters || 12,
+    djBoothWatts: djSetupAnalysis.value.djBoothTotal220vWatts + djSetupAnalysis.value.boothMonitorsTotal220vWatts,
+    djBoothDevices: djSetupAnalysis.value.djBoothDevicesForPowerStrip,
+    roster: hybridAnalysis.value.roster,
+    externalAmpsCount: hybridAnalysis.value.externalAmpsRequiredCount,
+    lightingAnalysis: lightingDmxAnalysis.value,
+  });
+});
+
+// 2E. HU08 / CU-07: SIMULADOR PLAN B (CONTINGENCIA EN VIVO)
+const contingencyPlan = computed(() => {
+  return simulateContingencyPlan(activeContingencyScenario.value, {
+    totalAudioSubsWatts: hybridAnalysis.value.electricalLines.line1SubsWatts,
+    totalAudioTopsAndBoothWatts:
+      hybridAnalysis.value.electricalLines.line2TopsCtrlWatts + djSetupAnalysis.value.boothMonitorsTotal220vWatts,
+    thermalFxWatts: lightingDmxAnalysis.value.thermalEffectsWatts,
+    lightingLedWatts: lightingDmxAnalysis.value.nonThermalLightingWatts,
+    topsCount: totalTopsCount.value,
+    subsCount: totalSubsCount.value,
+    hasPassiveSpeakers: passiveImpedanceAudit.value.hasPassiveUnits,
+  });
+});
+
+// 2F. HU09 / CU-08: LOGÍSTICA DE CARGA, VEHÍCULO Y LEY DEL SACO (25 KG)
+const loadLogistics = computed(() => {
+  const items = [
+    ...topBatches.value.map((b) => ({
+      name: b.modelLabel || 'Caja Top',
+      quantity: b.quantity || 0,
+      unitWeightKg: b.coneSizeInches >= 15 ? 24 : 18,
+    })),
+    ...subBatches.value.map((b) => ({
+      name: b.modelLabel || 'Subwoofer',
+      quantity: b.quantity || 0,
+      unitWeightKg: b.coneSizeInches >= 18 ? 38 : 28,
+    })),
+    ...lightingBatches.value.map((l) => ({
+      name: l.name,
+      quantity: l.quantity || 0,
+      unitWeightKg: l.unitWeightKg || 4,
+    })),
+  ];
+
+  return calculateLoadLogistics({
+    items,
+    extensionCordsCount: powerDistributionPlan.value.extensionCords.length,
+    powerStripsCount: powerDistributionPlan.value.totalPowerStripsCount,
+    dmxCablesCount: lightingDmxAnalysis.value.totalDmxCablesCount,
+    dmxTerminatorsCount: lightingDmxAnalysis.value.terminators120OhmCount,
+    gafferRolls50m: Math.max(1, hybridAnalysis.value.floorTapeRolls50m),
+    usesGenerator: powerSource.type !== 'GRID_220V',
+    has16ASockets: powerDistributionPlan.value.totalPowerStrips16A > 0,
+  });
 });
 
 // 3. Auditoría de Impedancia para Unidades Pasivas (Speakon Ohms)
@@ -2325,7 +3020,9 @@ const powerFeasibility = computed(() => {
       ? 0.60
       : 0.38;
 
-  const adjustedDemandWatts = Math.round(audioOnlyTechno * regimeMultiplier + 800);
+  const extraBoothAndLightWatts =
+    lightingDmxAnalysis.value.totalLightingWatts + djSetupAnalysis.value.boothMonitorsTotal220vWatts;
+  const adjustedDemandWatts = Math.round(audioOnlyTechno * regimeMultiplier + 800 + extraBoothAndLightWatts);
   // Usa Watts Peak reales calculados por los lotes si están disponibles
   const transientPeakWatts = hybridAnalysis.value.totalPeakWatts220v > 0
     ? Math.round(hybridAnalysis.value.totalPeakWatts220v * regimeMultiplier)
@@ -2494,6 +3191,10 @@ function downloadPdf() {
         neighborhoodNoiseDirective: neighborhoodNoiseAudit.value.mitigationDirective,
       },
       fieldAudit: fieldAudit.value,
+      powerDistribution: powerDistributionPlan.value,
+      lightingDmx: lightingDmxAnalysis.value,
+      logistics: loadLogistics.value,
+      djSetupAudio: djSetupAnalysis.value,
     },
     authorName: operatorSignature.value,
   });

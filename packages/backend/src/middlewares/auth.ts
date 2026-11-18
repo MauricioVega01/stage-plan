@@ -23,7 +23,11 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   }
 
   const token = authHeader.split(' ')[1];
-  const secret = process.env.JWT_SECRET || 'super_secret_jwt_key_stageplan_inacap_2026';
+  const secret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'dev_only_stageplan_secret_key');
+  if (!secret) {
+    res.status(500).json({ error: 'Error interno de configuración JWT.' });
+    return;
+  }
 
   try {
     const decoded = jwt.verify(token, secret) as AuthenticatedUser;

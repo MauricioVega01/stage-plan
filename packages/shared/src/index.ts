@@ -6,3 +6,7 @@ export * from './calc-engine/routing.js';
 export * from './calc-engine/cabling.js';
 export * from './calc-engine/hybrid-roster.js';
 export * from './calc-engine/stage-acoustic-engine.js';
+export * from './calc-engine/lighting-dmx.js';
+export * from './calc-engine/power-distribution.js';
+export * from './calc-engine/contingency-and-logistics.js';
+export * from './calc-engine/dj-setup-audio.js';

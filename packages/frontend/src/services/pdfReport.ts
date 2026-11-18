@@ -1,6 +1,13 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { MOUNTING_PROTOCOL_STEPS, MIXER_GAIN_STAGING_TABLE } from '@stageplan/shared';
+import {
+  MOUNTING_PROTOCOL_STEPS,
+  MIXER_GAIN_STAGING_TABLE,
+  type PowerDistributionPlan,
+  type LightingAndDmxAnalysis,
+  type LoadLogisticsResult,
+  type DjSetupAudioAnalysis,
+} from '@stageplan/shared';
 
 export interface GeneratePdfOptions {
   venue: {
@@ -103,6 +110,10 @@ export interface GeneratePdfOptions {
         crowdDirective: string;
       };
     };
+    powerDistribution?: PowerDistributionPlan;
+    lightingDmx?: LightingAndDmxAnalysis;
+    logistics?: LoadLogisticsResult;
+    djSetupAudio?: DjSetupAudioAnalysis;
   };
   authorName?: string;
 }
@@ -333,6 +344,146 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
     columnStyles: { 0: { cellWidth: 50, fontStyle: 'bold' } },
     margin: { left: 14, right: 14 },
   });
+
+  currentY = (doc as any).lastAutoTable.finalY + 8;
+
+  // 6. Alargadores, Zapatillas Multicontacto y Cables DMX Físicos (v4.1)
+  if (results.powerDistribution && results.powerDistribution.powerStrips.length > 0) {
+    if (currentY + 50 > pageHeight) {
+      doc.addPage();
+      currentY = 16;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(24, 24, 27);
+    doc.text(
+      `6. Zapatillas Multicontacto (${results.powerDistribution.totalSocketsRequired} bocas), Alargadores y Cables DMX`,
+      14,
+      currentY
+    );
+    currentY += 4;
+
+    const stripRows = results.powerDistribution.powerStrips.map((z) => [
+      `${z.id} (${z.ratingAmps}A)`,
+      z.label,
+      `${z.usedSockets}/${z.totalSockets}`,
+      `${z.loadWatts}W / ${z.safeMaxWatts}W`,
+      z.connectedDevices.join(', '),
+    ]);
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['ID', 'Zona / Tipo', 'Bocas', 'Carga / Límite SEC', 'Equipos Conectados']],
+      body: stripRows,
+      theme: 'grid',
+      headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      margin: { left: 14, right: 14 },
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 6;
+
+    const extRows = results.powerDistribution.extensionCordSummary.map((e) => [
+      `${e.quantity}x`,
+      `${e.crossSectionMm2} mm² (${e.ratingAmps}A)`,
+      `${e.lengthMeters} metros`,
+      e.description,
+    ]);
+    if (results.lightingDmx && results.lightingDmx.dmxCableInventory.length > 0) {
+      results.lightingDmx.dmxCableInventory.forEach((d) => {
+        extRows.push([
+          `${d.quantity}x`,
+          d.connector === 'DMX_5PIN' ? 'DMX 5-pin (120Ω)' : 'DMX 3-pin (120Ω)',
+          `${d.lengthMeters} metros`,
+          `${d.description} (${d.kindSummary})`,
+        ]);
+      });
+    }
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['Cant.', 'Tipo / Calibre', 'Largo', 'Detalle de Bodega y Montaje']],
+      body: extRows,
+      theme: 'striped',
+      headStyles: { fillColor: [180, 83, 9], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      margin: { left: 14, right: 14 },
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // 7. Logística de Carga, Ley del Saco N° 20.949 y Checklist de 3 Etapas
+  if (results.logistics) {
+    if (currentY + 48 > pageHeight) {
+      doc.addPage();
+      currentY = 16;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(24, 24, 27);
+    doc.text(
+      `7. Logística (${results.logistics.grandTotalWeightKg} kg · ${results.logistics.recommendedVehicle}) y Checklist Operativo`,
+      14,
+      currentY
+    );
+    currentY += 4;
+
+    const stageLabel: Record<string, string> = {
+      PRE_DEPARTURE: '1. Salida Bodega',
+      ON_SITE_SETUP: '2. Montaje Terreno',
+      TEARDOWN_5AM: '3. Retiro 5:00 AM',
+    };
+    const chkRows = results.logistics.checklist.map((c) => [
+      '[  ]',
+      stageLabel[c.stage] || c.stage,
+      c.label,
+    ]);
+    if (results.logistics.leyDelSacoAlert) {
+      chkRows.unshift(['[!]', 'LEY 20.949 (25kg)', results.logistics.leyDelSacoAlert.replace(/^[^\w]+/, '')]);
+    }
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['OK', 'Etapa', 'Verificación Obligatoria en Terreno']],
+      body: chkRows,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      columnStyles: { 0: { cellWidth: 12, halign: 'center' }, 1: { cellWidth: 36, fontStyle: 'bold' } },
+      margin: { left: 14, right: 14 },
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // 8. Conexiones de Audio Cabina DJ (CDJ/XDJ, Ethernet, Retorno Booth y Power Externos)
+  if (results.djSetupAudio && results.djSetupAudio.audioRoutes.length > 0) {
+    if (currentY + 48 > pageHeight) {
+      doc.addPage();
+      currentY = 16;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(24, 24, 27);
+    doc.text('8. Conexiones de Audio Cabina DJ (CDJ/XDJ, Ethernet, Retorno y Power Externos)', 14, currentY);
+    currentY += 4;
+
+    const routeRows = results.djSetupAudio.audioRoutes.map((r) => [
+      `${r.quantity}x`,
+      `${r.fromPort} -> ${r.toPort}`,
+      `${r.cableType} (${r.lengthMeters}m)`,
+      r.note,
+    ]);
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['Cant.', 'Ruta de Conexión (Puerto -> Destino)', 'Cable Exacto', 'Nota Técnica']],
+      body: routeRows,
+      theme: 'grid',
+      headStyles: { fillColor: [8, 145, 178], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      columnStyles: { 0: { cellWidth: 14, halign: 'center', fontStyle: 'bold' } },
+      margin: { left: 14, right: 14 },
+    });
+  }
 
   // Pie de página legal SEC y ético
   const totalPages = (doc as any).internal.getNumberOfPages();

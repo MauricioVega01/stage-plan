@@ -31,7 +31,7 @@ export class AuthController {
       return;
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
       data: {
         email,
@@ -65,10 +65,15 @@ export class AuthController {
       return;
     }
 
-    const secret = process.env.JWT_SECRET || 'super_secret_jwt_key_stageplan_inacap_2026';
+    const secret = process.env.JWT_SECRET;
+    if (!secret && process.env.NODE_ENV === 'production') {
+      res.status(500).json({ error: 'Configuración de seguridad incompleta en el servidor.' });
+      return;
+    }
+    const jwtSecret = secret || 'dev_only_stageplan_secret_key';
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name },
-      secret,
+      jwtSecret,
       { expiresIn: '12h' }
     );
 

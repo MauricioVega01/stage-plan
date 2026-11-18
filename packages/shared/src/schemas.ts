@@ -68,11 +68,42 @@ export const AudioSystemSchema = z.object({
   }).optional(),
 });
 
+export const LightingFixtureTypeEnum = z.enum([
+  'PAR_LED',
+  'LED_BAR',
+  'MOVING_HEAD',
+  'LASER',
+  'STROBE',
+  'FOG_MACHINE',
+  'HAZER',
+]);
+
+export const LightingZoneEnum = z.enum([
+  'TRUSS_LEFT',
+  'CENTER_BOOTH',
+  'TRUSS_RIGHT',
+  'FLOOR',
+]);
+
+export const DmxConnectorEnum = z.enum([
+  'DMX_3PIN',
+  'DMX_5PIN',
+  'NONE',
+]);
+
 export const LightingFixtureSchema = z.object({
-  name: z.string(),
-  nominalWatts: z.number().positive(),
-  quantity: z.number().int().positive(),
+  id: z.string().optional(),
+  name: z.string().min(1),
+  fixtureType: LightingFixtureTypeEnum.default('PAR_LED'),
+  nominalWatts: z.number().positive().max(10000),
+  quantity: z.number().int().positive().max(64),
+  zone: LightingZoneEnum.default('CENTER_BOOTH'),
+  dmxConnector: DmxConnectorEnum.default('DMX_3PIN'),
+  unitWeightKg: z.number().nonnegative().max(150).default(4),
+  isThermalLoad: z.boolean().default(false),
 });
+
+export type LightingFixtureInput = z.infer<typeof LightingFixtureSchema>;
 
 export const PowerSourceSchema = z.discriminatedUnion('type', [
   z.object({
