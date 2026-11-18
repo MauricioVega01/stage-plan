@@ -641,6 +641,44 @@
                     </span>
                   </div>
                 </div>
+
+                <!-- Configuración de Power (Etapa de Potencia) para Tops Pasivos -->
+                <div
+                  v-if="batch.systemType === 'PASSIVE'"
+                  class="mt-2.5 p-3 rounded-lg bg-[#111622] border border-cyan-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs"
+                >
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">⚡ Power Tops (Etapa de Potencia)</label>
+                    <input
+                      v-model="batch.powerAmpModel"
+                      @input="resetValidation"
+                      type="text"
+                      placeholder="Ej: Crown XLi 2500 / QSC RMX 2450"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">Watts RMS por Canal (del Power)</label>
+                    <input
+                      v-model.number="batch.powerAmpWatts"
+                      @input="resetValidation"
+                      type="number"
+                      placeholder="Ej: 750"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-cyan-200 focus:outline-none focus:border-cyan-400 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">Ubicación del Power</label>
+                    <select
+                      v-model="batch.powerAmpLocation"
+                      @change="resetValidation"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 cursor-pointer"
+                    >
+                      <option value="DJ_BOOTH">Cabina DJ / Rack Técnico</option>
+                      <option value="STAGE_RACK">Escenario (Cerca de cajas)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -786,6 +824,44 @@
                     </span>
                   </div>
                 </div>
+
+                <!-- Configuración de Power Subwoofer (Etapa de Graves) para Subs Pasivos -->
+                <div
+                  v-if="batch.systemType === 'PASSIVE'"
+                  class="mt-2.5 p-3 rounded-lg bg-[#111622] border border-cyan-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs"
+                >
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">⚡ Power Subwoofer (Etapa Graves)</label>
+                    <input
+                      v-model="batch.powerAmpModel"
+                      @input="resetValidation"
+                      type="text"
+                      placeholder="Ej: Powersoft K10 / Crest Pro 9200"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">Watts RMS por Canal (del Power Sub)</label>
+                    <input
+                      v-model.number="batch.powerAmpWatts"
+                      @input="resetValidation"
+                      type="number"
+                      placeholder="Ej: 1500"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-cyan-200 focus:outline-none focus:border-cyan-400 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-cyan-300 mb-1">Ubicación & Conexión</label>
+                    <select
+                      v-model="batch.powerAmpLocation"
+                      @change="resetValidation"
+                      class="w-full bg-[#0c1018] border border-cyan-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 cursor-pointer"
+                    >
+                      <option value="DJ_BOOTH">Cabina DJ (L1 Fuerza + Speakon NL4)</option>
+                      <option value="STAGE_RACK">Rack Escenario (L1 Fuerza)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -808,9 +884,19 @@
               </div>
             </div>
 
-            <!-- Botones rápidos de Presets de Iluminación / Humo -->
-            <div class="space-y-1.5">
-              <span class="text-[11px] font-mono uppercase text-zinc-400 font-bold block">Agregar rápido en 1 clic:</span>
+            <!-- Botones rápidos de Presets de Iluminación / Humo y Personalizado -->
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-mono uppercase text-zinc-400 font-bold">Presets Rápidos (Foco PAR = x1 Unidad):</span>
+                <button
+                  type="button"
+                  @click="addCustomLighting"
+                  class="px-3 py-1.5 rounded-lg text-xs font-mono font-black bg-fuchsia-600 hover:bg-fuchsia-500 text-white uppercase shadow-md transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>✨</span>
+                  <span>+ Agregar Equipo de Luz Personalizado</span>
+                </button>
+              </div>
               <div class="flex flex-wrap gap-1.5">
                 <button
                   v-for="preset in lightingPresets"
@@ -826,6 +912,9 @@
                   + {{ preset.name }} ({{ preset.nominalWatts }}W)
                 </button>
               </div>
+              <p class="text-[11px] font-mono text-zinc-400 italic">
+                ℹ️ Nota técnica: Los focos <strong>PAR LED</strong> se cuentan por <strong>unidad individual (x1)</strong> (PAR significa <em>Parabolic Aluminized Reflector</em>, no es que vengan en pares de 2).
+              </p>
             </div>
 
             <!-- Lista editable de lotes de iluminación / humo -->
@@ -1250,6 +1339,33 @@
           :lighting-analysis="lightingDmxAnalysis"
         />
 
+        <!-- Tarjeta Informativa de Ingeniería: Postes Guía y Radio de Curvatura SEC -->
+        <div class="bg-[#0b111a] border-2 border-sky-700/80 rounded-2xl p-4 sm:p-5 font-mono text-xs space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-sky-900 pb-2">
+            <span class="text-sky-400 font-black uppercase flex items-center gap-1.5">
+              <span>📍</span>
+              <span>Soportes de Esquina y Radio de Curvatura (SEC Pliego RIC N° 10)</span>
+            </span>
+            <span class="bg-sky-950 border border-sky-600 text-sky-200 px-2 py-0.5 rounded text-[11px] font-bold">
+              Norma Chilena SEC / IEC 60364
+            </span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-zinc-300 leading-relaxed text-[11px]">
+            <div class="space-y-1">
+              <strong class="text-sky-300 block text-xs">¿Cómo se llaman industrialmente y para qué sirven?</strong>
+              <p>
+                En eventos profesionales, en las esquinas y aristas del trazado perimetral se instalan <strong>Postes Guía Pasacables (Tótems de amarre / Drop Poles)</strong> si el tendido va perimetral elevado, o <strong>Pasacables Esquineros a 90° (Codos pasacables)</strong> si va por el suelo. Sirven para dar el radio de doblez suave al cable, evitando que quede tirante o expuesto a machacamiento.
+              </p>
+            </div>
+            <div class="space-y-1">
+              <strong class="text-amber-300 block text-xs">Exigencia SEC RIC N° 10 (Radio de Curvatura R ≥ 6d):</strong>
+              <p>
+                Los conductores flexibles de fuerza clase 5 exigen un radio de doblado mínimo de <strong>6 veces su diámetro exterior</strong>. Un quiebre en punta viva corta los microfilamentos de cobre internos, estrangula la chaqueta de aislación y provoca puntos calientes por resistencia de contacto.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Diagnóstico Innovador: Cuello de Botella Acústico & Ordenanza de Ruido D.S. N°38 MMA -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Innovación 4: Detector de Balance Sub-to-Top -->
@@ -1388,95 +1504,8 @@
             </div>
           </div>
 
-          <!-- Simulador Interactivo de Vúmetros LED en Mezcla de 2 Canales -->
-          <div class="p-4 bg-[#0a0a0e] border-2 border-zinc-700 rounded-xl space-y-3 text-xs font-mono">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-black text-white uppercase text-sm">
-                Simulador en Vivo: Mezcla de 2 Canales a +6 dB
-              </span>
-              <div class="flex flex-wrap items-center gap-2">
-                <button
-                  @click="lowEqKillActive = true"
-                  :class="[
-                    'px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition border-2',
-                    lowEqKillActive
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
-                      : 'bg-zinc-900 text-zinc-400 border-zinc-700'
-                  ]"
-                >
-                  ✅ Low EQ Kill Activo (1 Bajo a la vez)
-                </button>
-                <button
-                  @click="lowEqKillActive = false"
-                  :class="[
-                    'px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition border-2',
-                    !lowEqKillActive
-                      ? 'bg-red-950 text-red-300 border-red-500'
-                      : 'bg-zinc-900 text-zinc-400 border-zinc-700'
-                  ]"
-                >
-                  ❌ Error: 2 Bajos Arriba
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-[#14141b] p-3 rounded-lg border border-zinc-800">
-                <div class="flex justify-between text-xs text-zinc-300 mb-1.5">
-                  <span>CH 1 (Track Principal)</span>
-                  <span class="text-amber-300 font-bold">+6 dB (Ámbar)</span>
-                </div>
-                <div class="flex gap-1 h-3">
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-amber-400 rounded-xs"></span>
-                  <span class="flex-1 bg-amber-400 rounded-xs"></span>
-                  <span class="flex-1 bg-zinc-800 rounded-xs"></span>
-                </div>
-              </div>
-
-              <div class="bg-[#14141b] p-3 rounded-lg border border-zinc-800">
-                <div class="flex justify-between text-xs text-zinc-300 mb-1.5">
-                  <span>CH 2 ({{ lowEqKillActive ? 'LOW CORTADO' : 'LOW ARRIBA' }})</span>
-                  <span class="text-amber-300 font-bold">+6 dB (Ámbar)</span>
-                </div>
-                <div class="flex gap-1 h-3">
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-amber-400 rounded-xs"></span>
-                  <span class="flex-1 bg-amber-400 rounded-xs"></span>
-                  <span class="flex-1 bg-zinc-800 rounded-xs"></span>
-                </div>
-              </div>
-
-              <div class="bg-[#14141b] p-3 rounded-lg border-2" :class="lowEqKillActive ? 'border-emerald-600' : 'border-red-600'">
-                <div class="flex justify-between text-xs mb-1.5">
-                  <span class="text-white font-bold">MASTER XLR</span>
-                  <span :class="lowEqKillActive ? 'text-emerald-400 font-bold' : 'text-red-400 font-black animate-pulse'">
-                    {{ lowEqKillActive ? '0 a +3 dB (Limpio)' : '+10 dB CLIP ROJO' }}
-                  </span>
-                </div>
-                <div class="flex gap-1 h-3">
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-emerald-500 rounded-xs"></span>
-                  <span class="flex-1 bg-amber-400 rounded-xs"></span>
-                  <span :class="['flex-1 rounded-xs', lowEqKillActive ? 'bg-zinc-800' : 'bg-amber-400']"></span>
-                  <span :class="['flex-1 rounded-xs', lowEqKillActive ? 'bg-zinc-800' : 'bg-red-600 animate-ping']"></span>
-                </div>
-              </div>
-            </div>
-
-            <p class="text-xs leading-relaxed" :class="lowEqKillActive ? 'text-emerald-300' : 'text-red-300'">
-              {{
-                lowEqKillActive
-                  ? '✔️ Transición Limpia: Al cortar el LOW EQ de uno de los dos canales, el Master se mantiene estable en 0/+3 dB con golpe firme y sin saturación.'
-                  : '⚠️ Peligro Acústico: Dos bajos a +6 dB simultáneos suman hasta +12 dB en el bus interno, activan el limitador rojo (+10 dB), embarran los 40–250 Hz y cancelan la fase del bombo.'
-              }}
-            </p>
-          </div>
+          <!-- SIMULADOR PROFESIONAL HARDWARE REPLICA PIONEER DJM (GAIN STAGING, VÚMETROS VERTICALES Y LOW BASS SWAP) -->
+          <PioneerMixerSimulator />
 
           <!-- HU08 / CU-07: SIMULADOR PLAN B (CONTINGENCIA EN VIVO) -->
           <div class="bg-[#0e0c10] border-2 border-red-700/80 rounded-2xl p-5 space-y-4 font-mono">
@@ -2088,6 +2117,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import LayoutSvg2D from './components/LayoutSvg2D.vue';
 import InfoBadge from './components/InfoBadge.vue';
+import PioneerMixerSimulator from './components/PioneerMixerSimulator.vue';
 import { generateOperationalReportPdf } from './services/pdfReport';
 import {
   analyzeHybridRig,
@@ -2131,7 +2161,6 @@ const wizardSteps: { id: WizardStepId; icon: string; shortLabel: string; title: 
 const currentStep = ref<WizardStepId>(0);
 const isValidated = ref(false);
 const validationMessage = ref('');
-const lowEqKillActive = ref(true);
 const activePresetId = ref<string | null>(null);
 const checkedItems = reactive<Record<string, boolean>>({});
 const storageFeedbackMsg = ref('');
@@ -2346,13 +2375,29 @@ function addLightingPreset(preset: LightingPreset) {
     id: `light-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     name: preset.name,
     fixtureType: preset.fixtureType,
-    quantity: preset.fixtureType === 'PAR_LED' ? 2 : 1,
+    quantity: 1,
     nominalWatts: preset.nominalWatts,
     zone: preset.defaultZone,
     dmxConnector: preset.dmxConnector,
     unitWeightKg: preset.unitWeightKg,
     isThermalLoad: preset.isThermalLoad,
   });
+  resetValidation();
+}
+
+function addCustomLighting() {
+  lightingBatches.value.push({
+    id: `light-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    name: 'Foco PAR LED 54x3W RGBW',
+    fixtureType: 'PAR_LED',
+    quantity: 1,
+    nominalWatts: 120,
+    zone: 'TRUSS_LEFT',
+    dmxConnector: 'DMX_3PIN',
+    unitWeightKg: 2.5,
+    isThermalLoad: false,
+  });
+  resetValidation();
 }
 
 function removeLightingBatch(index: number) {

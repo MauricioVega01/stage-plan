@@ -335,10 +335,15 @@ export function analyzeDjSetupAndAudioRouting(input: DjSetupAndMonitorsInput): D
       ? `Mixer [MASTER 1 XLR] → Crossover/Sub [HIGH-PASS OUT XLR] → Power Tops [XLR IN A/B] → Speakon NL4 → ${passiveTopsQty}× Top Pasivo`
       : `Mixer [MASTER 1 XLR] → Power Tops [XLR IN A/B] → Speakon NL4 → ${passiveTopsQty}× Top Pasivo`;
 
+    const customAmpName = passiveTops.find((b) => b.powerAmpModel)?.powerAmpModel;
+    const topsAmpTitle = customAmpName
+      ? `${customAmpName} (${passiveTopsQty} caja${passiveTopsQty > 1 ? 's' : ''} · ${totalTopsRms}W RMS)`
+      : `Power para Tops Pasivos (${passiveTopsQty} caja${passiveTopsQty > 1 ? 's' : ''} · ${totalTopsRms}W RMS)`;
+
     powerAmpsRequired.push({
       id: 'amp-tops',
       targetRole: 'PASSIVE_TOPS',
-      title: `Power para Tops Pasivos (${passiveTopsQty} caja${passiveTopsQty > 1 ? 's' : ''} · ${totalTopsRms}W RMS)`,
+      title: topsAmpTitle,
       boxesCount: passiveTopsQty,
       totalRmsWatts: totalTopsRms,
       loadImpedanceOhms: perChannelLoad,
@@ -397,10 +402,15 @@ export function analyzeDjSetupAndAudioRouting(input: DjSetupAndMonitorsInput): D
 
     const mixerChain = `Mixer [MASTER 1 XLR] → Crossover/DSP [LOW OUT < 90Hz XLR] → Power Subs [XLR IN] → Speakon NL4 (2×4mm²) → ${passiveSubsQty}× Sub Pasivo`;
 
+    const customSubAmpName = passiveSubs.find((b) => b.powerAmpModel)?.powerAmpModel;
+    const subsAmpTitle = customSubAmpName
+      ? `${customSubAmpName} (${passiveSubsQty} sub${passiveSubsQty > 1 ? 's' : ''} · ${totalSubsRms}W RMS)`
+      : `Power de Fuerza para Sub-Bajos Pasivos (${passiveSubsQty} sub${passiveSubsQty > 1 ? 's' : ''} · ${totalSubsRms}W RMS)`;
+
     powerAmpsRequired.push({
       id: 'amp-subs',
       targetRole: 'PASSIVE_SUBS',
-      title: `Power de Fuerza para Sub-Bajos Pasivos (${passiveSubsQty} sub${passiveSubsQty > 1 ? 's' : ''} · ${totalSubsRms}W RMS)`,
+      title: subsAmpTitle,
       boxesCount: passiveSubsQty,
       totalRmsWatts: totalSubsRms,
       loadImpedanceOhms: perChannelLoad,

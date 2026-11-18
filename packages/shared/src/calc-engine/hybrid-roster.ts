@@ -19,6 +19,9 @@ export interface SpeakerBatchInput {
   rmsWatts: number;
   peakWatts: number;
   impedanceOhms?: 4 | 8 | 16;
+  powerAmpModel?: string;
+  powerAmpWatts?: number;
+  powerAmpLocation?: 'DJ_BOOTH' | 'STAGE_RACK';
 }
 
 export interface PassiveImpedanceAnalysis {
