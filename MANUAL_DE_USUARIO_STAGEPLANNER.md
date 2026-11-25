@@ -8,12 +8,12 @@
 
 ## 1. INTRODUCCIÓN Y PROPÓSITO DEL SISTEMA
 
-**STAGE PLAN (v4.0)** es una herramienta de ingeniería y logística para **pre-producción** de eventos en formato DJ. Su propósito principal es sustituir el cálculo empírico ("a ojo") por formulación técnica rigurosa basada en la **Normativa Eléctrica Chilena de la SEC (Pliegos RIC N° 03 y RIC N° 10)**, principios de electroacústica, ley de Ohm de impedancia y la normativa ambiental **D.S. N° 38 MMA**.
+**STAGE PLAN (v4.0)** es una herramienta de ingeniería y logística para **pre-producción** de eventos en formato DJ. Su propósito principal es sustituir el cálculo empírico ("a ojo") por formulación técnica rigurosa basada en la **Normativa Eléctrica Chilena de la SEC (Pliegos RIC N° 03 y RIC N° 10)**, principios de electroacústica, ley de Ohm para impedancia acústica y dimensionamiento de cableado.
 
 ### Enfoque Operativo "Online-First + Reporte Autónomo":
 1. **En la oficina / hogar (con internet):** El operador ingresa las medidas del salón, configura sus equipos mediante el **Constructor Híbrido Multilote** (cajas activas y pasivas con Watts RMS y Peak), visualiza el semáforo de carga, el cálculo de impedancia Speakon, la división en **2 Líneas de Fuerza Eléctrica** y el **Mapa de Calor SPL 2D**.
 2. **Exportación Inmediata:** Con un solo clic copia un resumen técnico directo a **WhatsApp** y genera la **Ficha Técnica en PDF descargable** en el navegador.
-3. **En terreno / parcela (sin señal móvil):** El técnico abre el PDF en su smartphone en **modo avión**. El documento contiene el inventario, calibres de cables, división de líneas, retardos Haas, recomendaciones de ganancia DJM y advertencias normativas.
+3. **En terreno / parcela (sin señal móvil):** El técnico abre el archivo PDF descargado en su smartphone. El documento contiene el inventario, calibres de cables, división de líneas, retardos Haas, recomendaciones de ganancia DJM y advertencias normativas.
 
 ---
 
@@ -30,7 +30,7 @@
 # 1. Abrir terminal en la raíz del proyecto
 cd "c:\Users\WIT2026\Documents\Proyecto Integrado"
 
-# 2. Ejecutar las pruebas unitarias automatizadas (44 tests Vitest)
+# 2. Ejecutar las pruebas unitarias automatizadas (70 tests Vitest)
 npm run test
 
 # 3. Iniciar el Frontend (Panel de Control de Usuario)
@@ -96,7 +96,6 @@ Presiona el botón interactivo **`[🔥 Ver Mapa de Calor SPL]`** en el plano 2D
 - **Verde Esmeralda (96-102 dBA):** Zona de confort acústico (*Sweet Spot* de pista).
 - **Azul (<90 dBA):** Caída sonora al fondo del recinto.
 - **Auditoría de Balance Top/Sub:** Informa si existe déficit de subgraves o si el sistema está equilibrado.
-- **Simulación Ambiental D.S. N° 38 MMA:** Proyecta el nivel sonoro en decibeles hacia la vivienda vecina más cercana para evitar multas municipales.
 
 ---
 

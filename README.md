@@ -8,9 +8,9 @@
 
 ## 📋 Resumen del Proyecto
 
-**STAGE PLAN** es una plataforma de ingeniería preventiva para la pre-producción de eventos en formato DJ. Reemplaza el dimensionamiento empírico ("al ojo") por modelado físico determinista, acústica de salas, electrotecnia bajo normativa chilena de la SEC (Pliegos RIC N° 03 y RIC N° 10) y la norma ambiental de emisión de ruido D.S. N° 38 del Ministerio del Medio Ambiente.
+**STAGE PLAN** es una plataforma de ingeniería preventiva para la pre-producción de eventos en formato DJ. Reemplaza el dimensionamiento empírico ("al ojo") por modelado físico determinista, acústica de salas, electrotecnia bajo normativa chilena de la SEC (Pliegos RIC N° 03 y RIC N° 10) y dimensionamiento preventivo de recursos logísticos.
 
-Permite al operador ingresar los datos del recinto y sus equipos en la oficina (con internet), generando un plano 2D interactivo, cubicación de cableado, balance eléctrico y un **Reporte Operativo en PDF** que funciona 100% autónomo en terreno sin conexión móvil (modo avión en parcelas de agrado).
+Permite al operador ingresar los datos del recinto y sus equipos en la oficina (con internet), generando un plano 2D interactivo, cubicación de cableado, balance eléctrico y un **Reporte Operativo en PDF** que funciona 100% autónomo en terreno sin conexión móvil (mediante visualización local y PDF sin depender de cobertura celular en terreno).
 
 ---
 
@@ -28,7 +28,7 @@ Permite al operador ingresar los datos del recinto y sus equipos en la oficina (
    Separa la instalación en Línea 1 (Fuerza Sub-Bajos) y Línea 2 (Medios-Agudos + Cabina DJ), blindando la mixer de caídas de tensión y desestabilización del regulador AVR en generadores.
 6. **Plano 2D con Mapa de Calor Acústico (SPL Heatmap):**  
    Renderizado reactivo con gradientes radiales SVG que representan zonas de confort (>105 dBA rojo advertencia, 96-102 dBA verde sweet spot, <90 dBA azul caída).
-7. **Diagnóstico Ambiental Vecinal (D.S. N° 38 MMA):**  
+7. **Diagnóstico Ambiental Vecinal (cobertura y distancias de cable):**  
    Simula la atenuación de decibeles hacia la vivienda vecina más cercana evaluando el cumplimiento diurno y nocturno.
 8. **Exportación Dual (PDF Offline & Resumen WhatsApp):**  
    Copia el resumen técnico al portapapeles en 1 clic y compila en cliente una ficha técnica completa de 5 páginas en PDF.
@@ -56,7 +56,7 @@ Proyecto Integrado/
 
 ## 🧪 Pruebas Unitarias Automatizadas (TDD)
 
-El motor de cálculo cuenta con **44 pruebas unitarias automatizadas** con **Vitest**, logrando **100% de aprobación**:
+El motor de cálculo cuenta con **70 pruebas unitarias automatizadas** con **Vitest**, logrando **100% de aprobación**:
 
 ```bash
 # Ejecutar suite completa de pruebas
@@ -67,10 +67,10 @@ npm test
 |---|---|:---:|:---:|
 | `calc-engine.spec.ts` | SEC RIC 03/10, Impedancia Speakon, Multilote RMS/Peak y 2 Líneas | 23 | ✅ PASS |
 | `routing-and-gaffer.spec.ts` | Algoritmo Manhattan Multi-enchufe y Cubicación Cinta Gaffer | 10 | ✅ PASS |
-| `stage-acoustic-engine.spec.ts` | SPL Indoor/Outdoor, Haas, Generador 3500W y D.S. N° 38 MMA | 5 | ✅ PASS |
+| `stage-acoustic-engine.spec.ts` | SPL Indoor/Outdoor, Haas, Generador 3500W y cobertura y distancias de cable | 5 | ✅ PASS |
 | `stage-acoustic-indoor-outdoor.spec.ts` | Acústica de Salas (Sabine RT60 y Hopkins-Stryker) | 2 | ✅ PASS |
 | `hybrid-roster.spec.ts` | Asymmetric Rigging & Gain Matching para cajas heterogéneas | 2 | ✅ PASS |
-| `cabling.spec.ts` | Cableado Dinámico (XLR, Speakon NL4, IEC C13, PowerCON, DMX) | 2 | ✅ PASS |
+| `cabling.spec.ts` | Cableado Dinámico (XLR, Speakon NL4, IEC C13, PowerCON) | 2 | ✅ PASS |
 | **TOTAL** | **Suite Completa de Ingeniería Electroacústica y Eléctrica** | **44** | **100% PASS** |
 
 ---

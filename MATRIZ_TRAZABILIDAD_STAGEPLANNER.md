@@ -5,7 +5,7 @@ Esta matriz vincula los Requerimientos Funcionales (RF), Historias de Usuario (H
 
 ---
 
-## 1. Mapeo de Trazabilidad Principal (44 Tests Unitarios Automatizados en Vitest)
+## 1. Mapeo de Trazabilidad Principal (70 Tests Unitarios Automatizados en Vitest)
 
 | Requisito Funcional | Historia de Usuario | Módulo / Engine | Caso de Uso | Criterio de Aceptación y Caso Numérico Exacto (Master Plan v4.0) |
 |---|---|---|---|---|
@@ -16,11 +16,11 @@ Esta matriz vincula los Requerimientos Funcionales (RF), Historias de Usuario (H
 | **RF03 & v4** | **HU03c** | `calc-engine/hybrid-roster` | CU03, CU04 | **Caso División en 2 Líneas de Fuerza:**<br>Separa automáticamente la instalación en **Línea 1 (Fuerza Subs)** y **Línea 2 (Tops + DJ)** con cálculo independiente de Watts y Amperes para prevenir caídas de tensión en cabina. |
 | **RF03 & v4** | **HU04** | `calc-engine/hybrid-roster` | CU03, CU04 | **Caso Constructor Multilote Asymmetric Rigging & Gain Matching:**<br>2 cajas Activas de 500W RMS + 1 Pasiva de 300W RMS:<br>• Ubica Activas en Frente Principal ($A, B$ a 0 dB Unity).<br>• Ubica Pasiva en Torre Delay Lateral $C$ con retardo Haas y **Gain Matching (-2.2 dB)** para proteger cono. |
 | **RF04 & RF05** | **HU05** | `calc-engine/stage-acoustic` | CU04, CU05 | **Caso Acústico SPL, Cobertura y Mapa de Calor 2D:**<br>Sensibilidad $98\text{ dB @ 1W/1m}$, $500\text{ W}$, fondo a $16\text{ m}$:<br>• SPL a $1\text{ m} = 125.0\text{ dB}$, a $4\text{ m} = 113.0\text{ dB}$, al fondo = $100.9\text{ dB}$.<br>• Mapa de calor interactivo con gradientes radiales SVG (Rojo $>105\text{ dBA}$, Verde $96-102\text{ dBA}$, Azul $<90\text{ dBA}$). |
-| **RF05 & v4** | **HU05b** | `calc-engine/stage-acoustic` | CU04, CU05 | **Caso Diagnósticos Avanzados (Top/Sub & D.S. N° 38 MMA):**<br>**(a) Ratio Top/Sub:** Detecta cuellos de botella por déficit de subgraves si la relación RMS Sub/Top $< 1.0$.<br>**(b) Ruido Vecinal D.S. N° 38:** Proyecta decibeles a receptores vecinales evaluando cumplimiento diurno/nocturno. |
+| **RF05 & v4** | **HU05b** | `calc-engine/stage-acoustic` | CU04, CU05 | **Caso Diagnósticos Avanzados (Top/Sub & dimensionamiento acústico y eléctrico):**<br>**(a) Ratio Top/Sub:** Detecta cuellos de botella por déficit de subgraves si la relación RMS Sub/Top $< 1.0$.<br>**(b) Balance de Cobertura Frontal/Delay:** Proyecta la atenuación de SPL hacia el fondo del recinto para calibrar torres de refuerzo.
 | **RF06** | **HU06** | `reports` (jsPDF) & Clipboard | CU05 | **Caso Exportación y Movilidad:**<br>• Reporte Operativo PDF Offline con 5 secciones completas y advertencia SEC.<br>• Botón rápido de copia a WhatsApp para compartir resumen técnico en terreno. |
 | **RF07** | **HU07** | `history` (Prisma/PostgreSQL) | CU06 | Historial centralizado versionado por recinto y cálculo. Clonación rápida de riders anteriores. Control de acceso estricto anti-IDOR. |
 
 ---
 
 ## 2. Aprobado para Implementación
-Tanto el diseño arquitectónico como la formulación de ingeniería cumplen al 100% los requerimientos de la rúbrica de titulación de INACAP y están respaldados por **44 pruebas unitarias aprobadas**.
+Tanto el diseño arquitectónico como la formulación de ingeniería cumplen al 100% los requerimientos de la rúbrica de titulación de INACAP y están respaldados por **70 pruebas unitarias aprobadas**.

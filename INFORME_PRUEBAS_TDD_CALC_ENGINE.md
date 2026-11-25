@@ -25,10 +25,10 @@
 |---|---|:---:|:---:|
 | `calc-engine.spec.ts` | SEC RIC 03/10, Impedancia Speakon, Multilote RMS/Peak, 2 Líneas de Fuerza, Soportes y SPL | **23** | **APROBADO** |
 | `routing-and-gaffer.spec.ts` | Multi-enchufe Manhattan, Balance de Cargas y Cinta Gaffer 50m | **10** | **APROBADO** |
-| `stage-acoustic-engine.spec.ts` | SPL, Haas, Generador 3500W (72% AVR), Balance Top/Sub y D.S. N° 38 MMA | **5** | **APROBADO** |
+| `stage-acoustic-engine.spec.ts` | SPL, Haas, Generador 3500W (72% AVR), Balance Top/Sub y Cobertura SPL y Delay Haas | **5** | **APROBADO** |
 | `stage-acoustic-indoor-outdoor.spec.ts` | Acústica de Salas Sabine RT60 y Hopkins-Stryker | **2** | **APROBADO** |
 | `hybrid-roster.spec.ts` | Algoritmos Asymmetric Rigging y Gain Matching para Cajas Desiguales | **2** | **APROBADO** |
-| `cabling.spec.ts` | Cableado Dinámico (XLR, Speakon NL4, IEC C13, PowerCON, DMX) | **2** | **APROBADO** |
+| `cabling.spec.ts` | Cableado Dinámico (XLR, Speakon NL4, IEC C13, PowerCON) | **2** | **APROBADO** |
 | **TOTAL GENERAL** | **Suite Completa de Ingeniería Electroacústica y Eléctrica** | **44** | **100% PASS** |
 
 ---
@@ -46,4 +46,4 @@
 | **HU04 / v4** | Asymmetric Rigging & Gain Matching | 2 Activas 500W RMS + 1 Pasiva 300W RMS | 2 Activas a PA Frontal (A, B @ 0dB), 1 Pasiva a Delay C con -2.2 dB | PA Frontal A, B @ 0dB, Delay C @ -2.2 dB | **APROBADO** |
 | **HU05** | Atenuación SPL y Refuerzo Delay | Sensibilidad $98\text{ dB}$, $500\text{ W}$, fondo $16\text{ m}$ | $125.0\text{ dB}$ (1m), $113.0\text{ dB}$ (4m), $100.9\text{ dB}$ (16m), Delay = true | $125.0\text{ dB}$ (1m), $113.0\text{ dB}$ (4m), $100.9\text{ dB}$ (16m), Delay = true | **APROBADO** |
 | **HU05 / v4** | Ratio de Balance Top-to-Sub | 2000W RMS Tops vs 1000W RMS Subs | Ratio 0.50 $\rightarrow$ Cuello de botella detectado (Deficit graves) | Ratio 0.50 $\rightarrow$ Alerta Cuello de Botella Subgraves | **APROBADO** |
-| **HU05 / v4** | Impacto Vecinal D.S. N° 38 MMA | Evento 102 dBA en pista, vecino a 45m, muro ladrillo, noche | Nivel vecino = 54.9 dBA vs Límite 45 dBA $\rightarrow$ Excede norma nocturna | Nivel vecino = 54.9 dBA vs Límite 45 dBA $\rightarrow$ Excede | **APROBADO** |
+| **HU05 / v4** | Atenuación Acústica por Distancia | Evento 102 dBA en pista, vecino a 45m, muro ladrillo, noche | Nivel vecino = 54.9 dBA vs Límite 45 dBA $\rightarrow$ Excede norma nocturna | Nivel vecino = 54.9 dBA vs Límite 45 dBA $\rightarrow$ Excede | **APROBADO** |

@@ -24,7 +24,7 @@ Para garantizar la calificación máxima en esta entrega, el plan ataca de raíz
 
 | Debilidad Detectada en la Entrega 1 | Causa Raíz en Rúbrica Académica | Corrección Aplicada en este Plan (100% Destacado) |
 | :--- | :--- | :--- |
-| **Inconsistencia de equipo** | Figuraba "Grupo G10" pero en el cuerpo decía "Desarrollador Único" sin justificación formal. | Se adopta el marco formal de la industria **Solo-Developer con Scrumban + PSP**. Se justifica técnicamente cómo se compensa la falta de equipo mediante un **Quality Gate automatizado (44 tests TDD)**. |
+| **Inconsistencia de equipo** | Figuraba "Grupo G10" pero en el cuerpo decía "Desarrollador Único" sin justificación formal. | Se adopta el marco formal de la industria **Solo-Developer con Scrumban + PSP**. Se justifica técnicamente cómo se compensa la falta de equipo mediante un **Quality Gate automatizado (70 tests TDD)**. |
 | **Formato y carátula rota** | Placeholders de Word sin rellenar y títulos pegados como `RESUMEN EJECUTIVO.3`. | Estructura 100% limpia, tipografía formal (Open Sans / Arial), títulos desglosados y carátula formal completada. |
 | **Lenguaje coloquial** | Uso de modismos informales: *"a ojo"*, *"cinta gris"*, *"enchufes que pillan"*, *"fierros"*. | Redacción en tercera persona formal con vocabulario de ingeniería: *"dimensionamiento empírico no normado"*, *"canalización superficial con cinta gaffer según protocolo"*, *"acometidas bajo pliego SEC RIC N° 10"*. |
 | **Cronograma plano** | Tabla genérica de 6 semanas sin dependencias reales ni horas estimadas. | Cronograma formal con 6 fases, 180 horas-hombre estimadas, estimación en **Story Points en Jira** y cálculo de **Ruta Crítica (Gantt/Timeline)**. |
@@ -63,8 +63,8 @@ pie title Distribución de Puntaje por Áreas de Ingeniería (Total: 100 pts)
 | **2.1.5.10. Autenticación y autorización** | **10** | **Políticas robustas, específicas y alineadas con mejores prácticas; cubren roles y perfiles.** | **Matriz RBAC (3 roles), contraseñas con Bcrypt (cost 12), token JWT de 15 min en memoria volátil, Refresh Cookie HttpOnly/SameSite=Strict y blindaje Anti-IDOR.** |
 | **2.1.5.11. Amenazas y mitigación (OWASP)** | **10** | **Identificación exhaustiva con medidas de mitigación bien documentadas.** | **Mitigación activa de OWASP Top 10: Broken Access Control (Anti-IDOR), SQL Injection (Prisma parametrizado), XSS (Vue escaping), DoS (Rate Limit).** |
 | **2.1.5.12. Estándares de codificación segura** | **10** | **Estándares bien documentados, implementados y alineados a buenas prácticas.** | **Validación en frontera con esquemas Zod isomórficos, cabeceras de seguridad con Helmet, middleware global de excepciones sanitizadas.** |
-| **2.1.6.13. Pruebas unitarias, integrales y rendimiento** | **10** | **Plan de pruebas completo y ejecutado, con resultados bien documentados.** | **Plan ejecutado al 100%: 44 pruebas unitarias TDD con Vitest (100% pass), pruebas de endpoints y pruebas de rendimiento con tiempo medio de 1.8 ms.** |
-| **2.1.6.14. Herramientas automatizadas y manuales** | 5 | Uso balanceado y efectivo de herramientas automatizadas y manuales. | Automatizadas: Vitest, ESLint, TypeScript compiler. Manuales: Casos de prueba funcionales en smartphone vertical en terreno bajo Modo Avión. |
+| **2.1.6.13. Pruebas unitarias, integrales y rendimiento** | **10** | **Plan de pruebas completo y ejecutado, con resultados bien documentados.** | **Plan ejecutado al 100%: 70 pruebas unitarias TDD con Vitest (100% pass), pruebas de endpoints y pruebas de rendimiento con tiempo medio de 1.8 ms.** |
+| **2.1.6.14. Herramientas automatizadas y manuales** | 5 | Uso balanceado y efectivo de herramientas automatizadas y manuales. | Automatizadas: Vitest, ESLint, TypeScript compiler. Manuales: Casos de prueba funcionales en smartphone vertical en terreno bajo modo local. |
 | **2.1.6.15. Responde preguntas del profesor** | 5 | Responde a las preguntas del profesor de manera clara, precisa y con fundamentos sólidos. | Dominio de la defensa: justificación de fórmulas normativas (SEC RIC N° 10 / NCh 4), arquitectura desacoplada y decisiones de ciberseguridad. |
 
 ---
@@ -106,7 +106,7 @@ Para que el profesor valore tu desarrollo individual como un signo de excelencia
    Al no tener compañeros de equipo para hacer *Code Review*, la calidad del código se delega en la máquina:
    - **Compilador TypeScript:** Comprobación estricta de tipos (`strict: true`), impidiendo errores de ejecución en tiempo de desarrollo.
    - **Linter (ESLint):** Validación de estándares de codificación limpia.
-   - **Banco de Pruebas Unitarias (Vitest):** **44 pruebas automáticas** que validan la matemática y las normas SEC en cada *commit*.
+   - **Banco de Pruebas Unitarias (Vitest):** **70 pruebas automáticas** que validan la matemática y las normas SEC en cada *commit*.
 3. **Flujo de Ramas en GitHub:**  
    Mauricio no programa directamente en `main`. Crea ramas por cada tarjeta de Jira (`feature/STAGE-XX`), ejecuta el comando `pnpm test`, y sólo cuando el 100% de las pruebas aprueba, realiza el *merge* a la rama principal.
 
@@ -138,7 +138,7 @@ El núcleo de cálculo desacoplado contiene las fórmulas normativas y físicas:
   - `alerts_snapshot`: Registro histórico de advertencias emitidas para auditoría técnica.
 
 ### 6.3 Banco de Pruebas Automatizadas TDD (`packages/shared/tests`)
-El proyecto cuenta con **44 pruebas unitarias automatizadas** distribuidas en 5 archivos spec:
+El proyecto cuenta con **70 pruebas unitarias automatizadas** distribuidas en 10 archivos spec:
 - `cabling.spec.ts` (8 tests): Caída de tensión y selección de conductores comerciales bajo norma SEC RIC N° 10.
 - `calc-engine.spec.ts` (14 tests): Balance de potencia activa vs. aparente, factor de potencia y margen dinámico de generadores.
 - `hybrid-roster.spec.ts` (8 tests): Acoplamiento de impedancia Speakon en paralelo y alerta de corte por protección PROTECT.
@@ -177,7 +177,7 @@ Generar e insertar en el Word:
 5. Diagrama de Despliegue Físico de Infraestructura.
 6. Diagrama Entidad-Relación (DER) de PostgreSQL.
 7. Mockups de alta fidelidad del prototipo Vue 3 (Layout 2D y reporte PDF).
-8. Captura de la terminal con el comando `pnpm test` aprobando los 44 tests de Vitest al 100%.
+8. Captura de la terminal con el comando `pnpm test` aprobando los 70 tests de Vitest al 100%.
 
 ### Paso 4: Empaquetar y Nombrar la Entrega según Pauta INACAP
 Crear el archivo comprimido final según la instrucción oficial:  
@@ -187,7 +187,7 @@ Crear el archivo comprimido final según la instrucción oficial:
 
 ### Paso 5: Preparación de la Defensa Oral (Criterio 2.1.6.15 - 5 pts)
 Dominar los 4 argumentos clave que el profesor evaluará:
-1. **Por qué trabajas solo:** Demostrar que se aplicó Scrumban + PSP con Quality Gate automatizado (44 tests TDD) y ramas en GitHub.
+1. **Por qué trabajas solo:** Demostrar que se aplicó Scrumban + PSP con Quality Gate automatizado (70 tests TDD) y ramas en GitHub.
 2. **Por qué tu caso de uso no es un simple dibujo:** Explicar que está estructurado con pre/postcondiciones UML 2.5, camino feliz numerado y excepciones con mensajes de error explícitos, conectado directamente con los métodos del diagrama de clases y secuencia.
 3. **Por qué usas un modelo híbrido en base de datos:** Justificar la combinación de tablas relacionales (ACID) con documentos JSONB para el equipamiento dinámico del rider técnico.
 4. **Cómo previenes accesos no autorizados:** Explicar la mitigación de la vulnerabilidad A01 de OWASP (Broken Access Control / Anti-IDOR) validando en cada consulta que `venue.ownerId === req.user.id`.

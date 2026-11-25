@@ -9,7 +9,7 @@
 ## 1. El Problema Real (Pitch de Apertura ante la Comisión)
 > *"Estimada comisión evaluadora, en los eventos de música en vivo y formato DJ en Chile, el 78% de los incidentes técnicos en terreno ocurren por fallas de pre-producción: cortes imprevistos de energía por sobrecargar disyuntores de 10A, quemaduras de etapas de potencia por conectar parlantes bajo la impedancia mínima, caídas de tensión severas por usar alargadores muy delgados en parcelas de eventos, y sonido deficiente por falta de cobertura en el fondo de la pista.*  
 > *Además, los técnicos operan en recintos aislados (parcelas en Curacaví, Lampa, Pirque) donde **no hay señal móvil 4G/5G**.*  
-> ***STAGE PLAN*** *es un sistema web de ingeniería preventiva que automatiza el cálculo eléctrico bajo pliegos técnicos RIC de la SEC, modela la acústica y genera un Layout 2D y un Reporte PDF descargable que el técnico consulta en su teléfono en **modo avión**, sin depender de internet en el montaje."*
+> ***STAGE PLAN*** *es un sistema web de ingeniería preventiva que automatiza el cálculo eléctrico bajo pliegos técnicos RIC de la SEC, modela la acústica y genera un Layout 2D y un Reporte PDF descargable que el técnico consulta en su teléfono directamente en su teléfono celular, sin depender de conexión a internet durante el montaje."*
 
 ---
 
