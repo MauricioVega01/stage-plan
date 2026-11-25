@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mosaico de Pantallas STAGE PLAN</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; width: 1400px; }
+  .header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #dc2626; padding-bottom: 10px; margin-bottom: 18px; }
+  .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .header span { font-family: Consolas, monospace; font-size: 12px; color: #94a3b8; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; overflow: hidden; }
+  .card-title { background: #1F497D; color: #fff; font-size: 11px; font-weight: 700; padding: 7px 12px; font-family: Consolas, monospace; }
+  .card img { width: 100%; height: 265px; object-fit: cover; object-position: top center; display: block; background: #09090d; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>STAGE PLAN — Mosaico Funcional del Prototipo Web Responsivo (DISTORSIONCL SPA)</h1>
+    <span>Vue 3 + TypeScript + Vite + Tailwind + SEC RIC N° 03/10</span>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="card-title">P01 · Operador Técnico y Acceso Anti-IDOR</div><img src="prototipo-P01-login-operador.png"/></div>
+    <div class="card"><div class="card-title">P02 · Recinto Ortogonal y Ruido D.S. N° 38 MMA</div><img src="prototipo-P02-recinto-ds38.png"/></div>
+    <div class="card"><div class="card-title">P03 · Lotes Activo/Pasivo + Power + DMX x1</div><img src="prototipo-P03-sonido-activo-pasivo-dmx.png"/></div>
+    <div class="card"><div class="card-title">P04 · Réplica Hardware Pioneer DJM (VU + Low Kill)</div><img src="prototipo-P04-simulador-pioneer-djm.png"/></div>
+    <div class="card"><div class="card-title">P05 · Plano 2D + Postes Guía SEC RIC 10 + Haas</div><img src="prototipo-P05-plano-2d-postes-guia-sec.png"/></div>
+    <div class="card"><div class="card-title">P06 · Reporte Camioneta (Ley del Saco) y PDF Offline</div><img src="prototipo-P06-reporte-camioneta-pdf.png"/></div>
+  </div>
+</body>
+</html>

@@ -39,7 +39,7 @@ app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     service: 'STAGE PLAN Backend API',
-    version: '4.1.0',
+    version: '1.0.0',
     timestamp: new Date().toISOString(),
   });
 });
@@ -63,7 +63,7 @@ app.get('/api/calculations/:id', authMiddleware, CalculationController.getById);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
-    console.log(`[STAGE PLAN API v3.1] Servidor escuchando en http://localhost:${port}`);
+    console.log(`[STAGE PLAN API] Servidor escuchando en http://localhost:${port}`);
   });
 }
 

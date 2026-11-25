@@ -165,8 +165,8 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
     rider.powerSource.type === 'GRID_220V'
       ? `Red Domiciliaria 220V (Automático ${rider.powerSource.circuitBreakerAmps || '16'} A - Máx Continuo Seguro 80%: ${Math.round(Number(rider.powerSource.circuitBreakerAmps || 16) * 220 * 0.8)}W)`
       : rider.powerSource.type === 'GENERATOR_WATTS'
-      ? `Generador Comercial ${rider.powerSource.generatorSurgeWatts || 3500} W Pico (~${Math.round((rider.powerSource.generatorSurgeWatts || 3500) * 0.85 * 0.72)}W Seguros Audio AVR)`
-      : `Generador Industrial (${rider.powerSource.apparentPowerKva || 5} kVA, FP ${rider.powerSource.powerFactor})`;
+        ? `Generador Comercial ${rider.powerSource.generatorSurgeWatts || 3500} W Pico (~${Math.round((rider.powerSource.generatorSurgeWatts || 3500) * 0.85 * 0.72)}W Seguros Audio AVR)`
+        : `Generador Industrial (${rider.powerSource.apparentPowerKva || 5} kVA, FP ${rider.powerSource.powerFactor})`;
 
   const venueRows = [
     ['Recinto / Parcela', venue.name || 'Sin especificar'],
@@ -253,18 +253,18 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
     ['Soportes en Terreno', `${results.inventory.subsAtFloorCount} Bajos a piso (Cluster Central) + ${results.inventory.tripodStandsCount} Atriles trípode independientes`],
     ...(results.fieldAudit
       ? [
-          ['1. Filtro Crossover HPF (Tops)', results.fieldAudit.hpfDirective],
-          ['2. Ángulo Apertura (Splay Angle)', results.fieldAudit.splayDirective],
-          ['3. Fase Sub vs Top (Escenario)', results.fieldAudit.phaseAlignmentDirective],
-          ['4. Caída de Tensión en el Drop', results.fieldAudit.cableVoltageDirective],
-          ['5. Puesta a Tierra y Compresión', `${results.fieldAudit.groundingDirective} | ${results.fieldAudit.powerCompressionDirective}`],
-          ...(results.fieldAudit.fuelLogistics ? [['6. Autonomía de Combustible', results.fieldAudit.fuelLogistics.fuelDirective]] : []),
-          ...(results.fieldAudit.crowdAcousticShift ? [['7. Acústica Vacío vs Pista Llena', results.fieldAudit.crowdAcousticShift.crowdDirective]] : []),
-          ...(results.v4EngineeringSummary?.phaseBalanceDirective ? [['8. Separación de Líneas Eléctricas', results.v4EngineeringSummary.phaseBalanceDirective]] : []),
-          ...(results.v4EngineeringSummary?.impedanceDirective ? [['9. Impedancia Pasiva (Speakon Ohms)', results.v4EngineeringSummary.impedanceDirective]] : []),
-          ...(results.v4EngineeringSummary?.bottleneckDiagnosis ? [['10. Equilibrio Tonal (Sub vs Top)', results.v4EngineeringSummary.bottleneckDiagnosis]] : []),
-          ...(results.v4EngineeringSummary?.neighborhoodNoiseDirective ? [['11. Ordenanza Ruido D.S. N°38 MMA', results.v4EngineeringSummary.neighborhoodNoiseDirective]] : []),
-        ]
+        ['1. Filtro Crossover HPF (Tops)', results.fieldAudit.hpfDirective],
+        ['2. Ángulo Apertura (Splay Angle)', results.fieldAudit.splayDirective],
+        ['3. Fase Sub vs Top (Escenario)', results.fieldAudit.phaseAlignmentDirective],
+        ['4. Caída de Tensión en el Drop', results.fieldAudit.cableVoltageDirective],
+        ['5. Puesta a Tierra y Compresión', `${results.fieldAudit.groundingDirective} | ${results.fieldAudit.powerCompressionDirective}`],
+        ...(results.fieldAudit.fuelLogistics ? [['6. Autonomía de Combustible', results.fieldAudit.fuelLogistics.fuelDirective]] : []),
+        ...(results.fieldAudit.crowdAcousticShift ? [['7. Acústica Vacío vs Pista Llena', results.fieldAudit.crowdAcousticShift.crowdDirective]] : []),
+        ...(results.v4EngineeringSummary?.phaseBalanceDirective ? [['8. Separación de Líneas Eléctricas', results.v4EngineeringSummary.phaseBalanceDirective]] : []),
+        ...(results.v4EngineeringSummary?.impedanceDirective ? [['9. Impedancia Pasiva (Speakon Ohms)', results.v4EngineeringSummary.impedanceDirective]] : []),
+        ...(results.v4EngineeringSummary?.bottleneckDiagnosis ? [['10. Equilibrio Tonal (Sub vs Top)', results.v4EngineeringSummary.bottleneckDiagnosis]] : []),
+        ...(results.v4EngineeringSummary?.neighborhoodNoiseDirective ? [['11. Ordenanza Ruido D.S. N°38 MMA', results.v4EngineeringSummary.neighborhoodNoiseDirective]] : []),
+      ]
       : []),
   ];
 
@@ -347,7 +347,7 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
 
   currentY = (doc as any).lastAutoTable.finalY + 8;
 
-  // 6. Alargadores, Zapatillas Multicontacto y Cables DMX Físicos (v4.1)
+  // 6. Alargadores, Zapatillas Multicontacto y Cables DMX Físicos
   if (results.powerDistribution && results.powerDistribution.powerStrips.length > 0) {
     if (currentY + 50 > pageHeight) {
       doc.addPage();

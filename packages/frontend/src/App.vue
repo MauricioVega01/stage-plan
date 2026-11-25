@@ -1698,7 +1698,7 @@
           <div class="leading-relaxed w-full space-y-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-black text-base uppercase tracking-wider font-mono">
-                DIAGNÓSTICO ELÉCTRICO: {{ powerFeasibility.status }}
+                DIAGNÓSTICO ELÉCTRICO: {{ powerFeasibility.status === 'CRITICAL_TRIP_GUARANTEED' ? 'SOBRECARGA CRÍTICA (CORTE SEGURO)' : powerFeasibility.status === 'WARNING_OVERLOAD_RISK' ? 'ALERTA DE SOBRECARGA (> 80%)' : 'CARGA SEGURA CONFORME SEC' }}
               </span>
               <span class="text-xs font-mono px-3 py-1 rounded bg-black/50 border border-white/20 font-bold">
                 Demanda: {{ powerFeasibility.totalSystemDemandWatts }}W continuos (Picos: {{ powerFeasibility.transientPeakWatts }}W) / Capacidad Segura: {{ powerFeasibility.availableContinuousWatts }}W ({{ powerFeasibility.loadPercentage }}%)
@@ -3132,7 +3132,7 @@ const fieldAudit = computed(() => {
 // Innovación 6: Resumen Copiable para WhatsApp
 const whatsappCopied = ref(false);
 function copyWhatsAppSummary() {
-  const text = `🎧 *STAGE PLAN v4.0 — FICHA TÉCNICA DE EVENTO*
+  const text = `🎧 *STAGE PLAN — FICHA TÉCNICA DE EVENTO*
 📍 *Lugar:* ${venue.name || 'Evento'} (${venue.widthMeters}m × ${venue.depthMeters}m · ${venue.widthMeters! * venue.depthMeters!} m²)
 👤 *Operador:* ${operatorSignature.value}
 

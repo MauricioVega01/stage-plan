@@ -1,0 +1,94 @@
+<svg viewBox="0 0 1160 660" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+  </marker>
+  <marker id="arr-navy" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#1F497D"/>
+  </marker>
+  <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#c81e1e"/>
+  </marker>
+  <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#059669"/>
+  </marker>
+  <marker id="hollow-tri" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+    <polygon points="0 0, 10 4, 0 8" fill="#ffffff" stroke="#1F497D" stroke-width="1.2"/>
+  </marker>
+</defs>
+
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<rect x="20" y="18" width="1120" height="290" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
+<text x="34" y="36" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">CRONOGRAMA SCRUMBAN + PSP (4 SPRINTS FIJOS DE 14 DÍAS · RUTA CRÍTICA EN ROJO)</text>
+<rect x="240" y="42" width="170" height="22" rx="4" fill="#1F497D"/>
+<text x="325" y="57" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">S1 (Sem 1-2)</text>
+<rect x="416" y="42" width="170" height="22" rx="4" fill="#1F497D"/>
+<text x="501" y="57" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">S2 (Sem 3-4)</text>
+<rect x="592" y="42" width="170" height="22" rx="4" fill="#1F497D"/>
+<text x="677" y="57" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">S3 (Sem 5-6)</text>
+<rect x="768" y="42" width="170" height="22" rx="4" fill="#1F497D"/>
+<text x="853" y="57" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">S4 (Sem 7-8)</text>
+<rect x="944" y="42" width="170" height="22" rx="4" fill="#1F497D"/>
+<text x="1029" y="57" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">Cierre U2</text>
+<text x="34" y="94" fill="#1e293b" font-size="10.5" font-weight="700" font-family="Segoe UI, sans-serif">T01-T04 Diagnostico & Zod</text>
+<rect x="240" y="78" width="170" height="26" rx="5" fill="#1F497D" fill-opacity="0.9"/>
+<text x="325.0" y="95" fill="#ffffff" font-size="9.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CRITICA</text>
+<text x="34" y="136" fill="#1e293b" font-size="10.5" font-weight="700" font-family="Segoe UI, sans-serif">T05-T08 Motor SEC + Haas + 70 Tests</text>
+<rect x="416" y="120" width="220" height="26" rx="5" fill="#c81e1e" fill-opacity="0.9"/>
+<text x="526.0" y="137" fill="#ffffff" font-size="9.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CRITICA</text>
+<text x="34" y="178" fill="#1e293b" font-size="10.5" font-weight="700" font-family="Segoe UI, sans-serif">T09-T12 Backend Express + Prisma + JWT</text>
+<rect x="560" y="162" width="180" height="26" rx="5" fill="#1F497D" fill-opacity="0.9"/>
+<text x="650.0" y="179" fill="#ffffff" font-size="9.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CRITICA</text>
+<text x="34" y="220" fill="#1e293b" font-size="10.5" font-weight="700" font-family="Segoe UI, sans-serif">T13-T16 Vue 3 + Layout 2D + Pioneer DJM</text>
+<rect x="720" y="204" width="220" height="26" rx="5" fill="#c81e1e" fill-opacity="0.9"/>
+<text x="830.0" y="221" fill="#ffffff" font-size="9.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CRITICA</text>
+<text x="34" y="262" fill="#1e293b" font-size="10.5" font-weight="700" font-family="Segoe UI, sans-serif">T17-T20 OWASP + Benchmark + Entrega U2</text>
+<rect x="910" y="246" width="200" height="26" rx="5" fill="#059669" fill-opacity="0.9"/>
+<text x="1010.0" y="263" fill="#ffffff" font-size="9.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">HITO FINAL</text>
+<text x="34" y="294" fill="#c81e1e" font-size="9.5" font-weight="700" font-family="Consolas, monospace">Ruta Crítica: T01 → T02 → T05 → T08 → T12 → T15 → T18 → T20 (Dependencias Finish-to-Start sin holgura)</text>
+<rect x="20" y="326" width="1120" height="316" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
+<text x="34" y="344" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">TABLERO KANBAN Y POLÍTICA WIP (SOLO-DEVELOPER MAURICIO VEGA)</text>
+<rect x="36" y="354" width="206" height="272" rx="7" fill="#ffffff" stroke="#64748b" stroke-width="1.3"/>
+<rect x="36" y="354" width="206" height="36" rx="7" fill="#64748b"/>
+<text x="139" y="370" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">BACKLOG (MoSCoW)</text>
+<text x="139" y="384" fill="#f1f5f9" font-size="8.5" font-family="Consolas, monospace" text-anchor="middle">Sin límite</text>
+<rect x="46" y="402" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="139" y="432" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">HU09 Exportación CSV</text>
+<rect x="46" y="466" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="139" y="496" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">HU10 Histórico Multi-Sede</text>
+<rect x="254" y="354" width="206" height="272" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.3"/>
+<rect x="254" y="354" width="206" height="36" rx="7" fill="#1F497D"/>
+<text x="357" y="370" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">SELECTED FOR DEV</text>
+<text x="357" y="384" fill="#f1f5f9" font-size="8.5" font-family="Consolas, monospace" text-anchor="middle">WIP Max: 3</text>
+<rect x="264" y="402" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="357" y="432" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">T18 Auditoría OWASP ZAP</text>
+<rect x="264" y="466" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="357" y="496" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">T19 Validación k6 5 VUs</text>
+<rect x="472" y="354" width="206" height="272" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.3"/>
+<rect x="472" y="354" width="206" height="36" rx="7" fill="#c81e1e"/>
+<text x="575" y="370" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">IN PROGRESS</text>
+<text x="575" y="384" fill="#f1f5f9" font-size="8.5" font-family="Consolas, monospace" text-anchor="middle">WIP Max: 1</text>
+<rect x="482" y="402" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="575" y="432" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">T20 Compilación DOCX Final</text>
+<rect x="482" y="466" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="575" y="496" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">(Foco exclusivo sin multitarea)</text>
+<rect x="690" y="354" width="206" height="272" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.3"/>
+<rect x="690" y="354" width="206" height="36" rx="7" fill="#d97706"/>
+<text x="793" y="370" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">TESTING / TDD</text>
+<text x="793" y="384" fill="#f1f5f9" font-size="8.5" font-family="Consolas, monospace" text-anchor="middle">WIP Max: 2</text>
+<rect x="700" y="402" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="793" y="432" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">10 suites Vitest (70/70 OK)</text>
+<rect x="700" y="466" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="793" y="496" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">vue-tsc + vite build OK</text>
+<rect x="908" y="354" width="206" height="272" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.3"/>
+<rect x="908" y="354" width="206" height="36" rx="7" fill="#059669"/>
+<text x="1011" y="370" fill="#ffffff" font-size="10" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">DONE (DoD 100%)</text>
+<text x="1011" y="384" fill="#f1f5f9" font-size="8.5" font-family="Consolas, monospace" text-anchor="middle">Completado</text>
+<rect x="918" y="402" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="1011" y="432" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">Motor SEC RIC 03/10 &amp; Haas</text>
+<rect x="918" y="466" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="1011" y="496" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">Layout 2D + Postes Guía</text>
+<rect x="918" y="530" width="186" height="52" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="1011" y="560" fill="#1e293b" font-size="9.5" font-weight="600" font-family="Segoe UI, sans-serif" text-anchor="middle">Réplica Pioneer DJM + PDF</text>
+</svg>
