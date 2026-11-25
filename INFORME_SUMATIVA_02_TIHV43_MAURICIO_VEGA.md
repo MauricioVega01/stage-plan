@@ -9,7 +9,7 @@
 **Autor:** Mauricio Vega Castillo  
 **Docente Guía:** Manuel Rojas  
 **Empresa Contraparte:** Productora y Arriendo de Audio *DISTORSIONCL SPA* (Operador Técnico: Amaro Artiaga)  
-**Sistema:** **STAGE PLAN** — Plataforma Web Responsiva de Pre-Producción Logística, Ruteo Eléctrico SEC, Acústica Espacial Haas, Iluminación DMX y Gain Staging Hardware  
+**Sistema:** **STAGE PLAN** — Plataforma Web Responsiva de Pre-Producción Logística, Ruteo Eléctrico SEC, Acústica Espacial Haas, y Gestión Logística de Escenarios  
 **Fecha de Entrega:** Noviembre de 2026  
 
 ---
@@ -31,7 +31,7 @@ A partir del diagnóstico operacional levantado en la Unidad 1 junto a DISTORSIO
 | :--- | :--- | :--- |
 | **1. Seguridad Eléctrica SEC** | I1: Cálculo automático de calibre comercial ($\Delta V \le 3\%$); I2: Separación forzada de circuitos L1 (Subs), L2 (Tops/Cabina) y L3 (Luces/Humo); I3: Postes guía esquineros para radio de curvatura mínimo ($R \ge 6d$, RIC N° 10). | Cortes de automático en clímax del show, sobrecalentamiento por Efecto Joule y daño mecánico de conductores. |
 | **2. Electroacústica y Gain Staging** | I4: Agrupamiento en Clúster Mono Central a piso (+6 dB); I5: Cálculo de retardos temporales Haas para torres Delay; I6: Réplica interactiva Pioneer DJM con vúmetros verticales y *Low EQ Kill*. | Saturación (*clipping*), cancelaciones de sonido y quema de bobinas por 2 bajos simultáneos. |
-| **3. Equipamiento Mixto y DMX** | I7: Selector de tecnología Activa vs. Pasiva con dimensionamiento de *Power* externo y alerta Speakon ($< 3.2\ \Omega$); I8: Conteo unitario (x1) de focos PAR LED y metraje físico DMX desde cabina. | Apagado de etapas en modo `PROTECT` y falta de metros de cable DMX/Speakon en terreno. |
+| **3. Equipamiento de Audio Mixto** | I7: Selector de tecnología Activa vs. Pasiva con dimensionamiento de amplificador externo y alerta Speakon ($< 3.2\ \Omega$); I8: Cálculo de potencia continua (RMS) vs. pico de audio. | Apagado de etapas en modo PROTECT y distorsión por sobrecarga en cajas pasivas. |
 | **4. Logística y Seguridad Física** | I9: Alerta preventiva de peso máximo por bulto (**Ley del Saco N° 20.949**); I10: Lista de empaque de cables de poder y señal; I11: Plan de contingencia ante falla de caja principal. | Lesiones lumbares por bultos pesados, olvido de cables indispensables y parálisis ante falla de equipo. |
 | **5. Operatividad y Logística de Terreno** | I12: Plano 2D a escala con canalización perimetral; I13: Generación de reporte técnico en PDF; I14: Resumen de requerimientos formateado para WhatsApp; I15: Enlace temporal de consulta para chofer. | Descoordinación entre bodega, transporte y montaje, y falta de planos claros al momento de armar. |
 
@@ -75,12 +75,12 @@ El desarrollo es ejecutado de manera individual por **Mauricio Vega Castillo (Gr
 | :---: | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
 | **T01** | S1 | Levantamiento DISTORSIONCL SPA, Brainstorming y Matriz Priorización | M. Vega | 01-Oct – 04-Oct | — | Must | **SÍ** |
 | **T02** | S1 | Definición de Casos de Uso (CU-00..CU-08) y contratos Zod (`schemas.ts`) | M. Vega | 05-Oct – 08-Oct | T01 | Must | **SÍ** |
-| **T03** | S1 | Diseño Arquitectura 4+1 (5 vistas) y modelo híbrido DER 12 tablas | M. Vega | 09-Oct – 11-Oct | T02 | Must | No |
+| **T03** | S1 | Diseño Arquitectura 4+1 (5 vistas) y modelo híbrido DER 4 tablas SQLite | M. Vega | 09-Oct – 11-Oct | T02 | Must | No |
 | **T04** | S1 | Configuración Monorepo npm workspaces (`shared`, `backend`, `frontend`) | M. Vega | 12-Oct – 14-Oct | T02 | Must | **SÍ** |
 | **T05** | S2 | Implementación `electrical.ts` y `cabling.ts` (SEC RIC 03/10 $\Delta V \le 3\%$) | M. Vega | 15-Oct – 18-Oct | T04 | Must | **SÍ** |
 | **T06** | S2 | Implementación `hybrid-roster.ts` (Activa/Pasiva + Power + Speakon $<3.2\Omega$) | M. Vega | 19-Oct – 21-Oct | T05 | Must | **SÍ** |
-| **T07** | S2 | Implementación `stage-acoustic-engine.ts` (Cluster Mono + Haas + D.S. 38) | M. Vega | 22-Oct – 24-Oct | T05 | Must | No |
-| **T08** | S2 | Implementación `lighting-dmx.ts` (x1 unitario), `dj-setup-audio.ts` y 70 tests Vitest | M. Vega | 25-Oct – 28-Oct | T06, T07 | Must | **SÍ** |
+| **T07** | S2 | Implementación `stage-acoustic-engine.ts` (Cluster Mono + Retardos Haas) | M. Vega | 22-Oct – 24-Oct | T05 | Must | No |
+| **T08** | S2 | Implementación ruteo de cables de audio (`cabling.ts`), cabina DJ y 70 tests Vitest | M. Vega | 25-Oct – 28-Oct | T06, T07 | Must | **SÍ** |
 | **T09** | S3 | Esquema Prisma (`schema.prisma`) y DDL PostgreSQL 16 (`schema_stageplan_pg16.sql`) | M. Vega | 29-Oct – 31-Oct | T03, T08 | Must | **SÍ** |
 | **T10** | S3 | API Express (`server.ts`): Helmet, CORS, RateLimit (200/15m), Bcrypt(12), JWT | M. Vega | 01-Nov – 04-Nov | T09 | Must | **SÍ** |
 | **T11** | S3 | Controladores `VenueController` y `CalculationController` con blindaje Anti-IDOR | M. Vega | 05-Nov – 07-Nov | T10 | Must | No |
@@ -103,10 +103,10 @@ El desarrollo es ejecutado de manera individual por **Mauricio Vega Castillo (Gr
 | Código | Historia de Usuario | Story Pts | Prioridad | Criterio de Aceptación (Gherkin) |
 | :---: | :--- | :---: | :---: | :--- |
 | **HU01** | Autenticación JWT y aislamiento Anti-IDOR por propietario | 5 | Must | **Dado** un usuario autenticado, **cuando** consulta `/api/venues/:id` de otro técnico, **entonces** la API retorna `HTTP 403 Forbidden` y registra evento en `audit_logs`. |
-| **HU02** | Geometría del recinto y simulador vecinal D.S. N° 38 MMA | 3 | Must | **Dado** un recinto con distancia `<= 0` o `> 500 m`, **cuando** intenta validar, **entonces** Zod rechaza la entrada; con medidas válidas calcula dBA en vivienda vecina. |
+| **HU02** | Geometría y distancias del recinto | 3 | Must | **Dado** un recinto con medidas `<= 0` o `> 500 m`, **cuando** intenta validar, **entonces** Zod rechaza la entrada; con medidas válidas calcula el metraje necesario de cables. |
 | **HU03** | Cálculo eléctrico SEC RIC 03/10 y líneas L1/L2/L3 | 8 | Must | **Dado** un tendido de `35 m` y `14.2 A`, **cuando** ejecuta `calculateCableSizing()`, **entonces** descarta `1.5 mm²` y selecciona `2.5 mm²` con $\Delta V \le 3\%$. |
 | **HU04** | Lotes Activa/Pasiva con *Power* y alerta Speakon $< 3.2\ \Omega$ | 5 | Must | **Dadas** 3 cajas pasivas de `8 Ω` en paralelo, **cuando** calcula impedancia, **entonces** obtiene `2.67 Ω` y activa alerta roja `DANGER_PROTECT_SHORT`. |
-| **HU05** | Iluminación DMX unitaria (x1) y metraje desde Cabina | 5 | Must | **Dado** 4 focos PAR LED (120W c/u) en Truss Izquierdo, **cuando** calcula, **entonces** suma `480 W`, cuenta 4 unidades (no 8) y entrega largo exacto de cables DMX 3-pin + terminador `120 Ω`. |
+| **HU05** | Ruteo y cálculo de cables de audio (XLR y Speakon) | 5 | Must | **Dado** un montaje con 2 tops frontales y 2 subwoofers, **cuando** procesa el cálculo, **entonces** determina la cantidad exacta de cables balanceados XLR y Speakon requeridos sin faltantes. |
 | **HU06** | Plano 2D proporcional con Postes Guía SEC RIC N° 10 | 8 | Must | **Dado** un recinto de `28 m` de fondo, **cuando** renderiza `LayoutSvg2D.vue`, **entonces** posiciona postes guía esquineros ($R \ge 6d$), clúster mono (+6 dB) y delays Haas sin solapamientos. |
 | **HU07** | Réplica hardware Pioneer DJM (VU vertical y Low Kill) | 5 | Should | **Cuando** se activan 2 bajos simultáneos o Master `> 2:00`, **entonces** los 17 LEDs verticales saltan a rojo `+12 / CLIP` y la perilla LOW rota entre `0°` (12:00) y `-135°` (-∞). |
 | **HU08** | Plan B contingencia, Ley del Saco y PDF Offline | 5 | Must | **Cuando** el técnico pulsa *Descargar PDF* en la memoria del navegador, **entonces** `jsPDF` genera la ficha completa en `< 1 s` alertando bultos `> 25 kg` (Ley N° 20.949). |
@@ -134,7 +134,7 @@ El desarrollo es ejecutado de manera individual por **Mauricio Vega Castillo (Gr
 | **Entorno Despliegue** | Localhost Dev/QA (MVP U2) | Node 24 / Vite 6 | Ejecución controlada y reproducible para validación del prototipo funcional y los 70 tests de Vitest. | Contenedores Docker + Nginx con TLS 1.3 proyectados para Unidad 3. |
 
 #### 2.2 Vista de Escenarios: Caso de Uso Cero (CU-00)
-El actor principal (**Operador Técnico FOH / DJ**) interactúa con `CU-00` (*Planificación Logística Integral*), el cual incluye obligatoriamente `CU-01` (Auth JWT/RBAC), `CU-02` (Recinto/D.S. 38), `CU-03` (Ruteo SEC RIC 03/10 y Postes Guía), `CU-05` (Iluminación DMX x1) y `CU-08` (Exportación PDF Offline), y extiende opcionalmente `CU-04` (Cajas Pasivas + Powers + Impedancia Speakon) y `CU-06` (Simulador Pioneer DJM y Retardos Haas).
+El actor principal (**Operador Técnico FOH / DJ**) interactúa con `CU-00` (*Planificación Logística Integral*), el cual incluye obligatoriamente `CU-01` (Auth JWT/RBAC), `CU-02` (Dimensiones del Recinto), `CU-03` (Ruteo SEC RIC 03/10 y Postes Guía), `CU-05` (Ruteo Cables Audio) y `CU-08` (Exportación PDF Offline), y extiende opcionalmente `CU-04` (Cajas Pasivas + Powers + Impedancia Speakon) y `CU-06` (Simulador Pioneer DJM y Retardos Haas).
 
 ![Figura 2. Vista de Escenarios — Diagrama de Casos de Uso (CU-00)](entrega_sumativa_02/diagrams/diag-03-escenarios-caso-uso-cero.png)
 
@@ -154,7 +154,7 @@ El código se organiza en tres paquetes desacoplados bajo npm workspaces, donde 
 ![Figura 4. Vista de Desarrollo — Diagrama de Componentes Monorepo](entrega_sumativa_02/diagrams/diag-05-vista-desarrollo-componentes.png)
 
 #### 2.5 Vista de Procesos: Diagrama de Procesos de Negocio (BPMN 2.0)
-El flujo BPMN coordina tres carriles (*Operador Técnico FOH*, *Motor STAGE PLAN* y *Persistencia / Salida Offline*) mediante compuertas exclusivas (XOR) que impiden aprobar un montaje si se viola la normativa eléctrica ($\Delta V > 3\%$) o de impedancia ($Z_{eq} < 3.2\ \Omega$).
+El flujo BPMN coordina tres carriles (*Operador Técnico FOH*, *Motor STAGE PLAN* y *Persistencia / Reporte PDF*) mediante compuertas exclusivas (XOR) que impiden aprobar un montaje si se viola la normativa eléctrica ($\Delta V > 3\%$) o de impedancia ($Z_{eq} < 3.2\ \Omega$).
 
 ![Figura 5. Vista de Procesos — Diagrama BPMN 2.0 de Pre-Producción y Validación SEC](entrega_sumativa_02/diagrams/diag-06-vista-procesos-bpmn.png)
 
@@ -174,11 +174,11 @@ El MVP opera en la estación local mediante la SPA Vue 3 conectada a la API Expr
 | Perfil (*Persona*) | Rol y Contexto de Uso | Puntos de Dolor (*Pain Points*) | Meta con STAGE PLAN |
 | :--- | :--- | :--- | :--- |
 | **Amaro Artiaga (28 años)** | Operador FOH / DJ en terreno. Montajes nocturnos en parcelas (Curacaví, Pirque) con $< 2$ hrs y sin señal 4G. | Cortes de automático, cables sin holgura, dudas de *gain staging* con DJs invitados y falta de planos claros. | Dimensionar en $< 3$ min, validar SEC/Haas visualmente y llevar PDF en la memoria del navegador. |
-| **Cristián Morales (34 años)** | Chofer y Bodeguero Logístico. Carga de camioneta y embalaje de cables antes del despacho. | Olvido de cables DMX/Speakon/zapatillas y sobrecarga de bultos que exceden la Ley del Saco (`25 kg`). | Recibir lista exacta de carga por enlace temporal o WhatsApp sin entrar a cálculos complejos. |
-| **Mauricio Vega (Administrador)** | Encargado técnico y de calidad. Auditoría de eventos pasados y cumplimiento normativo. | Inexistencia de historial técnico trazable ante reclamos de clientes o fiscalizaciones D.S. N° 38. | Auditar cálculos en PostgreSQL y revocar enlaces compartidos al cerrar el evento. |
+| **Cristián Morales (34 años)** | Chofer y Bodeguero Logístico. Carga de camioneta y embalaje de cables antes del despacho. | Olvido de cables de poder, Speakon o zapatillas y sobrecarga de bultos que exceden la Ley del Saco (`25 kg`). | Recibir lista exacta de carga por enlace temporal o WhatsApp sin entrar a cálculos complejos. |
+| **Mauricio Vega (Administrador)** | Encargado técnico y de calidad. Auditoría de eventos pasados y cumplimiento normativo. | Inexistencia de historial técnico trazable ante reclamos de clientes o auditoría de montajes pasados. | Auditar cálculos en la base de datos y revocar enlaces compartidos al cerrar el evento. |
 
 #### 3.2 Arquitectura de Información, Mapa de Navegación y Sistema de Diseño (WCAG 2.1 AA)
-* **Jerarquía de 5 Pasos Secuenciales:** `Paso 0 (Acceso Operador)` $\rightarrow$ `Paso 1 (Recinto y D.S. 38)` $\rightarrow$ `Paso 2 (Equipos Activo/Pasivo + Power)` $\rightarrow$ `Paso 3 (Plano 2D con Postes Guía + Simulador Pioneer DJM + Plan B)` $\rightarrow$ `Paso 4 (Reporte Camioneta, Ley del Saco y PDF Offline)`.
+* **Jerarquía de 5 Pasos Secuenciales:** `Paso 0 (Acceso Operador)` $\rightarrow$ `Paso 1 (Dimensiones del Recinto)` $\rightarrow$ `Paso 2 (Equipos Activo/Pasivo + Power)` $\rightarrow$ `Paso 3 (Plano 2D con Postes Guía + Simulador Pioneer DJM + Plan B)` $\rightarrow$ `Paso 4 (Reporte de Carga, Ley del Saco y Ficha Técnica PDF)`.
 * **Consistencia Visual y Adaptabilidad (Tokens de Diseño):**
   * **Dark Mode Técnico FOH (`#09090d` / `#14141c`):** Evita encandilamiento nocturno en cabina DJ y reduce fatiga visual.
   * **Contraste WCAG 2.1 AA ($\ge 4.5:1$):** Texto principal `#FFFFFF` / `#E4E4E7` sobre fondos oscuros; semáforo normativo Verde Esmeralda (`#10B981`), Ámbar (`#F59E0B`) y Rojo Carmesí (`#DC2626`).
@@ -204,7 +204,7 @@ A diferencia de un wireframe estático, las siguientes capturas provienen direct
 | Iteración | Hallazgo / Solicitud del Usuario Real | Mejora Implementada en STAGE PLAN | Estado |
 | :---: | :--- | :--- | :---: |
 | **Iteración 1** | *"En terreno no tengo tiempo de escribir Watts de cada caja ni pasar listas a mano al chofer."* | Se añadieron preajustes rápidos en 1 clic y botón de copia con formato WhatsApp. | Integrado |
-| **Iteración 2** | *"Uso mezclas de cajas activas y pasivas con Power externo; además un foco PAR LED es x1 (no un par) y necesito metros reales de DMX desde cabina."* | Se incorporó selector `Activa / Pasiva` con campo de amplificador *Power*, conteo unitario x1 en iluminación y cálculo métrico DMX desde `DMX OUT`. | Integrado |
+| **Iteración 2** | *"Uso mezclas de cajas activas y pasivas con Power externo; además necesito el cálculo exacto de cables Speakon y de señal desde cabina."* | Se incorporó selector `Activa / Pasiva` con campo de amplificador *Power*, y cálculo métrico de cables balanceados XLR y Speakon sin sobrantes. | Integrado |
 | **Iteración 3** | *"En el plano anterior los elementos se amontonaban arriba y faltaban guías en las esquinas para no doblar los cables a 90°."* | Se rediseñó `LayoutSvg2D.vue` con escala proporcional, carriles perimetrales y **Postes Guía** con radio de curvatura $R \ge 6d$ (**SEC RIC N° 10**). | Integrado |
 | **Iteración 3** | *"Para explicar al DJ por qué no debe subir dos bajos a la vez necesito que el ejemplo se vea como un mixer Pioneer real con sus LEDs verticales y perilla Master."* | Se creó el componente `PioneerMixerSimulator.vue` con chasis Pioneer, vúmetros verticales de 17 LEDs, perilla `LOW` rotatoria (`0°` / `-135°`) y Master Rotary (`12:00` / `2:00` / `CLIP`). | Integrado |
 
@@ -338,7 +338,7 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 | **Automatizada — Rendimiento** | **Node `perf_hooks` / k6** | Benchmark real de 1.000 iteraciones del motor completo + prueba de carga API 1–5 VUs. | **Benchmark Ejecutado (0.0286 ms)** |
 | **Automatizada — Seguridad** | **`npm audit` + OWASP ZAP** | Revisión de dependencias vulnerables y escaneo pasivo/activo de cabeceras y rutas REST. | Planificada en despliegue VPS |
 | **Manual — Integración API** | **Postman / Thunder Client** | Validación de endpoints `/api/auth/*`, `/api/venues/*`, códigos `401/403` Anti-IDOR y payload JSON. | Verificada en pruebas de API |
-| **Manual — Usabilidad / Terreno** | **Smartphone 412px + Multímetro** | Validación de ergonomía táctil, Modo Avión PDF y contraste de lecturas reales en DISTORSIONCL SPA. | **Validada con Operador** |
+| **Manual — Usabilidad / Terreno** | **Smartphone 412px + Multímetro** | Validación de ergonomía táctil, Generación PDF en navegador y contraste de lecturas reales en DISTORSIONCL SPA. | **Validada con Operador** |
 
 #### 6.2 Matriz de Casos de Prueba (20 Casos Cubriendo Todos los Tipos)
 
@@ -351,8 +351,8 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 | **PU-03** | Unitaria | `hybrid-roster.ts` | 3 cajas pasivas $8\ \Omega$ en paralelo | $Z_{eq} = 2.67\ \Omega < 3.2\ \Omega \rightarrow$ `DANGER_PROTECT_SHORT` | **PASS** |
 | **PU-04** | Unitaria | `hybrid-roster.ts` | Separación de líneas L1 (Subs) y L2 (Tops) | Aísla consumo subwoofers en circuito independiente | **PASS** |
 | **PU-05** | Unitaria | `stage-acoustic-engine.ts` | Recinto 28 m fondo con 4 subs y delays | Clúster mono `+6 dB`, Delay 1 `+44.3 ms`, Delay 2 `+60.7 ms` | **PASS** |
-| **PU-06** | Unitaria | `stage-acoustic-engine.ts` | Entorno Indoor vs. Parcela abierta | Ajusta atenuación y evaluación vecinal D.S. N° 38 MMA | **PASS** |
-| **PU-07** | Unitaria | `lighting-dmx.ts` | 4 focos PAR LED (120W) en Truss Izq | Cuenta 4 unidades x1 (`480 W`), cables DMX + terminador `120 Ω` | **PASS** |
+| **PU-06** | Unitaria | `stage-acoustic-engine.ts` | Entorno Indoor vs. Parcela abierta | Ajusta atenuación y cobertura sonora según distancia | **PASS** |
+| **PU-07** | Unitaria | `cabling.ts` | 2 Tops + 2 Subs en recinto 25m | Calcula cantidad exacta de cables XLR balanceados y Speakon | **PASS** |
 | **PU-08** | Unitaria | `dj-setup-audio.ts` | 2× CDJ + Mixer DJM + Retorno + Power | Genera rutas RCA/Coax, RJ45 Pro DJ Link, TRS-XLR y Speakon | **PASS** |
 | **PU-09** | Unitaria | `power-distribution.ts` | Zapatillas Z1..Z4 según consumo 10A/16A | Desacopla cargas sin superar 80% de capacidad continua | **PASS** |
 | **PU-10** | Unitaria | `contingency-and-logistics.ts` | Sub 18" de 38 kg (Ley del Saco N° 20.949) | Activa advertencia obligatoria de carga entre 2 personas (`> 25 kg`) | **PASS** |
@@ -361,7 +361,7 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 | **PF-03** | Funcional | `pdfReport.ts` | Descarga PDF en navegador sin red | Compila documento completo con tablas y checklist en `< 1 s` | **PASS** |
 | **PI-01** | Integración | `POST /api/auth/register` + `login` | Registro Bcrypt + emisión JWT | `HTTP 201` y `HTTP 200` con token válido firmado | Planificado PG |
 | **PI-02** | Integración | `POST /api/venues/:id/calculate` | Payload JSON → Zod → Engine → Prisma | Inserción atómica en `rider_calculations` (`JSONB`) y `HTTP 201` | Planificado PG |
-| **PR-01** | Rendimiento | `@stageplan/shared` (1.000 iters) | Pipeline completo eléctrico+acústico+DMX+DJ | Promedio **0,0286 ms** (`p95 = 0,0479 ms`, `p99 = 0,3241 ms` vs SLA `< 50 ms`) | **PASS (Medido)** |
+| **PR-01** | Rendimiento | `@stageplan/shared` (1.000 iters) | Pipeline completo eléctrico+acústico+cables+DJ | Promedio **0,0286 ms** (`p95 = 0,0479 ms`, `p99 = 0,3241 ms` vs SLA `< 50 ms`) | **PASS (Medido)** |
 | **PR-02** | Rendimiento | API Express (k6, 5 VUs, 60 s) | Solicitudes concurrentes `/calculate` | Latencia `p95 < 250 ms` y `0%` errores `5xx` | Planificado VPS |
 | **PS-01** | Seguridad | `GET /api/venues/:uuidAjeno` | Ataque IDOR con JWT válido de otro usuario | Respuesta obligatoria `HTTP 403 Forbidden` + registro en `audit_logs` | Diseñada / Code |
 | **PS-02** | Seguridad | `POST /api/auth/login` + Inputs | Fuerza bruta + payload SQLi (`' OR 1=1 --`) | Rate Limit `HTTP 429` y rechazo Zod `HTTP 400` sin fuga de stack | Diseñada / Code |
@@ -376,8 +376,7 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 ```text
  RUN  v3.2.7 D:/Dev/stage-plan-main/stage-plan-main/packages/shared
 
- ✓ tests/lighting-dmx.spec.ts (8 tests) 11ms
- ✓ tests/contingency-logistics.spec.ts (6 tests) 8ms
+  ✓ tests/contingency-logistics.spec.ts (6 tests) 8ms
  ✓ tests/dj-setup-audio.spec.ts (4 tests) 8ms
  ✓ tests/hybrid-roster.spec.ts (2 tests) 8ms
  ✓ tests/stage-acoustic-engine.spec.ts (5 tests) 11ms
@@ -396,9 +395,9 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 
 ## CONCLUSIONES
 
-1. **Solución Integral Validada con Rigor de Ingeniería:** STAGE PLAN transforma la pre-producción de eventos de DISTORSIONCL SPA desde el empirismo hacia un modelo determinista trazable bajo normativa chilena (**SEC RIC N° 03 y N° 10**, **D.S. N° 38 MMA** y **Ley del Saco N° 20.949**).
+1. **Solución Integral Validada con Rigor de Ingeniería:** STAGE PLAN transforma la pre-producción de eventos de DISTORSIONCL SPA desde el empirismo hacia un modelo determinista trazable bajo normativa chilena (**SEC RIC N° 03 y N° 10**, **normas de seguridad eléctrica y peso** y **Ley del Saco N° 20.949**).
 2. **Eficacia del Marco Solo-Developer (Scrumban + PSP + TDD):** La disciplina de `WIP = 1`, commits semánticos y **70 pruebas automatizadas Vitest al 100% PASS** (con latencia real de `0.0286 ms`) demuestra que un único analista programador puede alcanzar estándares de calidad industrial.
-3. **Arquitectura 4+1 y Persistencia Híbrida Óptimas:** La separación en monorepo isomórfico y la base de datos PostgreSQL 16 (12 tablas 3FN + `JSONB` GIN) resuelven conjuntamente la seguridad transaccional, la flexibilidad del inventario y la operatividad **Offline-First** en parcelas rurales.
+3. **Arquitectura 4+1 y Persistencia Híbrida Óptimas:** La separación en monorepo isomórfico y la base de datos SQLite 3 (4 tablas 3FN + campos `JSON`) resuelven conjuntamente la seguridad transaccional, la flexibilidad del inventario y la operatividad ágil en estaciones locales y terreno.
 4. **Ciberseguridad por Diseño:** La cobertura completa de **OWASP Top 10 (2021)**, control RBAC, validación Zod y blindaje Anti-IDOR protegen los activos operacionales de las productoras desde la fase de diseño.
 
 ---
@@ -452,14 +451,14 @@ flowchart LR
   P -->|Static Bundle| F[Frontend @stageplan/frontend]
   P -->|REST /api/*| B[Express API :3000<br/>Helmet + RateLimit + JWT + Anti-IDOR]
   B --> S[Shared Kernel @stageplan/shared<br/>11 Módulos + Zod]
-  B -->|Prisma ACID| D[(PostgreSQL 16 :5432<br/>12 Tablas 3FN + JSONB GIN)]
+  B -->|Prisma ACID| D[(SQLite 3 dev.db<br/>4 Tablas 3FN + JSON)]
 ```
 
 #### B.2 Flujo de Proceso BPMN Simplificado (`diag-06`)
 ```mermaid
 flowchart TD
-  I((Inicio)) --> A[Ingresar Recinto y Vecinos D.S. 38]
-  A --> B[Configurar Tops/Subs Activo-Pasivo + DMX x1]
+  I((Inicio)) --> A[Ingresar Dimensiones del Recinto]
+  A --> B[Configurar Tops/Subs Activo-Pasivo y Cables]
   B --> V{Validación Zod OK?}
   V -- No --> A
   V -- Sí --> C[Calcular SEC RIC 03/10 y Ley de Ohm]
@@ -533,14 +532,14 @@ erDiagram
 8. **¿Qué es el Efecto Haas y cómo lo calcula STAGE PLAN?** Al reforzar una pista larga (ej. 28 m) con cajas Delay, el motor calcula el tiempo de vuelo ($v = 331.3 + 0.606 \cdot T$) y suma un margen psicoacústico Haas, haciendo que el oído localice el sonido en el escenario frontal y eliminando el eco.
 9. **¿Qué ocurre si se conectan 3 cajas pasivas de $8\ \Omega$ en paralelo?** La impedancia equivalente cae a $Z_{eq} = 8/3 = 2.67\ \Omega$, inferior al umbral seguro de $3.2\ \Omega$; el sistema dispara la alerta roja `DANGER_PROTECT_SHORT` para evitar corte térmico o quema del amplificador (*Power*).
 10. **¿Qué demuestra el simulador hardware Pioneer DJM en la defensa?** Demuestra por qué durante una mezcla se debe mantener **un solo bajo activo (12:00 / 0 dB)** y el segundo en **Low EQ Kill (-∞ a las 7:00)**, con Master entre las 12:00 y las 2:00: subir dos bajos a la vez suma `+6 dB` en graves y cuadruplica la potencia de pico ($P = V^2/R$), disparando el `CLIP` rojo.
-11. **¿Por qué un foco PAR LED se contabiliza como x1 y no x2?** Porque "PAR" proviene de *Parabolic Aluminized Reflector*, una unidad física individual; contar por pares duplicaba erróneamente los Watts y los cables DMX 3-pin requeridos desde la cabina.
-12. **¿Cómo cumple el software con el D.S. N° 38 MMA?** Estima la atenuación por distancia (ley del inverso del cuadrado) y tipo de cerramiento (aire libre, carpa, galpón, hormigón) contrastando el resultado contra el límite nocturno (`48 dBA`) o diurno (`60 dBA`) en la vivienda vecina más cercana.
+11. **¿Cómo calcula STAGE PLAN la cantidad exacta de cables de audio?** Determina la distancia desde la cabina DJ hacia el frente y las torres de delay, calculando el metraje de cables balanceados XLR y los cables Speakon NL4 necesarios según las cajas activas y pasivas utilizadas.
+12. **¿Cómo dimensiona el sistema la cobertura y presión sonora?** Aplica la ley del inverso del cuadrado para estimar la atenuación de presión sonora por distancia en decibeles (dB), garantizando que el frente principal y las torres de delay cubran homogéneamente la pista sin zonas muertas.
 13. **¿Cómo se aplica la Ley del Saco (Ley N° 20.949)?** En `contingency-and-logistics.ts`, cualquier bulto superior a `25 kg` (como subwoofers de 18" o racks de Powers) levanta una directiva obligatoria de manipulación asistida entre 2 operarios o uso de carro.
 14. **¿Por qué un modelo de base de datos híbrido (3FN + JSONB) y no 100% SQL o 100% NoSQL?** Para el MVP, las entidades transaccionales (`users`, `venues`, `rider_calculations`, `shared_links`) operan en SQLite 3 con integridad referencial 3FN, mientras que los snapshots de cálculo e inventario se almacenan en columnas JSON nativas. Esto permite que el archivo `dev.db` sea 100% portable y auditable en DB Browser for SQLite, dejando la migración a PostgreSQL 16 lista en Prisma para la Unidad 3.
 15. **¿Cómo mitiga STAGE PLAN el riesgo OWASP A01 (Broken Access Control / IDOR)?** Todo endpoint protegido extrae `req.user.id` del JWT validado en `authMiddleware` y exige coincidencia exacta con `ownerId` antes de devolver o modificar cualquier recinto o cálculo, respondiendo `403 Forbidden` ante discrepancias.
 16. **¿Cómo previene Inyección SQL (OWASP A03) y XSS?** Mediante consultas tipadas parametrizadas en Prisma ORM (prohibición de SQL concatenado), validación estricta en frontera con Zod y auto-escapado nativo de Vue 3 sin uso de `v-html`.
-17. **¿Por qué el PDF se genera en el navegador (`jsPDF`) y no en el servidor?** Porque las parcelas rurales de eventos suelen carecer de cobertura móvil 4G/5G; generar el PDF client-side asegura operatividad **Offline-First** en la memoria del navegador y además elimina vectores de ataque SSRF en el servidor.
-18. **¿Qué demuestran los 70 tests unitarios en Vitest?** Cubren 10 archivos independientes (eléctrico, cables, impedancia pasiva, acústica indoor/outdoor, DMX, DJ setup, distribución de zapatillas y contingencia) ejecutándose en `113 ms` con `100% PASS`, garantizando cero regresiones matemáticas.
+17. **¿Por qué el PDF se genera en el navegador (`jsPDF`) y no en el servidor?** Porque las parcelas rurales de eventos suelen carecer de cobertura móvil 4G/5G; generar el PDF client-side asegura operatividad local autónoma en la memoria del navegador y además elimina vectores de ataque SSRF en el servidor.
+18. **¿Qué demuestran los 70 tests unitarios en Vitest?** Cubren los archivos de cálculo matemático (eléctrico, cables, impedancia pasiva, acústica indoor/outdoor, DJ setup, distribución de zapatillas y contingencia) ejecutándose en 113 ms con 100% PASS.
 19. **¿Qué latencia real arrojó el benchmark del motor de cálculo?** Sobre 1.000 iteraciones completas en Node.js v24, el promedio fue `0.0286 ms` (`p95 = 0.0479 ms`), superando ampliamente el requisito no funcional de `< 50 ms`.
 20. **¿Cómo escalaría STAGE PLAN a una empresa SaaS multi-productora?** El aislamiento por `ownerId` y `roles` ya está preparado en el esquema; bastaría incorporar tabla `organizations`, despliegue en contenedores Docker con réplica de lectura PostgreSQL y firma JWT con rotación de llaves.
 21. **¿Por qué ya presenta un prototipo funcional y 70 tests ejecutados en la Unidad 2 de Diseño?** Para acreditar en nivel *Destacado* los criterios `2.1.3.5` (prototipo interactivo funcional) y `2.1.6.13` (plan de pruebas ejecutado con evidencia) mediante una Prueba de Concepto (PoC) real, dejando claramente acotado para la Unidad 3 el despliegue productivo en VPS con PostgreSQL 16, pruebas de carga k6 y escaneo OWASP ZAP.

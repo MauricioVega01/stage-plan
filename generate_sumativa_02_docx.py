@@ -288,7 +288,7 @@ def build_sumativa_02():
     orig[10].text = ""
     cur = DocCursor(doc, orig[9])
     cur.add_p(
-        "STAGE PLAN es una plataforma web responsiva (Mobile-First y Offline-First) diseñada y validada para "
+        "STAGE PLAN es una plataforma web responsiva de pre-producción electroacústica diseñada y validada para "
         "la empresa contraparte DISTORSIONCL SPA (operador técnico Amaro Artiaga), en el marco de la Unidad 2 de la "
         "asignatura Proyecto Integrado (TIHV43, Sección C1, INACAP Sede Maipú). La solución erradica el dimensionamiento "
         "empírico de instalaciones temporales de sonido, cables de escenario y fuerza eléctrica, aplicando de forma determinista "
@@ -320,8 +320,8 @@ def build_sumativa_02():
         [
             ["1. Seguridad Eléctrica SEC", "I1: Calibre automático ΔV ≤ 3%; I2: Líneas aisladas L1/L2/L3; I3: Postes guía esquineros R ≥ 6d (RIC N° 10).", "Disparos termomagnéticos, Efecto Joule y fatiga mecánica de conductores."],
             ["2. Acústica y Gain Staging", "I4: Clúster mono de subs (+6 dB); I5: Retardos Haas para Delays; I6: Réplica hardware Pioneer DJM (VU vertical + Low Kill).", "Saturación (clipping), cancelación acústica y daño de bobinas por 2 bajos activos."],
-            ["3. Equipos Mixtos y DMX", "I7: Lotes Activa/Pasiva con Power externo y alerta Speakon < 3.2 Ω; I8: Conteo unitario x1 de PAR LED y metraje DMX.", "Apagado de amplificadores en PROTECT y faltante de cables DMX en show."],
-            ["4. Normativa y Logística", "I9: Simulador ruido vecinal cobertura y distancias; I10: Control peso Ley del Saco N° 20.949; I11: Plan B contingencia (< 2 min).", "Partes municipales, riesgo lumbar en carga y parálisis ante falla en vivo."],
+        ["3. Equipamiento de Audio Mixto", "I7: Lotes Activa/Pasiva con amplificador y alerta Speakon; I8: Potencia continua vs pico.", "Apagado en modo PROTECT y distorsión por sobrecarga en cajas pasivas."],
+        ["4. Logística y Seguridad Física", "I9: Alerta preventiva peso máximo Ley del Saco; I10: Lista cables poder y señal; I11: Plan contingencia.", "Lesiones lumbares, olvido de cables y parálisis ante falla."],
             ["5. Operación Offline", "I12: Plano 2D perimetral sin cruces centrales; I13: PDF client-side en modo local; I14: Resumen WhatsApp; I15: SharedLink chofer.", "Parcelas rurales sin 4G/5G y descoordinación bodega-transporte."]
         ],
         [1.5, 2.7, 2.3]
@@ -372,12 +372,12 @@ def build_sumativa_02():
         [
             ["T01", "S1", "Diagnóstico DISTORSIONCL SPA, Brainstorming y Priorización", "M. Vega", "01–04 Oct", "—", "Must", "SÍ"],
             ["T02", "S1", "Casos de Uso (CU-00..08) y contratos Zod (schemas.ts)", "M. Vega", "05–08 Oct", "T01", "Must", "SÍ"],
-            ["T03", "S1", "Arquitectura 4+1 (5 vistas) y modelo híbrido DER 12 tablas", "M. Vega", "09–11 Oct", "T02", "Must", "No"],
+            ["T03", "S1", "Arquitectura 4+1 (5 vistas) y modelo híbrido DER 4 tablas", "M. Vega", "09–11 Oct", "T02", "Must", "No"],
             ["T04", "S1", "Setup Monorepo npm workspaces (shared, backend, frontend)", "M. Vega", "12–14 Oct", "T02", "Must", "SÍ"],
             ["T05", "S2", "Motor eléctrico SEC RIC 03/10 (electrical.ts, cabling.ts)", "M. Vega", "15–18 Oct", "T04", "Must", "SÍ"],
             ["T06", "S2", "Lotes Activa/Pasiva + Power + Speakon < 3.2 Ω (hybrid-roster.ts)", "M. Vega", "19–21 Oct", "T05", "Must", "SÍ"],
-            ["T07", "S2", "Acústica espacial: Clúster +6 dB, Haas y cobertura acústica MMA", "M. Vega", "22–24 Oct", "T05", "Must", "No"],
-            ["T08", "S2", "DMX unitario x1, Setup DJ y suite 70 tests Vitest", "M. Vega", "25–28 Oct", "T06, T07", "Must", "SÍ"],
+            ["T07", "S2", "Acústica espacial: Clúster mono +6 dB y retardos Haas", "M. Vega", "22–24 Oct", "T05", "Must", "No"],
+            ["T08", "S2", "Ruteo cables audio, Setup DJ y 70 tests Vitest", "M. Vega", "25–28 Oct", "T06, T07", "Must", "SÍ"],
             ["T09", "S3", "Prisma ORM (schema.prisma) + SQLite 3 (dev.db) 4 tablas 3FN + JSON", "M. Vega", "29–31 Oct", "T03, T08", "Must", "SÍ"],
             ["T10", "S3", "API Express: Helmet, CORS, RateLimit, Bcrypt(12), JWT", "M. Vega", "01–04 Nov", "T09", "Must", "SÍ"],
             ["T11", "S3", "Controladores Venues y Calculations con blindaje Anti-IDOR", "M. Vega", "05–07 Nov", "T10", "Must", "No"],
@@ -413,10 +413,10 @@ def build_sumativa_02():
         ["ID", "Historia de Usuario", "Pts", "Prio.", "Criterio de Aceptación (Gherkin)"],
         [
             ["HU01", "Autenticación JWT y blindaje Anti-IDOR", "5", "Must", "Dado un técnico autenticado, cuando solicita /api/venues/:uuidAjeno, entonces recibe HTTP 403 y se audita el intento."],
-            ["HU02", "Recinto ortogonal y ruido vecinal cobertura acústica", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta dBA hacia la vivienda vecina."],
+            ["HU02", "Dimensiones ortogonales del recinto y distancias", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta dBA hacia la vivienda vecina."],
             ["HU03", "Cálculo SEC RIC 03/10 y líneas L1/L2/L3", "8", "Must", "Dado un tendido de 35 m con 3.250 W (220V), descarta 1.5 mm² y selecciona 2.5 mm² asegurando ΔV = 2.18% ≤ 3%."],
             ["HU04", "Cajas Activa/Pasiva + Power + Speakon", "5", "Must", "Dadas 3 cajas pasivas de 8 Ω en paralelo, calcula Zeq = 2.67 Ω < 3.2 Ω y dispara alerta roja DANGER_PROTECT_SHORT."],
-            ["HU05", "Gestión de Cables de Escenario unitaria (x1) y cables", "5", "Must", "Dados 4 PAR LED (120W c/u) en Truss Izq, suma 480W, cuenta 4 unidades (no 8) y calcula cables DMX + terminador 120 Ω."],
+        ["HU05", "Ruteo y metraje de cables de audio (XLR / Speakon)", "5", "Must", "Dada una configuración de 2 Tops y 2 Subs, calcula los cables XLR y Speakon exactos sin faltantes."],
             ["HU06", "Plano 2D proporcional y Postes Guía RIC 10", "8", "Must", "Dado un recinto de 28 m de fondo, renderiza 4 postes guía (R ≥ 6d), clúster mono (+6 dB) y delays Haas sin solapamiento."],
             ["HU07", "Réplica Hardware Pioneer DJM (VU + Kill)", "5", "Should", "Al subir 2 bajos o forzar Master > 2:00, los 17 LEDs verticales saltan a +12/CLIP rojo y la perilla LOW rota 0°/-135°."],
             ["HU08", "Plan B, Ley del Saco y PDF Offline", "5", "Must", "Al pulsar Descargar PDF sin internet, jsPDF genera el informe en < 1 s marcando bultos > 25 kg (Ley N° 20.949)."]
@@ -431,7 +431,7 @@ def build_sumativa_02():
         ["Sprint", "Ventana Temporal", "Objetivo del Sprint (Sprint Goal)", "Entregable Verificado"],
         [
             ["Sprint 1", "01-Oct – 14-Oct", "Cerrar diagnóstico, contratos Zod, Arquitectura 4+1 y monorepo.", "CU-00..08, schemas.ts y monorepo listo."],
-            ["Sprint 2", "15-Oct – 28-Oct", "Construir motor determinista completo SEC, Haas, Pasivos y DMX bajo TDD.", "11 módulos TS y 70/70 tests Vitest PASS."],
+            ["Sprint 2", "15-Oct – 28-Oct", "Construir motor determinista completo SEC, Haas, Pasivos y Ruteo de Cables bajo TDD.", "11 módulos TS y 70/70 tests Vitest PASS."],
             ["Sprint 3", "29-Oct – 11-Nov", "Implementar persistencia SQLite/Prisma (dev.db), API segura y Wizard Vue 3.", "API Anti-IDOR + Wizard 5 pasos WCAG AA."],
             ["Sprint 4", "12-Nov – 25-Nov", "Integrar Plano 2D Postes Guía, Pioneer DJM, PDF Offline, OWASP y entrega U2.", "Prototipo funcional desplegado, benchmark y paquete U2."]
         ],
@@ -469,7 +469,7 @@ def build_sumativa_02():
     c26 = DocCursor(doc, orig[26])
     c26.add_p(
         "El Caso de Uso Cero (CU-00: Planificación Logística Integral) articula la operación del técnico FOH, el bodeguero/chofer "
-        "y el administrador mediante relaciones <<include>> (Auth JWT, Recinto cobertura acústica, Ruteo SEC RIC 10 + Postes Guía, DMX x1 y PDF Offline) "
+        "y el administrador mediante relaciones <<include>> (Auth JWT, Dimensiones del Recinto, Ruteo SEC RIC 10 + Postes Guía, Ruteo Cables Audio y Reporte PDF) "
         "y <<extend>> (Cajas Pasivas + Powers y Simulador Pioneer DJM). En el caso crítico CU-03 se validan 3 flujos de excepción: "
         "[E1] rechazo Zod por dimensiones fuera de rango (1..500 m); [E2] Semáforo Rojo SEC por sobrecarga de automático (> 16 A) o "
         "caída de tensión > 3%; y [E3] alerta PROTECT ante impedancia Speakon < 3.2 Ω."
@@ -500,10 +500,10 @@ def build_sumativa_02():
         "La Vista de Procesos (Figura 5) modela en BPMN 2.0 los tres carriles operacionales con compuertas XOR de validación Zod, "
         "verificación SEC (ΔV ≤ 3%) e impedancia Speakon (Zeq ≥ 3.2 Ω). La Vista Física (Figura 6) completa los 5 puntos de vista del "
         "estándar ISO/IEC/IEEE 42010:2022, aislando los contenedores de aplicación y base de datos tras un proxy inverso TLS 1.3 (:443) "
-        "mientras preserva la autonomía Offline-First en el dispositivo móvil del técnico."
+        "mientras preserva la autonomía en terreno en el dispositivo móvil del técnico."
     )
     c29.add_figure(os.path.join(DIAG_DIR, "diag-06-vista-procesos-bpmn.png"), "Figura 5. Vista de Procesos (4+1) — Diagrama BPMN 2.0 de pre-producción y compuertas normativas SEC.")
-    c29.add_figure(os.path.join(DIAG_DIR, "diag-02-arquitectura-4plus1-despliegue.png"), "Figura 6. Vista Física y de Despliegue (4+1) — Infraestructura segura TLS 1.3 y modo Offline-First.")
+    c29.add_figure(os.path.join(DIAG_DIR, "diag-02-arquitectura-4plus1-despliegue.png"), "Figura 6. Vista Física y de Despliegue (4+1) — Infraestructura segura TLS 1.3 y ejecución local.")
 
     # 5. DISEÑO UX/UI (P[33]..P[38])
     style_anchor(orig[33], "Diseño de Experiencia e Interfaz de Usuario – UX/UI", 13.0)
@@ -515,7 +515,7 @@ def build_sumativa_02():
         ["User Persona", "Rol y Contexto Operacional", "Puntos de Dolor", "Objetivo con STAGE PLAN"],
         [
             ["Amaro Artiaga (28)", "Operador FOH / DJ en parcelas nocturnas sin 4G (< 2h montaje).", "Cortes de luz, cables sin holgura, clipping en cabina DJ.", "Dimensionar en < 3 min y llevar PDF en modo local."],
-            ["Cristián Morales (34)", "Chofer y Bodeguero encargado de carga de camioneta.", "Olvido de cables DMX/Speakon y bultos > 25 kg (Ley del Saco).", "Recibir checklist exacto por enlace temporal o WhatsApp."],
+            ["Cristián Morales (34)", "Chofer y Bodeguero encargado de carga de camioneta.", "Olvido de cables de poder o Speakon y bultos > 25 kg (Ley del Saco).", "Recibir checklist exacto por enlace temporal o WhatsApp."],
             ["Mauricio Vega (Admin)", "Responsable técnico y auditoría de eventos.", "Falta de trazabilidad ante fiscalizaciones SEC o cobertura acústica.", "Auditar historial PostgreSQL y revocar enlaces expirados."]
         ],
         [1.25, 1.8, 1.75, 1.7]
@@ -524,10 +524,10 @@ def build_sumativa_02():
     style_anchor(orig[35], "3.2 Lista priorizada de funcionalidades clave (MoSCoW)")
     c35 = DocCursor(doc, orig[35])
     c35.add_p(
-        "Must Have: Acceso Anti-IDOR, dimensiones ortogonales + cobertura acústica MMA, cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con "
-        "alerta Speakon < 3.2 Ω, Plano 2D con postes guía RIC 10 y exportación PDF Offline. Should Have: Conteo DMX unitario x1, réplica "
+        "Must Have: Acceso Anti-IDOR, dimensiones ortogonales + dimensiones ortogonales, cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con "
+        "alerta Speakon < 3.2 Ω, Plano 2D con postes guía RIC 10 y exportación PDF Offline. Should Have: Réplica "
         "hardware Pioneer DJM con vúmetros verticales y Plan B contingencia. Could Have: Copia WhatsApp 1-clic y enlaces compartidos. "
-        "Won't Have (fuera de alcance): Procesamiento DSP de audio en tiempo real o control hardware USB-DMX directo."
+        "Won't Have (fuera de alcance): Procesamiento DSP de audio en tiempo real o control de luminarias por protocolo DMX."
     )
 
     style_anchor(orig[36], "3.3 Arquitectura de la información y sistema de diseño visual (WCAG 2.1 AA)")
@@ -559,7 +559,7 @@ def build_sumativa_02():
         ["Versión", "Hallazgo / Solicitud del Usuario", "Mejora Integrada en el Software", "Estado"],
         [
             ["Iteración 1", "Evitar ingreso manual de Watts en terreno y facilitar envío al chofer.", "Catálogo de presets 1-clic y botón de resumen WhatsApp.", "Integrado"],
-            ["Iteración 2", "Soportar cajas activas/pasivas con Power, PAR LED x1 y metros DMX.", "Selector Activa/Pasiva + campo Power + DMX x1 desde cabina.", "Integrado"],
+        ["Iteración 2", "Soportar cajas activas/pasivas con amplificador y cálculo de cables Speakon.", "Selector Activo/Pasivo y cálculo métrico de cables de audio sin sobrantes.", "Integrado"],
             ["Iteración 3", "Evitar solapamiento en el plano y guiar curvas de cable en esquinas.", "LayoutSvg2D proporcional con Postes Guía R ≥ 6d (SEC RIC 10).", "Integrado"],
             ["Iteración 3", "Mostrar visualmente un mixer Pioneer real para explicar Low Kill.", "Nuevo componente PioneerMixerSimulator.vue con 17 LEDs verticales.", "Integrado"]
         ],
@@ -576,10 +576,10 @@ def build_sumativa_02():
         "seguridad, recintos y circuitos normativos, con documentos semi-estructurados JSONB indexados mediante GIN (jsonb_path_ops) "
         "para fichas polimórficas de equipamiento y snapshots inmutables de cálculo. En packages/backend/prisma/schema.prisma "
         "operan actualmente las 4 tablas núcleo MVP (users, venues, rider_calculations, shared_links), mientras que el script "
-        "autónomo entrega_sumativa_02/sql/schema_stageplan_pg16.sql despliega el esquema completo de 12 tablas con triggers PL/pgSQL."
+        "autónomo entrega_sumativa_02/sql/schema_stageplan_pg16.sql despliega el esquema completo de 4 tablas con triggers PL/pgSQL."
     )
 
-    style_anchor(orig[43], "4.2 Diseño estructural: DER 3FN (12 tablas) y documentos JSONB")
+    style_anchor(orig[43], "4.2 Diseño estructural: DER 3FN (4 tablas) y documentos JSONB")
     orig[44].text = ""
     orig[45].text = ""
     c43 = DocCursor(doc, orig[43])
@@ -718,7 +718,7 @@ def build_sumativa_02():
             ["PU-04", "Unitaria", "hybrid-roster.ts", "Desacoplo automático de líneas L1 (Subs) y L2 (Tops/Cabina).", "PASS"],
             ["PU-05", "Unitaria", "stage-acoustic-engine.ts", "Recinto 28 m con 4 subs y delays → +6 dB clúster, +44.3 ms / +60.7 ms Haas.", "PASS"],
             ["PU-06", "Unitaria", "stage-acoustic-engine.ts", "Evaluación Indoor vs. Parcela abierta frente a cobertura y distancias.", "PASS"],
-            ["PU-07", "Unitaria", "lighting-dmx.ts", "4 PAR LED (120W) → 480W (conteo x1), cables DMX 3-pin + terminador 120 Ω.", "PASS"],
+        ["PU-07", "Unitaria", "cabling.ts", "2 Tops + 2 Subs en 25m: Cables XLR y Speakon necesarios", "PASS"],
             ["PU-08", "Unitaria", "dj-setup-audio.ts", "2× CDJ + Mixer DJM + Retorno + Power → rutas RCA, RJ45, TRS-XLR, Speakon.", "PASS"],
             ["PU-09", "Unitaria", "power-distribution.ts", "Asignación zapatillas Z1..Z4 (10A/16A) bajo 80% carga continua.", "PASS"],
             ["PU-10", "Unitaria", "contingency-and-logistics.ts", "Subwoofer 38 kg (> 25 kg) → alerta obligatoria Ley del Saco N° 20.949.", "PASS"],
@@ -745,12 +745,11 @@ def build_sumativa_02():
     )
     c60.add_p(
         "Prueba Crítica de Rendimiento y Física (PR-01 + PU-03): Sobre 1.000 iteraciones completas en Node.js v24.20.0 del "
-        "pipeline (eléctrico SEC + acústica Haas + lotes pasivos + DMX + DJ setup), se midió una latencia promedio de 0,0286 ms "
+        "pipeline (eléctrico SEC + acústica Haas + lotes pasivos + cables + DJ setup), se midió una latencia promedio de 0,0286 ms "
         "(p50 = 0,0158 ms, p95 = 0,0479 ms, p99 = 0,3241 ms, máx = 4,2926 ms), superando en más de 1.000× el SLA de 50 ms."
     )
     c60.add_code(
         "RUN  v3.2.7 D:/Dev/stage-plan-main/stage-plan-main/packages/shared\n"
-        " ✓ tests/lighting-dmx.spec.ts (8 tests) 11ms\n"
         " ✓ tests/contingency-logistics.spec.ts (6 tests) 8ms\n"
         " ✓ tests/dj-setup-audio.spec.ts (4 tests) 8ms\n"
         " ✓ tests/hybrid-roster.spec.ts (2 tests) 8ms\n"
@@ -776,7 +775,7 @@ def build_sumativa_02():
     c64 = DocCursor(doc, orig[64])
     c64.add_p("1. Cumplimiento Integral de Objetivos: STAGE PLAN elimina la improvisación empírica en DISTORSIONCL SPA al integrar en un motor determinista la normativa SEC RIC N° 03 y N° 10, el cobertura y distancias y la Ley del Saco N° 20.949.")
     c64.add_p("2. Validación del Marco Solo-Developer (Scrumban + PSP): La combinación de Sprints de 14 días, WIP = 1 y 70 pruebas unitarias automatizadas Vitest (100% PASS, 0,0286 ms promedio) demuestra calidad industrial sin sacrificar velocidad.")
-    c64.add_p("3. Excelencia Arquitectónica y Persistencia Híbrida: El monorepo TypeScript bajo paradigma 4+1 (ISO/IEC/IEEE 42010:2022) y el esquema PostgreSQL 16 (12 tablas 3FN + JSONB GIN) equilibran integridad ACID, flexibilidad de inventario y operación Offline-First.")
+    c64.add_p("3. Excelencia Arquitectónica y Persistencia Híbrida: El monorepo TypeScript bajo paradigma 4+1 (ISO/IEC/IEEE 42010:2022) y la base de datos SQLite 3 dev.db (4 tablas 3FN + JSON) equilibran integridad ACID, portabilidad total y agilidad operativa en terreno.")
     c64.add_p("4. Ciberseguridad y Defensa Técnica: La mitigación integral de OWASP Top 10 (A01–A10), el control RBAC/Anti-IDOR y el banco de 20 preguntas preparadas consolidan una entrega lista para calificación máxima.")
 
     # 10. REFERENCIAS BIBLIOGRÁFICAS (P[66]..P[67])
@@ -866,13 +865,13 @@ def build_sumativa_02():
             ["8", "¿Cómo funciona el Efecto Haas en líneas Delay?", "Suma al tiempo de vuelo del sonido (v = 331.3 + 0.606·T) un margen Haas para que el público localice el origen sonoro en el escenario frontal."],
             ["9", "¿Qué pasa con 3 cajas pasivas de 8 Ω en paralelo?", "Zeq = 8/3 = 2.67 Ω < 3.2 Ω seguro; se dispara DANGER_PROTECT_SHORT para evitar corte térmico o destrucción del Power."],
             ["10", "¿Qué demuestra el simulador Pioneer DJM?", "Que mantener 1 solo bajo activo (12:00) y el segundo en Low Kill (-∞ a 7:00) evita +6 dB en graves que cuadruplican potencia de pico y causan CLIP."],
-            ["11", "¿Por qué un foco PAR LED se cuenta x1 y no x2?", "PAR significa Parabolic Aluminized Reflector (unidad física); contar por pares duplicaba erróneamente Watts y cables DMX."],
+            ["11", "¿Cómo dimensiona el sistema los cables de audio necesarios?", "Calcula la distancia desde la cabina hacia el PA frontal y torres de delay, determinando la cantidad y metraje exacto de cables XLR y Speakon NL4 sin cruces peligrosos por la pista."],
             ["12", "¿Cómo valida el cobertura y distancias?", "Calcula atenuación por distancia y tipo de muro contrastando el nivel resultante contra el límite nocturno (48 dBA) o diurno (60 dBA)."],
             ["13", "¿Cómo integra la Ley del Saco (Ley 20.949)?", "contingency-and-logistics.ts alerta automáticamente cualquier equipo > 25 kg exigiendo manipulación entre 2 operarios o carro."],
             ["14", "¿Por qué base de datos híbrida SQLite + JSON?", "Para el MVP, 4 tablas 3FN en SQLite aseguran integridad referencial y portabilidad total con dev.db (auditable en DB Browser), mientras campos JSON absorben el cálculo sin sobrediseñar tablas intermedias."],
             ["15", "¿Cómo mitiga OWASP A01 (IDOR)?", "authMiddleware extrae req.user.id del JWT y los controladores validan ownerId === req.user.id antes de responder, retornando HTTP 403 + log."],
             ["16", "¿Cómo previene Inyección SQL y XSS?", "Consultas parametrizadas con Prisma ORM, validación Zod en frontera y auto-escapado de Vue 3 sin uso de v-html."],
-            ["17", "¿Por qué generar el PDF en el cliente (jsPDF)?", "Garantiza operatividad Offline-First en modo local en parcelas sin señal 4G/5G y elimina vectores SSRF en el servidor."],
+            ["17", "¿Por qué generar el PDF en el cliente (jsPDF)?", "Garantiza operatividad ágil en modo local en parcelas sin señal 4G/5G y elimina vectores SSRF en el servidor."],
             ["18", "¿Qué cobertura tienen las pruebas automatizadas?", "70 tests unitarios en 10 archivos Vitest pasando al 100% en 113 ms cubriendo todos los módulos de ingeniería."],
             ["19", "¿Qué latencia arrojó el benchmark real?", "0,0286 ms promedio (p95 = 0,0479 ms) en 1.000 ejecuciones completas en Node v24, muy por debajo del SLA de 50 ms."],
             ["20", "¿Cómo escalaría STAGE PLAN a SaaS multi-empresa?", "Agregando tabla organizations sobre el aislamiento ownerId/RBAC ya existente, Docker Compose y réplica de lectura PostgreSQL."],
