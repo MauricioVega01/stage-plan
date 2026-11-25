@@ -59,10 +59,60 @@ export class AuthController {
       return;
     }
 
+    // 1. Verificar política de seguridad de bloqueo de cuenta
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      const minutesRemaining = Math.max(1, Math.ceil((user.lockedUntil.getTime() - Date.now()) / (60 * 1000)));
+      res.status(423).json({
+        error: `Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ${minutesRemaining} minuto(s).`,
+        lockedUntil: user.lockedUntil,
+      });
+      return;
+    }
+
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
-      res.status(401).json({ error: 'Credenciales incorrectas.' });
+      const newAttempts = (user.failedAttempts || 0) + 1;
+      let lockedUntil: Date | null = null;
+      let isNowLocked = false;
+
+      if (newAttempts >= 5) {
+        lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+        isNowLocked = true;
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedAttempts: newAttempts,
+          lockedUntil,
+        },
+      });
+
+      if (isNowLocked) {
+        res.status(423).json({
+          error: 'Ha superado el límite de 5 intentos fallidos permitidos. Su cuenta ha sido bloqueada por 15 minutos.',
+          lockedUntil,
+        });
+        return;
+      }
+
+      const attemptsRemaining = 5 - newAttempts;
+      res.status(401).json({
+        error: `Credenciales incorrectas. Intentos restantes antes del bloqueo: ${attemptsRemaining}.`,
+        attemptsRemaining,
+      });
       return;
+    }
+
+    // Resetear contador de intentos ante autenticación exitosa
+    if (user.failedAttempts > 0 || user.lockedUntil) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedAttempts: 0,
+          lockedUntil: null,
+        },
+      });
     }
 
     const secret = process.env.JWT_SECRET;

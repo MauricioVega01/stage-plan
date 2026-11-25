@@ -13,6 +13,8 @@ model User {
   passwordHash      String             @map("clave_hash")
   name              String             @map("nombre")
   role              String             @default("ADMIN") @map("rol")
+  failedAttempts    Int                @default(0) @map("intentos_fallidos")
+  lockedUntil       DateTime?          @map("bloqueado_hasta")
   createdAt         DateTime           @default(now()) @map("fecha_creacion")
   updatedAt         DateTime           @updatedAt @map("fecha_actualizacion")
   venues            Venue[]
