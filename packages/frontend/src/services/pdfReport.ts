@@ -263,7 +263,6 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
         ...(results.v4EngineeringSummary?.phaseBalanceDirective ? [['8. Separación de Líneas Eléctricas', results.v4EngineeringSummary.phaseBalanceDirective]] : []),
         ...(results.v4EngineeringSummary?.impedanceDirective ? [['9. Impedancia Pasiva (Speakon Ohms)', results.v4EngineeringSummary.impedanceDirective]] : []),
         ...(results.v4EngineeringSummary?.bottleneckDiagnosis ? [['10. Equilibrio Tonal (Sub vs Top)', results.v4EngineeringSummary.bottleneckDiagnosis]] : []),
-        ...(results.v4EngineeringSummary?.neighborhoodNoiseDirective ? [['11. Ordenanza Ruido D.S. N°38 MMA', results.v4EngineeringSummary.neighborhoodNoiseDirective]] : []),
       ]
       : []),
   ];
@@ -347,7 +346,7 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
 
   currentY = (doc as any).lastAutoTable.finalY + 8;
 
-  // 6. Alargadores, Zapatillas Multicontacto y Cables DMX Físicos
+  // 6. Alargadores y Zapatillas Multicontacto de Fuerza Eléctrica
   if (results.powerDistribution && results.powerDistribution.powerStrips.length > 0) {
     if (currentY + 50 > pageHeight) {
       doc.addPage();
@@ -357,7 +356,7 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
     doc.setFontSize(11);
     doc.setTextColor(24, 24, 27);
     doc.text(
-      `6. Zapatillas Multicontacto (${results.powerDistribution.totalSocketsRequired} bocas), Alargadores y Cables DMX`,
+      `6. Zapatillas Multicontacto (${results.powerDistribution.totalSocketsRequired} bocas) y Alargadores de Fuerza (SEC)`,
       14,
       currentY
     );
@@ -388,16 +387,6 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
       `${e.lengthMeters} metros`,
       e.description,
     ]);
-    if (results.lightingDmx && results.lightingDmx.dmxCableInventory.length > 0) {
-      results.lightingDmx.dmxCableInventory.forEach((d) => {
-        extRows.push([
-          `${d.quantity}x`,
-          d.connector === 'DMX_5PIN' ? 'DMX 5-pin (120Ω)' : 'DMX 3-pin (120Ω)',
-          `${d.lengthMeters} metros`,
-          `${d.description} (${d.kindSummary})`,
-        ]);
-      });
-    }
 
     autoTable(doc, {
       startY: currentY,

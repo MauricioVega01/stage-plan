@@ -5,7 +5,7 @@
       <div class="flex items-center space-x-2.5">
         <span class="inline-block w-3 h-3 bg-red-600 rounded-full animate-ping"></span>
         <h3 class="text-sm font-black tracking-wider text-white uppercase font-mono">
-          Plano 2D Escala Proporcional (Audio + Fuerza + Zapatillas + DMX)
+          Plano 2D Escala Proporcional (Audio + Fuerza Eléctrica SEC + Postes Guía)
         </h3>
       </div>
       <div class="flex flex-wrap items-center gap-1.5">
@@ -52,18 +52,6 @@
         >
           <span>🎛️</span>
           <span>Audio (XLR/Speakon)</span>
-        </button>
-        <button
-          v-if="hasLighting"
-          type="button"
-          @click="showDmxCables = !showDmxCables"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showDmxCables
-            ? 'bg-fuchsia-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-fuchsia-500'"
-        >
-          <span>🟣</span>
-          <span>DMX ({{ dmxCablesCount }})</span>
         </button>
         <button
           type="button"
@@ -246,70 +234,12 @@
           </g>
         </g>
 
-        <!-- CAPA 4: CADENA FÍSICA DMX DESDE DMX OUT (CABINA) -->
-        <g v-if="showDmxCables && hasLighting">
-          <g v-for="dmx in dmxPaths" :key="dmx.id">
-            <polyline
-              :points="dmx.points"
-              fill="none"
-              stroke="#e879f9"
-              stroke-width="1.8"
-              stroke-dasharray="4 2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              opacity="0.95"
-            />
-            <rect
-              :x="dmx.labelX - 22"
-              :y="dmx.labelY - 5"
-              width="44"
-              height="11"
-              fill="#2e1065"
-              fill-opacity="0.95"
-              stroke="#e879f9"
-              stroke-width="0.8"
-              rx="2"
-            />
-            <text
-              :x="dmx.labelX"
-              :y="dmx.labelY + 3"
-              fill="#f5d0fe"
-              font-size="5.6"
-              font-weight="900"
-              font-family="monospace"
-              text-anchor="middle"
-            >
-              {{ dmx.label }}
-            </text>
-          </g>
-
-          <!-- Nodos visuales de zonas de iluminación / humo -->
-          <g v-for="lz in lightingZoneNodes" :key="lz.zone">
-            <rect
-              :x="lz.x - 30"
-              :y="lz.y - 11"
-              width="60"
-              height="22"
-              :fill="lz.hasThermal ? '#431407' : '#3b0764'"
-              :stroke="lz.hasThermal ? '#fb923c' : '#e879f9'"
-              stroke-width="1.6"
-              rx="4"
-            />
-            <text :x="lz.x" :y="lz.y - 1" fill="#ffffff" font-size="6.4" font-weight="900" font-family="monospace" text-anchor="middle">
-              {{ lz.icon }} {{ lz.shortTitle }}
-            </text>
-            <text :x="lz.x" :y="lz.y + 7.5" :fill="lz.hasThermal ? '#fed7aa' : '#f5d0fe'" font-size="5.5" font-weight="700" font-family="monospace" text-anchor="middle">
-              {{ lz.fixtureCount }}u · {{ lz.totalWatts }}W
-            </text>
-          </g>
-        </g>
-
         <!-- BANDA 1: TABLERO ELÉCTRICO SEC (ESQUINA SUPERIOR IZQUIERDA DESPEJADA) -->
         <g :transform="`translate(${boardPoint.x - 32}, ${boardPoint.y - 14})`">
           <rect width="64" height="28" fill="#450a0a" stroke="#dc2626" stroke-width="2" rx="4" />
           <text x="32" y="11" fill="#fca5a5" font-size="7.5" font-weight="900" font-family="monospace" text-anchor="middle">⚡ 220V SEC</text>
           <text x="32" y="21" fill="#fde047" font-size="6" font-weight="900" font-family="monospace" text-anchor="middle">
-            {{ hasLighting ? 'L1 / L2 / L3' : 'L1 SUB / L2 TOP' }}
+            L1 SUB / L2 TOP
           </text>
         </g>
 

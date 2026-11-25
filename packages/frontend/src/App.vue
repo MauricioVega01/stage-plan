@@ -458,58 +458,6 @@
             </div>
           </div>
 
-          <!-- Innovación 5: Parámetros de Entorno Vecinal (D.S. N° 38 MMA Chile) -->
-          <div class="bg-[#15151d] border-2 border-zinc-800 rounded-2xl p-5 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-sm sm:text-base font-black text-white uppercase font-mono flex items-center gap-2">
-                <span>🏘️ Simulador de Ruido a Vecinos y Ordenanza Municipal (D.S. N° 38 MMA)</span>
-                <InfoBadge
-                  title="Prevención de Partes por Ruidos Molestos"
-                  simple-explanation="Estima cuántos decibeles llegarán a la vivienda más cercana según la distancia, el tipo de muro del recinto y si la fiesta es de día o de noche."
-                />
-              </h3>
-              <span class="text-xs font-mono text-amber-400 font-bold">Norma Chilena D.S. N° 38</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-bold text-zinc-200 mb-2">Distancia al Vecino más cercano (m)</label>
-                <input
-                  v-model.number="venue.neighborDistanceMeters"
-                  type="number"
-                  min="5"
-                  max="2000"
-                  placeholder="Ej: 35"
-                  class="w-full bg-[#1c1c24] border-2 border-zinc-700 rounded-xl px-4 py-3 text-base text-white font-mono focus:outline-none focus:border-red-500"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-bold text-zinc-200 mb-2">Tipo de Cierre / Aislamiento</label>
-                <select
-                  v-model="venue.enclosureWallType"
-                  class="w-full bg-[#1c1c24] border-2 border-zinc-700 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-red-500 cursor-pointer"
-                >
-                  <option value="OPEN_AIR">🌲 Aire Libre / Patio Abierto (0 dB aislamiento)</option>
-                  <option value="TENT_CANVAS">🎪 Carpa / Toldo de Lona (-4 dB aislamiento)</option>
-                  <option value="METAL_WAREHOUSE">🏭 Galpón Industrial Techo Lata (-13 dB)</option>
-                  <option value="BRICK_CONCRETE_CLOSED">🧱 Salón Ladrillo / Hormigón Cerrado (-25 dB)</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-bold text-zinc-200 mb-2">Horario del Evento</label>
-                <select
-                  v-model="venue.scheduleShift"
-                  class="w-full bg-[#1c1c24] border-2 border-zinc-700 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-red-500 cursor-pointer"
-                >
-                  <option value="NIGHTTIME_21_07">🌙 Nocturno 21:00 a 07:00 (Límite 48 dBA)</option>
-                  <option value="DAYTIME_07_21">☀️ Diurno 07:00 a 21:00 (Límite 60 dBA)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
           <!-- Botones de Avance Paso 1 -> Paso 2 -->
           <div class="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-zinc-800">
             <button
@@ -942,160 +890,6 @@
             </div>
           </div>
 
-          <!-- ===================================================================== -->
-          <!-- HU06 / CU-05: CONSTRUCTOR DE ILUMINACIÓN, EFECTOS (HUMO/LÁSER) Y DMX -->
-          <!-- ===================================================================== -->
-          <div class="bg-[#0b0b10] border-2 border-fuchsia-800/70 rounded-2xl p-5 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
-              <div>
-                <h3 class="text-base font-black text-fuchsia-300 font-mono uppercase">
-                  💡 Iluminación, Efectos (Humo / Láser) y Cableado Físico DMX
-                </h3>
-                <p class="text-xs text-zinc-400">
-                  Suma los Watts reales al consumo total (Línea 3) y calcula cables DMX físicos saliendo desde <span class="text-fuchsia-300 font-mono font-bold">DMX OUT</span> en cabina.
-                </p>
-              </div>
-              <div class="text-xs font-mono bg-fuchsia-950/60 border border-fuchsia-700 text-fuchsia-200 px-3 py-1.5 rounded-lg font-bold">
-                {{ lightingDmxAnalysis.totalFixtureUnits }} eq. · {{ lightingDmxAnalysis.totalLightingWatts }}W · {{ lightingDmxAnalysis.totalDmxCablesCount }} cables DMX
-              </div>
-            </div>
-
-            <!-- Botones rápidos de Presets de Iluminación / Humo y Personalizado -->
-            <div class="space-y-2">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="text-[11px] font-mono uppercase text-zinc-400 font-bold">Presets Rápidos (Foco PAR = x1 Unidad):</span>
-                <button
-                  type="button"
-                  @click="addCustomLighting"
-                  class="px-3 py-1.5 rounded-lg text-xs font-mono font-black bg-fuchsia-600 hover:bg-fuchsia-500 text-white uppercase shadow-md transition cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>✨</span>
-                  <span>+ Agregar Equipo de Luz Personalizado</span>
-                </button>
-              </div>
-              <div class="flex flex-wrap gap-1.5">
-                <button
-                  v-for="preset in lightingPresets"
-                  :key="preset.key"
-                  type="button"
-                  @click="addLightingPreset(preset)"
-                  class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold border transition cursor-pointer"
-                  :class="preset.isThermalLoad
-                    ? 'bg-orange-950/60 hover:bg-orange-900 border-orange-600 text-orange-200'
-                    : 'bg-zinc-900 hover:bg-fuchsia-950/70 border-zinc-700 hover:border-fuchsia-500 text-zinc-200'"
-                  :title="preset.shortNote"
-                >
-                  + {{ preset.name }} ({{ preset.nominalWatts }}W)
-                </button>
-              </div>
-              <p class="text-[11px] font-mono text-zinc-400 italic">
-                ℹ️ Nota técnica: Los focos <strong>PAR LED</strong> se cuentan por <strong>unidad individual (x1)</strong> (PAR significa <em>Parabolic Aluminized Reflector</em>, no es que vengan en pares de 2).
-              </p>
-            </div>
-
-            <!-- Lista editable de lotes de iluminación / humo -->
-            <div v-if="lightingBatches.length === 0" class="text-xs font-mono text-zinc-500 bg-zinc-950 border border-dashed border-zinc-800 rounded-xl p-4 text-center">
-              Sin luces ni máquinas de humo agregadas. Pulsa cualquier botón de arriba para sumar focos PAR, cabezas móviles, láser o máquina de humo.
-            </div>
-
-            <div v-else class="space-y-2.5">
-              <div
-                v-for="(lb, idx) in lightingBatches"
-                :key="lb.id"
-                class="bg-[#14141d] border rounded-xl p-3.5 space-y-3"
-                :class="lb.isThermalLoad ? 'border-orange-600/80' : 'border-zinc-800'"
-              >
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-mono font-black px-2 py-0.5 rounded" :class="lb.isThermalLoad ? 'bg-orange-950 text-orange-300 border border-orange-600' : 'bg-fuchsia-950 text-fuchsia-300 border border-fuchsia-700'">
-                      {{ lb.isThermalLoad ? '🔥 L3 TÉRMICA' : '💡 L3 LUCES' }}
-                    </span>
-                    <input
-                      v-model="lb.name"
-                      type="text"
-                      class="bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-1 text-sm text-white font-bold focus:outline-none focus:border-fuchsia-500"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    @click="removeLightingBatch(idx)"
-                    class="text-xs font-mono text-red-400 hover:text-red-300 px-2 py-1 rounded bg-red-950/40 border border-red-900 cursor-pointer"
-                  >
-                    ✕ Quitar
-                  </button>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                  <div>
-                    <label class="block text-[11px] text-zinc-400 mb-1">Cantidad</label>
-                    <input
-                      v-model.number="lb.quantity"
-                      type="number"
-                      min="1"
-                      max="32"
-                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-2 text-sm text-white font-mono font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] text-amber-300 mb-1">Watts (c/u)</label>
-                    <input
-                      v-model.number="lb.nominalWatts"
-                      type="number"
-                      min="10"
-                      max="5000"
-                      class="w-full bg-[#0c0c12] border border-amber-700 rounded-lg px-2.5 py-2 text-sm text-amber-300 font-mono font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] text-zinc-400 mb-1">Ubicación Física</label>
-                    <select
-                      v-model="lb.zone"
-                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2 py-2 text-xs text-white font-mono cursor-pointer"
-                    >
-                      <option value="TRUSS_LEFT">Trípode / Truss Izq</option>
-                      <option value="CENTER_BOOTH">Frente / Cabina</option>
-                      <option value="TRUSS_RIGHT">Trípode / Truss Der</option>
-                      <option value="FLOOR">Piso (Humo / FX)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-[11px] text-fuchsia-300 mb-1">Cable DMX</label>
-                    <select
-                      v-model="lb.dmxConnector"
-                      class="w-full bg-[#0c0c12] border border-fuchsia-700 rounded-lg px-2 py-2 text-xs text-fuchsia-200 font-mono cursor-pointer"
-                    >
-                      <option value="DMX_3PIN">DMX 3-Pin (Estándar)</option>
-                      <option value="DMX_5PIN">DMX 5-Pin (Pro)</option>
-                      <option value="NONE">Sin DMX (Manual/Auto)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-[11px] text-zinc-400 mb-1">Peso c/u (kg)</label>
-                    <input
-                      v-model.number="lb.unitWeightKg"
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      max="100"
-                      class="w-full bg-[#0c0c12] border border-zinc-700 rounded-lg px-2.5 py-2 text-sm text-zinc-200 font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Alertas instantáneas de Humo / Láser / Conectores DMX -->
-            <div v-if="lightingDmxAnalysis.alerts.length > 0" class="space-y-1.5">
-              <div
-                v-for="(al, i) in lightingDmxAnalysis.alerts"
-                :key="`la-${i}`"
-                class="text-xs font-mono bg-orange-950/50 border border-orange-600 text-orange-200 rounded-lg px-3 py-2"
-              >
-                {{ al }}
-              </div>
-            </div>
-          </div>
-
           <!-- Innovación 2: Calculadora de Impedancia en Paralelo para Equipos Pasivos (Speakon Ohms) + Power Externo -->
           <div
             v-if="passiveImpedanceAudit.hasPassiveUnits || djSetupAnalysis.powerAmpsRequired.length > 0"
@@ -1404,7 +1198,7 @@
           </span>
         </div>
 
-        <!-- Plano 2D en Gran Formato con soporte para Nodos Mixtos, Cableado, Zapatillas y DMX -->
+        <!-- Plano 2D en Gran Formato con soporte para Nodos Mixtos, Cableado y Zapatillas -->
         <LayoutSvg2D
           :venue-width="venue.widthMeters || 10"
           :venue-depth="venue.depthMeters || 16"
@@ -1442,9 +1236,9 @@
           </div>
         </div>
 
-        <!-- Diagnóstico Innovador: Cuello de Botella Acústico & Ordenanza de Ruido D.S. N°38 MMA -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Innovación 4: Detector de Balance Sub-to-Top -->
+        <!-- Diagnóstico de Balance Tonal Acústico Sub vs Top -->
+        <div class="w-full">
+          <!-- Detector de Balance Sub-to-Top -->
           <div
             class="p-5 rounded-2xl border-2 space-y-2 font-mono transition"
             :class="
@@ -1462,26 +1256,6 @@
               </span>
             </div>
             <p class="text-xs sm:text-sm leading-relaxed">{{ topSubBottleneck.bottleneckDiagnosis }}</p>
-          </div>
-
-          <!-- Innovación 5: Diagnóstico Vecinal D.S. N°38 -->
-          <div
-            class="p-5 rounded-2xl border-2 space-y-2 font-mono transition"
-            :class="
-              neighborhoodNoiseAudit.status === 'COMPLIANT_SAFE'
-                ? 'bg-emerald-950/40 border-emerald-600 text-emerald-100'
-                : neighborhoodNoiseAudit.status === 'BORDERLINE_CAUTION'
-                ? 'bg-amber-950/40 border-amber-500 text-amber-100'
-                : 'bg-red-950/50 border-red-600 text-red-100'
-            "
-          >
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-black uppercase text-red-300">🏘️ Ordenanza Ruido (D.S. N° 38 MMA)</span>
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-black/40 border border-white/20">
-                ~{{ neighborhoodNoiseAudit.estimatedNeighborDba }} dBA @ {{ neighborhoodNoiseAudit.neighborDistanceM }}m
-              </span>
-            </div>
-            <p class="text-xs sm:text-sm leading-relaxed">{{ neighborhoodNoiseAudit.mitigationDirective }}</p>
           </div>
         </div>
 
@@ -1701,7 +1475,7 @@
               @click="downloadPdf"
               class="w-full sm:w-auto px-7 py-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-base uppercase tracking-wider font-mono shadow-2xl shadow-red-600/40 cursor-pointer transition active:scale-95 flex items-center justify-center gap-2 shrink-0"
             >
-              <span>📄 Descargar Reporte PDF (Modo Avión)</span>
+              <span>📄 Descargar Ficha Técnica PDF</span>
             </button>
           </div>
         </div>
@@ -2026,43 +1800,6 @@
 
             <div class="space-y-1 text-[11px] text-zinc-300">
               <p v-for="(rec, idx) in powerDistributionPlan.recommendations" :key="`prec-${idx}`">{{ rec }}</p>
-            </div>
-          </div>
-
-          <!-- HU06 / CU-05: INVENTARIO FÍSICO DE CABLES DMX DESDE DMX OUT -->
-          <div v-if="lightingDmxAnalysis.totalFixtureUnits > 0" class="bg-[#120d16] border-2 border-fuchsia-700/70 rounded-2xl p-5 space-y-4 font-mono">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-              <div>
-                <span class="text-[11px] text-fuchsia-400 font-black uppercase block">🟣 HU06 / CU-05 · CABLEADO FÍSICO DESDE DMX OUT</span>
-                <h3 class="text-base font-black text-white uppercase">Iluminación ({{ lightingDmxAnalysis.totalLightingWatts }}W) y Cables DMX de Montaje</h3>
-              </div>
-              <div class="flex flex-wrap gap-2 text-xs font-bold">
-                <span class="bg-fuchsia-950 border border-fuchsia-600 text-fuchsia-200 px-2.5 py-1 rounded-lg">
-                  {{ lightingDmxAnalysis.totalDmxCablesCount }} cables ({{ lightingDmxAnalysis.totalDmxMeters }}m)
-                </span>
-                <span v-if="lightingDmxAnalysis.terminators120OhmCount > 0" class="bg-purple-950 border border-purple-600 text-purple-200 px-2.5 py-1 rounded-lg">
-                  {{ lightingDmxAnalysis.terminators120OhmCount }}× Terminador 120Ω
-                </span>
-                <span v-if="lightingDmxAnalysis.needsDmxSplitter" class="bg-amber-950 border border-amber-500 text-amber-200 px-2.5 py-1 rounded-lg">
-                  🔀 Splitter DMX sugerido
-                </span>
-              </div>
-            </div>
-
-            <div v-if="lightingDmxAnalysis.dmxCableInventory.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div
-                v-for="(item, idx) in lightingDmxAnalysis.dmxCableInventory"
-                :key="`dmxinv-${idx}`"
-                class="bg-[#1c1324] border border-fuchsia-900 rounded-lg px-3 py-2.5 space-y-0.5"
-              >
-                <div class="text-white font-black">{{ item.quantity }}× {{ item.description }}</div>
-                <div class="text-[11px] text-fuchsia-300">{{ item.kindSummary }}</div>
-              </div>
-            </div>
-
-            <div class="space-y-1 text-[11px] text-zinc-300">
-              <p v-for="(al, idx) in lightingDmxAnalysis.alerts" :key="`dal-${idx}`" class="text-orange-300 font-bold">{{ al }}</p>
-              <p v-for="(rec, idx) in lightingDmxAnalysis.recommendations" :key="`drec-${idx}`">{{ rec }}</p>
             </div>
           </div>
 
@@ -2523,21 +2260,9 @@ const allBatches = computed<SpeakerBatchInput[]>(() => {
   return [...topBatches.value, ...subBatches.value];
 });
 
-// 2B. HU06 / CU-05: CONSTRUCTOR DE ILUMINACIÓN, EFECTOS (HUMO/LÁSER) Y DMX FÍSICO
+// 2B. Scope de Iluminación y DMX retirado del MVP (inicializado en vacío)
 const lightingPresets = LIGHTING_PRESETS;
-const lightingBatches = ref<LightingBatchInput[]>([
-  {
-    id: 'light-init-1',
-    name: 'Foco PAR LED (54x3W)',
-    fixtureType: 'PAR_LED',
-    quantity: 4,
-    nominalWatts: 120,
-    zone: 'TRUSS_LEFT',
-    dmxConnector: 'DMX_3PIN',
-    unitWeightKg: 2.5,
-    isThermalLoad: false,
-  },
-]);
+const lightingBatches = ref<LightingBatchInput[]>([]);
 
 function addLightingPreset(preset: LightingPreset) {
   lightingBatches.value.push({
@@ -3331,7 +3056,9 @@ function copyWhatsAppSummary() {
 • Cable Alargador: Mínimo ${fieldAudit.value.recommendedCableMm2} mm² a ${venue.electricalDistanceMeters}m
 • División de Fases: Línea 1 Subs (${hybridAnalysis.value.electricalLines.line1SubsWatts}W) / Línea 2 Tops+DJ (${hybridAnalysis.value.electricalLines.line2TopsCtrlWatts}W)
 
-📋 *Norma Ruido Vecinos (D.S. 38):* ~${neighborhoodNoiseAudit.value.estimatedNeighborDba} dBA a ${neighborhoodNoiseAudit.value.neighborDistanceM}m (${neighborhoodNoiseAudit.value.status})`;
+📦 *LOGÍSTICA & TRANSPORTE:*
+• Carga Total: ~${loadLogistics.value.totalWeightKg} kg (${loadLogistics.value.recommendedVehicle})
+• Impedancia Speakon: ${passiveImpedanceAudit.value.hasPassiveUnits ? `${passiveImpedanceAudit.value.equivalentImpedanceOhms} Ω (${passiveImpedanceAudit.value.status})` : 'Cajas Activas (Seguro)'}`;
 
   navigator.clipboard.writeText(text);
   whatsappCopied.value = true;
