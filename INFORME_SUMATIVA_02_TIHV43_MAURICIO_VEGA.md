@@ -1,5 +1,5 @@
 # PROYECTO INTEGRADO (TIHV43) – UNIDAD 2: DISEÑO DE LA SOLUCIÓN DE SOFTWARE
-## INFORME TÉCNICO FORMAL: EVALUACIÓN SUMATIVA 2 (100/100 PUNTOS)
+## INFORME TÉCNICO: EVALUACIÓN SUMATIVA 2
 
 **Institución:** Instituto Profesional INACAP – Sede Maipú  
 **Área Académica:** Tecnologías de Información y Ciberseguridad  
@@ -16,11 +16,9 @@
 
 ## RESUMEN EJECUTIVO
 
-**STAGE PLAN** es una plataforma web responsiva (*Mobile-First* y *Offline-First*) diseñada y construida para resolver una problemática crítica de terreno en la empresa contraparte **DISTORSIONCL SPA**: el dimensionamiento empírico ("al ojo") de instalaciones temporales de sonido, iluminación DMX y fuerza eléctrica en eventos de música electrónica y espectáculos en Chile. En la operación tradicional, la falta de cálculo normativo provoca cortes de suministro por disparo termomagnético, caídas de tensión por sobre el límite legal ($\Delta V > 3\%$), destrucción térmica de amplificadores pasivos por impedancias Speakon peligrosas ($< 3.2\ \Omega$), saturación de mezcla (*clipping* en cabina DJ) y accidentes por cableado expuesto en zonas de público.
+**STAGE PLAN** es una plataforma web responsiva (*Mobile-First* y con autonomía en terreno) diseñada y construida para resolver una problemática crítica de terreno en la empresa contraparte **DISTORSIONCL SPA**: el dimensionamiento empírico ("al ojo") de instalaciones temporales de sonido y fuerza eléctrica en eventos de música electrónica y espectáculos en Chile. En la operación tradicional, la falta de cálculo normativo provoca cortes de suministro por disparo termomagnético, caídas de tensión por sobre el límite legal ($\Delta V > 3\%$), destrucción térmica de amplificadores pasivos por impedancias Speakon peligrosas ($< 3.2\ \Omega$), saturación de mezcla (*clipping* en cabina DJ) y accidentes por cableado expuesto en zonas de público.
 
-El presente informe de Unidad 2 consolida los seis ejes de diseño de ingeniería alineados al 100% con los 15 criterios de la rúbrica oficial INACAP: (1) planificación ágil **Scrumban + PSP** en 4 Sprints fijos de 14 días con 20 tareas (`T01`–`T20`), ruta crítica y tablero Kanban con política `WIP = 1`; (2) arquitectura **4+1 (ISO/IEC/IEEE 42010:2022)** implementada como monorepo TypeScript (`@stageplan/frontend`, `@stageplan/shared`, `@stageplan/backend`); (3) experiencia **UX/UI Dark Mode FOH (WCAG 2.1 AA)** con prototipo web real funcional en 5 pasos, plano vectorial 2D con postes guía de radio de curvatura (**SEC Pliego RIC N° 10**) y réplica hardware interactiva del mezclador **Pioneer DJM**; (4) persistencia híbrida **PostgreSQL 16** (12 tablas normalizadas 3FN + documentos `JSONB` indexados con GIN); (5) estándares de programación segura con matriz **RBAC**, defensa Anti-IDOR y mitigación integral de **OWASP Top 10 (2021)**; y (6) aseguramiento de calidad respaldado por **70 pruebas unitarias automatizadas en Vitest (10 archivos, 100% PASS en 113 ms)** y un benchmark real de **0,0286 ms** por cálculo completo.
-
-> **Nota Metodológica de Alcance (Unidad 2 — Diseño y Prueba de Concepto):** Conforme a la Guía ABPRO Unidad 2, este informe documenta formalmente el **Diseño de la Solución de Software**. Los componentes funcionales operativos (interfaz Vue 3, motor `@stageplan/shared` y 70 tests Vitest) se presentan como **Prototipo Interactivo Funcional de Alta Fidelidad (Criterio 2.1.3.5)** y **Prueba de Concepto (PoC)** para respaldar el Plan de Pruebas (`2.1.6.13`), manteniendo el despliegue productivo con PostgreSQL 16 en VPS, pruebas de carga k6 y auditoría OWASP ZAP planificados para la Unidad 3.
+El presente informe de Unidad 2 consolida los seis ejes de diseño de ingeniería estructurados en los seis ejes de desarrollo: (1) planificación ágil **Scrumban + PSP** en 4 Sprints fijos de 14 días con 20 tareas (`T01`–`T20`), ruta crítica y tablero Kanban con política `WIP = 1`; (2) arquitectura **4+1 (ISO/IEC/IEEE 42010:2022)** implementada como monorepo TypeScript (`@stageplan/frontend`, `@stageplan/shared`, `@stageplan/backend`); (3) experiencia **UX/UI Dark Mode FOH (WCAG 2.1 AA)** con prototipo web real funcional en 5 pasos, plano vectorial 2D con postes guía de radio de curvatura (**SEC Pliego RIC N° 10**) y réplica hardware interactiva del mezclador **Pioneer DJM**; (4) persistencia híbrida **SQLite** con Prisma ORM (4 tablas normalizadas 3FN + documentos `JSON` auditables directamente en DB Browser for SQLite, con arquitectura relacional proyectada a PostgreSQL 16 para producción); (5) estándares de programación segura con matriz **RBAC**, defensa Anti-IDOR y mitigación integral de **OWASP Top 10 (2021)**; y (6) aseguramiento de calidad respaldado por **70 pruebas unitarias automatizadas en Vitest (10 archivos, 100% PASS en 113 ms)** y un benchmark real de **0,0286 ms** por cálculo completo.
 
 ---
 
@@ -32,10 +30,10 @@ A partir del diagnóstico operacional levantado en la Unidad 1 junto a DISTORSIO
 | Categoría Temática | Ideas Levantadas en Brainstorming | Problema Operacional que Resuelve |
 | :--- | :--- | :--- |
 | **1. Seguridad Eléctrica SEC** | I1: Cálculo automático de calibre comercial ($\Delta V \le 3\%$); I2: Separación forzada de circuitos L1 (Subs), L2 (Tops/Cabina) y L3 (Luces/Humo); I3: Postes guía esquineros para radio de curvatura mínimo ($R \ge 6d$, RIC N° 10). | Cortes de automático en clímax del show, sobrecalentamiento por Efecto Joule y daño mecánico de conductores. |
-| **2. Electroacústica y Gain Staging** | I4: Agrupamiento en Clúster Mono Central a piso (+6 dB); I5: Cálculo de retardos temporales Haas para torres Delay; I6: Réplica interactiva Pioneer DJM con vúmetros verticales y *Low EQ Kill*. | Saturación (*clipping*), eco destructivo (*comb filtering*) y quema de bobinas por 2 bajos simultáneos. |
+| **2. Electroacústica y Gain Staging** | I4: Agrupamiento en Clúster Mono Central a piso (+6 dB); I5: Cálculo de retardos temporales Haas para torres Delay; I6: Réplica interactiva Pioneer DJM con vúmetros verticales y *Low EQ Kill*. | Saturación (*clipping*), cancelaciones de sonido y quema de bobinas por 2 bajos simultáneos. |
 | **3. Equipamiento Mixto y DMX** | I7: Selector de tecnología Activa vs. Pasiva con dimensionamiento de *Power* externo y alerta Speakon ($< 3.2\ \Omega$); I8: Conteo unitario (x1) de focos PAR LED y metraje físico DMX desde cabina. | Apagado de etapas en modo `PROTECT` y falta de metros de cable DMX/Speakon en terreno. |
-| **4. Logística y Normativa Chilena** | I9: Simulador de ruido vecinal **D.S. N° 38 MMA**; I10: Control ergonómico de peso por operario (**Ley del Saco N° 20.949**); I11: Plan B de contingencia en vivo (< 2 min). | Partes municipales por ruidos molestos, lesiones lumbares y parálisis ante falla de equipo. |
-| **5. Operación Terreno Offline** | I12: Plano 2D vectorial a escala sin cruces centrales; I13: Exportación PDF client-side en Modo Avión; I14: Resumen rápido para WhatsApp; I15: Enlace temporal solo-lectura para chofer. | Parcelas rurales sin señal 4G/5G y descoordinación entre bodega, transporte y montaje. |
+| **4. Logística y Seguridad Física** | I9: Alerta preventiva de peso máximo por bulto (**Ley del Saco N° 20.949**); I10: Lista de empaque de cables de poder y señal; I11: Plan de contingencia ante falla de caja principal. | Lesiones lumbares por bultos pesados, olvido de cables indispensables y parálisis ante falla de equipo. |
+| **5. Operatividad y Logística de Terreno** | I12: Plano 2D a escala con canalización perimetral; I13: Generación de reporte técnico en PDF; I14: Resumen de requerimientos formateado para WhatsApp; I15: Enlace temporal de consulta para chofer. | Descoordinación entre bodega, transporte y montaje, y falta de planos claros al momento de armar. |
 
 ### Parte 2: Matriz de Priorización Ponderada (Impacto, Viabilidad y Urgencia Normativa)
 
@@ -45,9 +43,8 @@ A partir del diagnóstico operacional levantado en la Unidad 1 junto a DISTORSIO
 | **2** | I7: Lotes Activa/Pasiva con *Power* y alerta Speakon $< 3.2\ \Omega$ | 5.0 | 4.8 | 4.8 | **4.88** | **MVP Obligatorio (Sprint 1–2)** |
 | **3** | I3 + I12: Plano 2D a escala con Postes Guía ($R \ge 6d$) y rutas perimetrales | 4.9 | 4.5 | 5.0 | **4.81** | **Core (Sprint 3)** |
 | **4** | I4 + I5 + I6: Clúster Mono + Delays Haas + Réplica Hardware Pioneer DJM | 4.6 | 4.7 | 4.5 | **4.60** | **Core (Sprint 3)** |
-| **5** | I8: Iluminación DMX unitaria (x1) + cálculo métrico de cables | 4.2 | 5.0 | 4.3 | **4.47** | **Core (Sprint 2)** |
-| **6** | I9 + I10 + I13: Ruido D.S. N° 38 + Ley del Saco + PDF Offline client-side | 4.5 | 4.6 | 4.2 | **4.44** | **Core (Sprint 3)** |
-| **7** | I11 + I14 + I15: Contingencia Plan B + WhatsApp + SharedLink Chofer | 4.0 | 4.8 | 3.8 | **4.18** | **Complemento (Sprint 4)** |
+| **5** | I9 + I10 + I13: Ley del Saco + Lista Cables + Reporte PDF | 4.5 | 4.6 | 4.2 | **4.44** | **Core (Sprint 3)** |
+| **6** | I11 + I14 + I15: Contingencia Plan B + WhatsApp + SharedLink Chofer | 4.0 | 4.8 | 3.8 | **4.18** | **Complemento (Sprint 4)** |
 
 ---
 
@@ -112,7 +109,7 @@ El desarrollo es ejecutado de manera individual por **Mauricio Vega Castillo (Gr
 | **HU05** | Iluminación DMX unitaria (x1) y metraje desde Cabina | 5 | Must | **Dado** 4 focos PAR LED (120W c/u) en Truss Izquierdo, **cuando** calcula, **entonces** suma `480 W`, cuenta 4 unidades (no 8) y entrega largo exacto de cables DMX 3-pin + terminador `120 Ω`. |
 | **HU06** | Plano 2D proporcional con Postes Guía SEC RIC N° 10 | 8 | Must | **Dado** un recinto de `28 m` de fondo, **cuando** renderiza `LayoutSvg2D.vue`, **entonces** posiciona postes guía esquineros ($R \ge 6d$), clúster mono (+6 dB) y delays Haas sin solapamientos. |
 | **HU07** | Réplica hardware Pioneer DJM (VU vertical y Low Kill) | 5 | Should | **Cuando** se activan 2 bajos simultáneos o Master `> 2:00`, **entonces** los 17 LEDs verticales saltan a rojo `+12 / CLIP` y la perilla LOW rota entre `0°` (12:00) y `-135°` (-∞). |
-| **HU08** | Plan B contingencia, Ley del Saco y PDF Offline | 5 | Must | **Cuando** el técnico pulsa *Descargar PDF* en Modo Avión, **entonces** `jsPDF` genera la ficha completa en `< 1 s` alertando bultos `> 25 kg` (Ley N° 20.949). |
+| **HU08** | Plan B contingencia, Ley del Saco y PDF Offline | 5 | Must | **Cuando** el técnico pulsa *Descargar PDF* en la memoria del navegador, **entonces** `jsPDF` genera la ficha completa en `< 1 s` alertando bultos `> 25 kg` (Ley N° 20.949). |
 
 #### 1.4 Planificación del Sprint Activo (Sprint 4) y Tablero Kanban
 * **Objetivo del Sprint 4 (12-Nov al 25-Nov-2026):** *"Entregar el plano vectorial 2D con postes guía SEC RIC N° 10, la réplica hardware Pioneer DJM, el reporte PDF offline y validar 100% de la suite Vitest y auditoría OWASP Top 10"*.
@@ -128,13 +125,13 @@ El desarrollo es ejecutado de manera individual por **Mauricio Vega Castillo (Gr
 
 | Capa / Ámbito | Tecnología Seleccionada | Versión Real | Justificación Técnica y Operacional | Evolución / Escalabilidad Futura |
 | :--- | :--- | :---: | :--- | :--- |
-| **Frontend SPA** | Vue 3 + Vite + Tailwind CSS + Pinia | 3.5 / 6.1 / 3.4 | Reactividad instantánea para recálculo en vivo sin recargas; Dark Mode FOH ligero; bundle compacto. | PWA completa con Service Workers y sincronización IndexedDB. |
-| **Núcleo de Cálculo** | TypeScript + Zod (`@stageplan/shared`) | TS 5.7 / Zod 3.24 | Código 100% isomórfico compartido por cliente y servidor: elimina divergencias de cálculo y valida entradas en frontera. | Publicación como paquete interno para app móvil nativa o CLI. |
-| **Backend API** | Node.js + Express + Helmet + RateLimit | Node 24 / Exp 4.21 | Ecosistema unificado en TypeScript; alto rendimiento I/O para endpoints JSON; middlewares probados de seguridad. | Balanceo horizontal detrás de Nginx/Caddy y colas BullMQ para reportes masivos. |
-| **Persistencia** | PostgreSQL 16 + Prisma ORM | PG 16 / Prisma 6.4 | Transaccionalidad ACID para usuarios/recintos + flexibilidad `JSONB` con índices GIN para inventario polimórfico. | Réplica de solo lectura para analítica de consumo energético histórico. |
+| **Frontend SPA** | Vue 3 + Vite + Tailwind CSS + Pinia | 3.5 / 6.1 / 3.4 | Reactividad instantánea para recálculo en vivo sin recargas; Dark Mode FOH ligero; bundle compacto ejecutable en navegador. | Empaquetado como app móvil nativa para Android/iOS o PWA. |
+| **Núcleo de Cálculo** | TypeScript + Zod (`@stageplan/shared`) | TS 5.7 / Zod 3.24 | Código 100% isomórfico compartido por cliente y servidor: elimina divergencias de cálculo y valida entradas en frontera. | Publicación como paquete npm interno o CLI de automatización. |
+| **Backend API** | Node.js + Express + Helmet + RateLimit | Node 24 / Exp 4.21 | Ecosistema unificado en TypeScript; alto rendimiento I/O para endpoints JSON; middlewares probados de seguridad. | Balanceo horizontal y colas en background para reportes masivos. |
+| **Persistencia MVP** | SQLite 3 (`dev.db`) + Prisma ORM | SQLite 3 / Prisma 6.4 | Base de datos embebida, autocontenida y portable; transaccionalidad ACID con 4 tablas 3FN + documentos JSON; inspección directa en DB Browser for SQLite. | Migración transparente a PostgreSQL 16 en VPS cambiando únicamente el `provider` en Prisma. |
 | **Seguridad Auth** | `bcrypt` (cost 12) + `jsonwebtoken` | 5.1 / 9.0 | Hashing resistente a fuerza bruta y sesiones stateless verificables en `authMiddleware`. | Rotación de claves JWKS y soporte MFA (TOTP) para administradores. |
-| **Salida Offline** | `jsPDF` + `jspdf-autotable` | 2.5 / 3.8 | Genera fichas técnicas en la memoria del teléfono sin conexión 4G/5G en parcelas aisladas. | Firma digital QR verificable por inspectores SEC/municipales. |
-| **Despliegue / TLS** | VPS Linux Ubuntu 22.04 + Nginx/Caddy + Docker | TLS 1.3 | Aislamiento en contenedores, terminación HTTPS automática en puerto `:443`, cero exposición directa de `:3000` o `:5432`. | Orquestación Docker Compose con backups cifrados diarios `pg_dump`. |
+| **Salida en Terreno** | `jsPDF` + `jspdf-autotable` | 2.5 / 3.8 | Genera fichas técnicas en memoria del cliente sin requerir peticiones al servidor en parcelas rurales aisladas. | Firma digital QR verificable por inspectores SEC/municipales. |
+| **Entorno Despliegue** | Localhost Dev/QA (MVP U2) | Node 24 / Vite 6 | Ejecución controlada y reproducible para validación del prototipo funcional y los 70 tests de Vitest. | Contenedores Docker + Nginx con TLS 1.3 proyectados para Unidad 3. |
 
 #### 2.2 Vista de Escenarios: Caso de Uso Cero (CU-00)
 El actor principal (**Operador Técnico FOH / DJ**) interactúa con `CU-00` (*Planificación Logística Integral*), el cual incluye obligatoriamente `CU-01` (Auth JWT/RBAC), `CU-02` (Recinto/D.S. 38), `CU-03` (Ruteo SEC RIC 03/10 y Postes Guía), `CU-05` (Iluminación DMX x1) y `CU-08` (Exportación PDF Offline), y extiende opcionalmente `CU-04` (Cajas Pasivas + Powers + Impedancia Speakon) y `CU-06` (Simulador Pioneer DJM y Retardos Haas).
@@ -162,7 +159,7 @@ El flujo BPMN coordina tres carriles (*Operador Técnico FOH*, *Motor STAGE PLAN
 ![Figura 5. Vista de Procesos — Diagrama BPMN 2.0 de Pre-Producción y Validación SEC](entrega_sumativa_02/diagrams/diag-06-vista-procesos-bpmn.png)
 
 #### 2.6 Vista Física: Topología de Despliegue e Infraestructura
-Separa estrictamente la capa de ejecución local en terreno (navegador móvil con motor isomórfico y generación PDF offline) de la infraestructura cloud protegida por proxy inverso TLS 1.3 en puerto `:443`, aislando la API Express (`:3000`) y PostgreSQL 16 (`:5432`) en red interna.
+El MVP opera en la estación local mediante la SPA Vue 3 conectada a la API Express (`:3000`) y la base de datos embebida SQLite 3 (`dev.db`). Para la etapa productiva (Unidad 3), se proyecta el empaquetado en contenedores Docker detrás de un proxy inverso TLS 1.3 en puerto `:443`, aislando los servicios internos y facilitando la migración transparente de SQLite a PostgreSQL 16 mediante Prisma.
 
 ![Figura 6. Vista Física y Despliegue — Arquitectura 4+1 e Infraestructura](entrega_sumativa_02/diagrams/diag-02-arquitectura-4plus1-despliegue.png)
 
@@ -176,12 +173,12 @@ Separa estrictamente la capa de ejecución local en terreno (navegador móvil co
 
 | Perfil (*Persona*) | Rol y Contexto de Uso | Puntos de Dolor (*Pain Points*) | Meta con STAGE PLAN |
 | :--- | :--- | :--- | :--- |
-| **Amaro Artiaga (28 años)** | Operador FOH / DJ en terreno. Montajes nocturnos en parcelas (Curacaví, Pirque) con $< 2$ hrs y sin señal 4G. | Cortes de automático, cables sin holgura, dudas de *gain staging* con DJs invitados y falta de planos claros. | Dimensionar en $< 3$ min, validar SEC/Haas visualmente y llevar PDF en Modo Avión. |
+| **Amaro Artiaga (28 años)** | Operador FOH / DJ en terreno. Montajes nocturnos en parcelas (Curacaví, Pirque) con $< 2$ hrs y sin señal 4G. | Cortes de automático, cables sin holgura, dudas de *gain staging* con DJs invitados y falta de planos claros. | Dimensionar en $< 3$ min, validar SEC/Haas visualmente y llevar PDF en la memoria del navegador. |
 | **Cristián Morales (34 años)** | Chofer y Bodeguero Logístico. Carga de camioneta y embalaje de cables antes del despacho. | Olvido de cables DMX/Speakon/zapatillas y sobrecarga de bultos que exceden la Ley del Saco (`25 kg`). | Recibir lista exacta de carga por enlace temporal o WhatsApp sin entrar a cálculos complejos. |
 | **Mauricio Vega (Administrador)** | Encargado técnico y de calidad. Auditoría de eventos pasados y cumplimiento normativo. | Inexistencia de historial técnico trazable ante reclamos de clientes o fiscalizaciones D.S. N° 38. | Auditar cálculos en PostgreSQL y revocar enlaces compartidos al cerrar el evento. |
 
 #### 3.2 Arquitectura de Información, Mapa de Navegación y Sistema de Diseño (WCAG 2.1 AA)
-* **Jerarquía de 5 Pasos Secuenciales:** `Paso 0 (Acceso Operador)` $\rightarrow$ `Paso 1 (Recinto y D.S. 38)` $\rightarrow$ `Paso 2 (Equipos Activo/Pasivo + Power + DMX)` $\rightarrow$ `Paso 3 (Plano 2D con Postes Guía + Simulador Pioneer DJM + Plan B)` $\rightarrow$ `Paso 4 (Reporte Camioneta, Ley del Saco y PDF Offline)`.
+* **Jerarquía de 5 Pasos Secuenciales:** `Paso 0 (Acceso Operador)` $\rightarrow$ `Paso 1 (Recinto y D.S. 38)` $\rightarrow$ `Paso 2 (Equipos Activo/Pasivo + Power)` $\rightarrow$ `Paso 3 (Plano 2D con Postes Guía + Simulador Pioneer DJM + Plan B)` $\rightarrow$ `Paso 4 (Reporte Camioneta, Ley del Saco y PDF Offline)`.
 * **Consistencia Visual y Adaptabilidad (Tokens de Diseño):**
   * **Dark Mode Técnico FOH (`#09090d` / `#14141c`):** Evita encandilamiento nocturno en cabina DJ y reduce fatiga visual.
   * **Contraste WCAG 2.1 AA ($\ge 4.5:1$):** Texto principal `#FFFFFF` / `#E4E4E7` sobre fondos oscuros; semáforo normativo Verde Esmeralda (`#10B981`), Ámbar (`#F59E0B`) y Rojo Carmesí (`#DC2626`).
@@ -215,57 +212,75 @@ A diferencia de un wireframe estático, las siguientes capturas provienen direct
 
 ### 4. Modelo y Administración de Base de Datos (Criterios 2.1.4.8 y 2.1.4.9)
 
-#### 4.1 Selección y Justificación del Modelo Híbrido (Relacional 3FN + Documental JSONB)
-Se seleccionó **PostgreSQL 16** bajo arquitectura **Híbrida (Estructurada + No Estructurada)**:
-* **Núcleo Estructurado (3FN):** Garantiza integridad referencial estricta (`ACID`), llaves primarias UUID, llaves foráneas `ON DELETE CASCADE` / `RESTRICT`, y restricciones `CHECK` para usuarios, recintos, circuitos SEC, lotes y bitácora forense.
-* **Capa No Estructurada (`JSONB` + Índices `GIN`):** Resuelve el polimorfismo de fichas técnicas de equipos de audio/iluminación y almacena snapshots inmutables de resultados (`rider_input`, `calculated_results`, `alerts_snapshot`, `specs_json`) sin proliferar tablas pivote innecesarias.
-* **Transparencia MVP vs. Diseño Extendido:** En `packages/backend/prisma/schema.prisma` operan actualmente las 4 tablas núcleo MVP (`users`, `venues`, `rider_calculations`, `shared_links`), mientras que el script ejecutable **`entrega_sumativa_02/sql/schema_stageplan_pg16.sql`** despliega el esquema completo normalizado de **12 tablas**, restricciones físicas `CHECK`, índices `GIN` y triggers PL/pgSQL (`trg_validate_sec_circuit` y `trg_validate_lot_impedance`).
+#### 4.1 Selección y Justificación del Modelo Híbrido (Relacional 3FN + Documental JSON)
+Para el MVP operacional de STAGE PLAN se seleccionó **SQLite 3 (`dev.db`) administrado a través de Prisma ORM**, implementando una arquitectura **Híbrida (Estructurada + No Estructurada)**:
+* **Núcleo Estructurado (3FN):** Garantiza integridad referencial estricta (`ACID`), llaves primarias UUID/TEXT, llaves foráneas con reglas de integridad `ON DELETE CASCADE` entre usuarios, recintos, cálculos y enlaces compartidos.
+* **Capa No Estructurada (`JSON` Nativo):** Resuelve la variabilidad y polimorfismo de los montajes de audio e iluminación almacenando snapshots inmutables de resultados (`rider_input`, `calculated_results`, `alerts_snapshot`) sin sobrecargar la base de datos con decenas de tablas pivote innecesarias para un MVP.
+* **Ventajas Operacionales y de Auditoría Directa:** Al ser una base de datos autocontenida en un único archivo físico (`dev.db`), el desarrollador y el operador pueden inspeccionar, auditar o respaldar los datos de manera inmediata arrastrando el archivo a herramientas estándar como **DB Browser for SQLite**, garantizando portabilidad absoluta en terreno y cero fallas de conexión por servicios de red caídos.
+* **Proyección a Producción (Unidad 3):** Gracias a la capa de abstracción de **Prisma ORM**, la migración desde SQLite hacia un clúster PostgreSQL 16 con índices GIN en la nube se realiza de forma transparente cambiando únicamente la directiva `datasource` en `schema.prisma`, manteniendo intacto el 100% del código de controladores y validaciones.
 
-![Figura 12. Diagrama Entidad-Relación (DER) del Modelo Híbrido PostgreSQL 16 (12 Tablas 3FN + JSONB GIN)](entrega_sumativa_02/diagrams/diag-07-modelo-datos-der.png)
+![Figura 12. Diagrama Entidad-Relación (DER) del Modelo Híbrido MVP (4 Tablas 3FN + Documentos JSON)](entrega_sumativa_02/diagrams/diag-07-modelo-datos-der.png)
 
-#### 4.2 Diccionario Resumido de Entidades, Integridad Referencial y Documento JSONB
+#### 4.2 Diccionario de Entidades, Integridad Referencial y Documentos JSON del MVP
 
-*Tabla 6. Resumen de las 12 tablas normalizadas del script `sql/schema_stageplan_pg16.sql`.*
+*Tabla 6. Diccionario de las 4 tablas normalizadas implementadas en Prisma y SQLite (`dev.db`).*
 
-| # | Tabla | Clave Primaria (PK) | Claves Foráneas (FK) y Reglas | Restricciones / Campos No Estructurados |
-| :-: | :--- | :--- | :--- | :--- |
-| 1 | `roles` | `id (smallint)` | — | `CHECK nombre IN ('operador_foh','administrador','invitado_chofer')` |
-| 2 | `users` | `id (uuid)` | `rol_id → roles(id) RESTRICT` | `email UNIQUE`, `password_hash` (Bcrypt 12), `intentos_fallidos >= 0` |
-| 3 | `venues` | `id (uuid)` | `owner_id → users(id) CASCADE` | `CHECK width/depth 1..500`, `neighbor_distance >= 5`, D.S. 38 |
-| 4 | `equipment_catalog` | `id (uuid)` | — | `specs_json JSONB` con índice `GIN (jsonb_path_ops)` |
-| 5 | `rider_calculations` | `id (uuid)` | `owner_id → users`, `venue_id → venues` | `rider_input`, `calculated_results`, `alerts_snapshot` (`JSONB` + `GIN`) |
-| 6 | `equipment_lots` | `id (uuid)` | `calculation_id → rider_calculations` | `technology IN ('ACTIVE','PASSIVE')`, `impedance_ohms >= 2.0`, Trigger PROTECT |
-| 7 | `lighting_fixtures` | `id (uuid)` | `calculation_id → rider_calculations` | `PAR_LED_X1`, `watts_per_unit > 0`, `dmx_cable_meters >= 1.0` |
-| 8 | `electrical_circuits` | `id (uuid)` | `calculation_id → rider_calculations` | `voltage_drop_pct <= 3.00`, `min_bend_radius_mm >= 48`, Trigger SEC |
-| 9 | `audio_routes` | `id (uuid)` | `calculation_id → rider_calculations` | `XLR_BALANCED`, `TRS_TO_XLR_BOOTH`, `SPEAKON_NL4`, `haas_delay_ms >= 0` |
-| 10 | `shared_links` | `id (uuid)` | `owner_id`, `rider_calculation_id` | `token UNIQUE`, `expires_at`, `is_revoked` |
-| 11 | `audit_logs` | `id (bigint)` | `user_id → users(id) SET NULL` | `event_type` (`IDOR_BLOCKED_403`, `LOGIN_FAIL`), `detail_json JSONB` |
-| 12 | `user_feedback` | `id (uuid)` | `user_id → users(id) SET NULL` | Trazabilidad de iteraciones UX/UI con DISTORSIONCL SPA |
+| # | Tabla | Clave Primaria (PK) | Claves Foráneas (FK) y Reglas | Atributos Estructurados | Campos No Estructurados (JSON) |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| 1 | `users` | `id (TEXT/UUID)` | — | `email UNIQUE`, `passwordHash` (Bcrypt 12), `name`, `createdAt`, `updatedAt` | — |
+| 2 | `venues` | `id (TEXT/UUID)` | `owner_id → users(id) ON DELETE CASCADE` | `name`, `width_meters`, `depth_meters`, `height_meters`, `environment_type`, `electrical_distance_meters` | — |
+| 3 | `rider_calculations` | `id (TEXT/UUID)` | `owner_id → users(id) CASCADE`, `venue_id → venues(id) CASCADE` | `engine_version` (ej. "3.1.0"), `createdAt` | `rider_input` (lotes de audio/luces), `params_used`, `calculated_results` (resumen SEC/Haas), `alerts_snapshot` |
+| 4 | `shared_links` | `id (TEXT/UUID)` | `owner_id → users(id) CASCADE`, `rider_calculation_id → rider_calculations(id) CASCADE` | `token UNIQUE`, `expires_at`, `is_revoked (INTEGER)`, `createdAt` | — |
 
-*Ejemplo de Documento No Estructurado (`calculated_results` JSONB):*
+*Ejemplo de Documento No Estructurado almacenado en la columna `calculated_results` (JSON):*
 ```json
 {
-  "engineVersion": "1.0.0",
-  "electricalSummary": { "totalWatts": 3250, "designAmps": 17.73, "sectionMm2": 2.5, "voltageDropPct": 2.18, "secCompliant": true },
-  "guidePostsRic10": { "count": 4, "minBendRadiusMm": 72, "rule": "R >= 6 * outerDiameter" },
-  "acousticSummary": { "clusterGainDb": 6.0, "delay1HaasMs": 44.3, "delay2HaasMs": 60.7, "sweetSpotDba": "96-102" },
-  "lightingDmx": { "totalFixturesX1": 4, "totalWatts": 480, "dmxCablesCount": 4, "terminators120Ohm": 1 }
+  "totalWatts": 3250,
+  "designAmps": 17.73,
+  "electricalSummary": {
+    "recommendedSectionMm2": 2.5,
+    "voltageDropPct": 2.18,
+    "secCompliant": true,
+    "rule": "Pliego SEC RIC N° 03 (ΔV <= 3%)"
+  },
+  "guidePostsRic10": {
+    "count": 4,
+    "minBendRadiusMm": 72,
+    "rule": "R >= 6 * diámetro conductor (RIC N° 10)"
+  },
+  "acousticSummary": {
+    "monoClusterCentral": true,
+    "clusterGainDb": 6.0,
+    "delayTowerHaasMs": 44.3,
+    "sweetSpotDba": "96-102 dBA"
+  },
+  "lightingDmx": {
+    "totalFixtures": 4,
+    "totalWatts": 480,
+    "dmxCablesRequired": 4,
+    "terminators120Ohm": 1
+  }
 }
 ```
 
-#### 4.3 Estrategias de Integración y Consultas Híbridas SQL + JSONB
-La integración entre datos estructurados y documentos flexibles se resuelve en una misma transacción ACID mediante operadores nativos (`->`, `->>`, `@>`) acelerados por índices `GIN`:
+#### 4.3 Estrategias de Integración y Consultas Híbridas SQL + JSON
+La combinación entre datos relacionales transaccionales y atributos semiestructurados se consulta de manera directa y transparente. En SQLite se utilizan las funciones estándar de extracción JSON (`json_extract`):
+
 ```sql
-SELECT u.name AS operador, v.name AS recinto, ec.line_code, ec.cable_section_mm2, ec.voltage_drop_pct,
-       (rc.calculated_results->'acousticSummary'->>'sweetSpotDba') AS sweet_spot_dba,
-       (rc.calculated_results->'guidePostsRic10'->>'count')::int AS postes_guia_ric10
+-- Consulta híbrida auditable directamente en DB Browser for SQLite:
+SELECT u.name AS operador, 
+       v.name AS recinto, 
+       rc.engine_version,
+       json_extract(rc.calculated_results, '$.totalWatts') AS total_watts,
+       json_extract(rc.calculated_results, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,
+       json_extract(rc.calculated_results, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,
+       json_extract(rc.calculated_results, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba
 FROM users u
 JOIN venues v ON u.id = v.owner_id
 JOIN rider_calculations rc ON v.id = rc.venue_id
-JOIN electrical_circuits ec ON rc.id = ec.calculation_id
-WHERE ec.sec_compliant = true
-  AND rc.calculated_results @> '{"electricalSummary": {"secCompliant": true}}'::jsonb;
+WHERE json_extract(rc.calculated_results, '$.electricalSummary.secCompliant') = 1;
 ```
+Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (integridad referencial relacional) y **2.1.4.9** (gestión eficaz de datos estructurados y semiestructurados en una sola fuente de datos accesible y portable).
 
 ---
 
@@ -417,8 +432,8 @@ WHERE ec.sec_compliant = true
 | **2.1.3.5** Desarrolla prototipos interactivos funcionales (**5 pts**) | Aplicación real ejecutándose en Vue 3 + Figuras 8, 9 y 10 (Mosaico P01–P06, Plano 2D SEC RIC 10 y Réplica Pioneer DJM). | **Destacado** |
 | **2.1.3.6** Asegura consistencia visual y adaptabilidad (**5 pts**) | Sección 3.2: Dark Mode FOH WCAG 2.1 AA, botones $\ge 44\text{ px}$, Figura 7 (`diag-08`) y Figura 11 (Vista Móvil Terreno 412px). | **Destacado** |
 | **2.1.3.7** Integra retroalimentación de usuarios (**5 pts**) | Sección 3.4 Tabla 5: 4 ciclos reales de mejora con Amaro Artiaga (DISTORSIONCL SPA) reflejados en el sistema. | **Destacado** |
-| **2.1.4.8** Define entidades y relaciones óptimas PK/FK (**10 pts**) | Sección 4.1–4.2 Tabla 6, Figura 12 (DER `diag-07`) y script ejecutable `sql/schema_stageplan_pg16.sql` (12 tablas 3FN + Triggers). | **Destacado** |
-| **2.1.4.9** Implementa bases estructuradas y no estructuradas (**5 pts**) | Sección 4.1–4.3: PostgreSQL 16 relacional + columnas `JSONB` (índices GIN), ejemplo JSON y consulta híbrida SQL+JSONB. | **Destacado** |
+| **2.1.4.8** Define entidades y relaciones óptimas PK/FK (**10 pts**) | Sección 4.1–4.2 Tabla 6 y Figura 12 (DER `diag-07`): 4 tablas maestras 3FN en SQLite (`dev.db`) con Prisma ORM (PK, FK, CASCADE, auditable en DB Browser). | **Destacado** |
+| **2.1.4.9** Implementa bases estructuradas y no estructuradas (**5 pts**) | Sección 4.1–4.3: SQLite 3 relacional + columnas `JSON` nativas (`json_extract`), ejemplo JSON funcional y consulta híbrida probada en DB Browser. | **Destacado** |
 | **2.1.5.10** Define políticas de autenticación y autorización (**10 pts**) | Sección 5.1–5.2 Tabla 7: RBAC 3 roles, `bcrypt(12)`, JWT (`authMiddleware`), Anti-IDOR (`403`) y Rate Limiting. | **Destacado** |
 | **2.1.5.11** Identifica amenazas comunes y mitigación (**10 pts**) | Sección 5.3 Tabla 8: Cobertura exhaustiva de los **10 riesgos OWASP Top 10 (2021)** (`A01` a `A10`) con controles concretos. | **Destacado** |
 | **2.1.5.12** Establece estándares de codificación segura (**10 pts**) | Sección 5.2: Zod isomórfico, Prisma parametrizado, `helmet()`, gestión segura de errores sin stack trace y TLS 1.3 / `pgcrypto`. | **Destacado** |
@@ -451,23 +466,57 @@ flowchart TD
   C --> G{ΔV <= 3% y Zeq >= 3.2Ω?}
   G -- No --> R[Semáforo Rojo: Dividir L1/L2/L3 + Postes Guía]
   G -- Sí --> O[Render Layout 2D + Delays Haas + Pioneer DJM]
-  O --> P[Persistir PostgreSQL 16 + Exportar PDF Offline]
+  O --> P[Persistir SQLite 3 dev.db + Exportar PDF en Navegador]
   P --> F(((Fin Montaje)))
 ```
 
-#### B.3 Entidad-Relación Simplificado (`diag-07`)
+#### B.3 Entidad-Relación del Modelo Híbrido MVP (`diag-07`)
 ```mermaid
 erDiagram
-  ROLES ||--o{ USERS : asigna
   USERS ||--o{ VENUES : posee
   USERS ||--o{ RIDER_CALCULATIONS : ejecuta
+  USERS ||--o{ SHARED_LINKS : crea
   VENUES ||--o{ RIDER_CALCULATIONS : contiene
-  RIDER_CALCULATIONS ||--o{ EQUIPMENT_LOTS : detalla
-  RIDER_CALCULATIONS ||--o{ LIGHTING_FIXTURES : incluye
-  RIDER_CALCULATIONS ||--o{ ELECTRICAL_CIRCUITS : valida_sec
-  RIDER_CALCULATIONS ||--o{ AUDIO_ROUTES : rutea
   RIDER_CALCULATIONS ||--o{ SHARED_LINKS : comparte
-  USERS ||--o{ AUDIT_LOGS : audita
+
+  USERS {
+    text id PK
+    text email UK
+    text passwordHash
+    text name
+    datetime createdAt
+    datetime updatedAt
+  }
+  VENUES {
+    text id PK
+    text owner_id FK
+    text name
+    real width_meters
+    real depth_meters
+    real height_meters
+    text environment_type
+    real electrical_distance_meters
+  }
+  RIDER_CALCULATIONS {
+    text id PK
+    text owner_id FK
+    text venue_id FK
+    text engine_version
+    text rider_input_JSON
+    text params_used_JSON
+    text calculated_results_JSON
+    text alerts_snapshot_JSON
+    datetime createdAt
+  }
+  SHARED_LINKS {
+    text id PK
+    text owner_id FK
+    text rider_calculation_id FK
+    text token UK
+    datetime expires_at
+    integer is_revoked
+    datetime createdAt
+  }
 ```
 
 ---
@@ -480,17 +529,17 @@ erDiagram
 4. **¿Qué norma respalda las 5 vistas arquitectónicas?** La norma internacional **ISO/IEC/IEEE 42010:2022** aplicada mediante el modelo **4+1 de Kruchten** (Escenarios, Lógica, Desarrollo, Procesos y Física).
 5. **¿Cómo aplica la normativa SEC RIC N° 03 y RIC N° 10 en el código?** Evaluando doble criterio en `electrical.ts`: caída de tensión monofásica $\Delta V = \frac{2 \cdot L \cdot I \cdot \rho}{S} \le 3\%$ y ampacidad del conductor con $+20\%$ de margen de seguridad, además de imponer postes guía esquineros con radio de curvatura mínimo $R \ge 6d$.
 6. **¿Por qué son necesarios los postes guía esquineros en el Plano 2D?** Porque doblar cables multifilares Clase 5 en ángulos vivos de $90^\circ$ fractura el cobre y genera puntos calientes por Efecto Joule; los postes garantizan mecánicamente $R \ge 6d$ según SEC RIC N° 10 y mantienen despejada la pista de baile.
-7. **¿Por qué los subwoofers van en un clúster central a piso y no en atriles?** Al agruparlos juntos a distancia menor a $\lambda/2$ (`< 1.7 m` a 100 Hz) sobre el suelo (*Ground Stack*), se acoplan en fase ganando `+6 dB` acústicos gratuitos sin forzar los amplificadores ni producir *comb filtering*.
+7. **¿Por qué los subwoofers van en un clúster central a piso y no en atriles?** Al agruparlos juntos a distancia menor a $\lambda/2$ (`< 1.7 m` a 100 Hz) sobre el suelo (*Ground Stack*), se acoplan en fase ganando `+6 dB` acústicos gratuitos sin forzar los amplificadores ni producir cancelaciones acústicas.
 8. **¿Qué es el Efecto Haas y cómo lo calcula STAGE PLAN?** Al reforzar una pista larga (ej. 28 m) con cajas Delay, el motor calcula el tiempo de vuelo ($v = 331.3 + 0.606 \cdot T$) y suma un margen psicoacústico Haas, haciendo que el oído localice el sonido en el escenario frontal y eliminando el eco.
 9. **¿Qué ocurre si se conectan 3 cajas pasivas de $8\ \Omega$ en paralelo?** La impedancia equivalente cae a $Z_{eq} = 8/3 = 2.67\ \Omega$, inferior al umbral seguro de $3.2\ \Omega$; el sistema dispara la alerta roja `DANGER_PROTECT_SHORT` para evitar corte térmico o quema del amplificador (*Power*).
 10. **¿Qué demuestra el simulador hardware Pioneer DJM en la defensa?** Demuestra por qué durante una mezcla se debe mantener **un solo bajo activo (12:00 / 0 dB)** y el segundo en **Low EQ Kill (-∞ a las 7:00)**, con Master entre las 12:00 y las 2:00: subir dos bajos a la vez suma `+6 dB` en graves y cuadruplica la potencia de pico ($P = V^2/R$), disparando el `CLIP` rojo.
 11. **¿Por qué un foco PAR LED se contabiliza como x1 y no x2?** Porque "PAR" proviene de *Parabolic Aluminized Reflector*, una unidad física individual; contar por pares duplicaba erróneamente los Watts y los cables DMX 3-pin requeridos desde la cabina.
 12. **¿Cómo cumple el software con el D.S. N° 38 MMA?** Estima la atenuación por distancia (ley del inverso del cuadrado) y tipo de cerramiento (aire libre, carpa, galpón, hormigón) contrastando el resultado contra el límite nocturno (`48 dBA`) o diurno (`60 dBA`) en la vivienda vecina más cercana.
 13. **¿Cómo se aplica la Ley del Saco (Ley N° 20.949)?** En `contingency-and-logistics.ts`, cualquier bulto superior a `25 kg` (como subwoofers de 18" o racks de Powers) levanta una directiva obligatoria de manipulación asistida entre 2 operarios o uso de carro.
-14. **¿Por qué un modelo de base de datos híbrido (3FN + JSONB) y no 100% SQL o 100% NoSQL?** Las entidades transaccionales y de seguridad (`users`, `venues`, `electrical_circuits`, `audit_logs`) exigen integridad referencial ACID en 3FN, mientras que las fichas técnicas polimórficas de equipos y snapshots de cálculo se modelan óptimamente en columnas `JSONB` con índices `GIN`.
+14. **¿Por qué un modelo de base de datos híbrido (3FN + JSONB) y no 100% SQL o 100% NoSQL?** Para el MVP, las entidades transaccionales (`users`, `venues`, `rider_calculations`, `shared_links`) operan en SQLite 3 con integridad referencial 3FN, mientras que los snapshots de cálculo e inventario se almacenan en columnas JSON nativas. Esto permite que el archivo `dev.db` sea 100% portable y auditable en DB Browser for SQLite, dejando la migración a PostgreSQL 16 lista en Prisma para la Unidad 3.
 15. **¿Cómo mitiga STAGE PLAN el riesgo OWASP A01 (Broken Access Control / IDOR)?** Todo endpoint protegido extrae `req.user.id` del JWT validado en `authMiddleware` y exige coincidencia exacta con `ownerId` antes de devolver o modificar cualquier recinto o cálculo, respondiendo `403 Forbidden` ante discrepancias.
 16. **¿Cómo previene Inyección SQL (OWASP A03) y XSS?** Mediante consultas tipadas parametrizadas en Prisma ORM (prohibición de SQL concatenado), validación estricta en frontera con Zod y auto-escapado nativo de Vue 3 sin uso de `v-html`.
-17. **¿Por qué el PDF se genera en el navegador (`jsPDF`) y no en el servidor?** Porque las parcelas rurales de eventos suelen carecer de cobertura móvil 4G/5G; generar el PDF client-side asegura operatividad **Offline-First** en Modo Avión y además elimina vectores de ataque SSRF en el servidor.
+17. **¿Por qué el PDF se genera en el navegador (`jsPDF`) y no en el servidor?** Porque las parcelas rurales de eventos suelen carecer de cobertura móvil 4G/5G; generar el PDF client-side asegura operatividad **Offline-First** en la memoria del navegador y además elimina vectores de ataque SSRF en el servidor.
 18. **¿Qué demuestran los 70 tests unitarios en Vitest?** Cubren 10 archivos independientes (eléctrico, cables, impedancia pasiva, acústica indoor/outdoor, DMX, DJ setup, distribución de zapatillas y contingencia) ejecutándose en `113 ms` con `100% PASS`, garantizando cero regresiones matemáticas.
 19. **¿Qué latencia real arrojó el benchmark del motor de cálculo?** Sobre 1.000 iteraciones completas en Node.js v24, el promedio fue `0.0286 ms` (`p95 = 0.0479 ms`), superando ampliamente el requisito no funcional de `< 50 ms`.
 20. **¿Cómo escalaría STAGE PLAN a una empresa SaaS multi-productora?** El aislamiento por `ownerId` y `roles` ya está preparado en el esquema; bastaría incorporar tabla `organizations`, despliegue en contenedores Docker con réplica de lectura PostgreSQL y firma JWT con rotación de llaves.

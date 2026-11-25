@@ -39,6 +39,7 @@ Thumbs.db
 *.bak
 *.bak.*
 *.bak.docx
+*.zip
 
 # Python / Virtualenv
 __pycache__/

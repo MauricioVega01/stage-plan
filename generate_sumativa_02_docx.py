@@ -7,8 +7,11 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 
-TEMPLATE_PATH = r"C:\Users\casa\Downloads\Formato_propuesto_sumativa 02_2026.docx"
-BASE_DIR = r"D:\Dev\INACAP\stage-plan-main\stage-plan-main"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_PATH = os.path.join(BASE_DIR, "Formato_propuesto_sumativa 01_2026.docx")
+if not os.path.exists(TEMPLATE_PATH):
+    TEMPLATE_PATH = os.path.join(BASE_DIR, "Proyecto Integrado 1.docx")
+# BASE_DIR dinamico ya definido arriba
 ENTREGA_DIR = os.path.join(BASE_DIR, "entrega_sumativa_02")
 DIAG_DIR = os.path.join(ENTREGA_DIR, "diagrams")
 SHOT_DIR = os.path.join(ENTREGA_DIR, "prototipo", "capturas")
@@ -225,7 +228,7 @@ def build_sumativa_02():
     r1.font.name = FONT_NAME
     r1.font.size = Pt(24)
     r1.font.color.rgb = COLOR_TITLE
-    r2 = p1.add_run("Plataforma Web de Pre-Producción Logística, Ruteo Eléctrico SEC RIC N° 03/10, Acústica Espacial Haas, Iluminación DMX y Gain Staging Hardware")
+    r2 = p1.add_run("Plataforma Web de Pre-Producción Logística, Ruteo Eléctrico SEC RIC N° 03/10, Acústica Espacial Haas, Gestión de Cables de Escenario y Gain Staging Hardware")
     r2.font.name = FONT_NAME
     r2.font.size = Pt(12.5)
     r2.font.color.rgb = COLOR_SUBTITLE
@@ -288,15 +291,15 @@ def build_sumativa_02():
         "STAGE PLAN es una plataforma web responsiva (Mobile-First y Offline-First) diseñada y validada para "
         "la empresa contraparte DISTORSIONCL SPA (operador técnico Amaro Artiaga), en el marco de la Unidad 2 de la "
         "asignatura Proyecto Integrado (TIHV43, Sección C1, INACAP Sede Maipú). La solución erradica el dimensionamiento "
-        "empírico de instalaciones temporales de sonido, iluminación DMX y fuerza eléctrica, aplicando de forma determinista "
-        "los Pliegos Técnicos Normativos SEC RIC N° 03 y RIC N° 10, la norma ambiental de ruido D.S. N° 38 MMA y la Ley del Saco N° 20.949."
+        "empírico de instalaciones temporales de sonido, cables de escenario y fuerza eléctrica, aplicando de forma determinista "
+        "los Pliegos Técnicos Normativos SEC RIC N° 03 y RIC N° 10, la norma ambiental de ruido cobertura y distancias y la Ley del Saco N° 20.949."
     )
     cur.add_p(
-        "El presente informe consolida los seis ejes exigidos por la rúbrica oficial (100/100 puntos): (1) planificación "
+        "El presente informe consolida los seis ejes exigidos por la rúbrica oficial : (1) planificación "
         "Scrumban + PSP en 4 Sprints de 14 días (20 tareas con ruta crítica y tablero Kanban WIP=1); (2) arquitectura 4+1 "
         "(ISO/IEC/IEEE 42010:2022) implementada como monorepo TypeScript; (3) diseño UX/UI Dark Mode FOH (WCAG 2.1 AA) "
         "con prototipo web real funcional, plano 2D con postes guía SEC RIC N° 10 y réplica hardware interactiva Pioneer DJM; "
-        "(4) base de datos híbrida PostgreSQL 16 (12 tablas 3FN + columnas JSONB con índices GIN); (5) programación segura "
+        "(4) base de datos híbrida SQLite 3 dev.db con Prisma ORM (4 tablas normalizadas 3FN + documentos JSON nativos, auditable en DB Browser for SQLite); (5) programación segura "
         "RBAC, Anti-IDOR y cobertura completa OWASP Top 10 (2021); y (6) plan de pruebas respaldado por 70 tests unitarios "
         "automatizados en Vitest (10 archivos, 100% PASS en 113 ms) y un benchmark real de 0,0286 ms por cálculo completo."
     )
@@ -316,10 +319,10 @@ def build_sumativa_02():
         ["Categoría Temática", "Ideas Levantadas en Lluvia de Ideas", "Problemática Resuelta en Terreno"],
         [
             ["1. Seguridad Eléctrica SEC", "I1: Calibre automático ΔV ≤ 3%; I2: Líneas aisladas L1/L2/L3; I3: Postes guía esquineros R ≥ 6d (RIC N° 10).", "Disparos termomagnéticos, Efecto Joule y fatiga mecánica de conductores."],
-            ["2. Acústica y Gain Staging", "I4: Clúster mono de subs (+6 dB); I5: Retardos Haas para Delays; I6: Réplica hardware Pioneer DJM (VU vertical + Low Kill).", "Saturación (clipping), comb filtering y daño de bobinas por 2 bajos activos."],
+            ["2. Acústica y Gain Staging", "I4: Clúster mono de subs (+6 dB); I5: Retardos Haas para Delays; I6: Réplica hardware Pioneer DJM (VU vertical + Low Kill).", "Saturación (clipping), cancelación acústica y daño de bobinas por 2 bajos activos."],
             ["3. Equipos Mixtos y DMX", "I7: Lotes Activa/Pasiva con Power externo y alerta Speakon < 3.2 Ω; I8: Conteo unitario x1 de PAR LED y metraje DMX.", "Apagado de amplificadores en PROTECT y faltante de cables DMX en show."],
-            ["4. Normativa y Logística", "I9: Simulador ruido vecinal D.S. N° 38 MMA; I10: Control peso Ley del Saco N° 20.949; I11: Plan B contingencia (< 2 min).", "Partes municipales, riesgo lumbar en carga y parálisis ante falla en vivo."],
-            ["5. Operación Offline", "I12: Plano 2D perimetral sin cruces centrales; I13: PDF client-side en Modo Avión; I14: Resumen WhatsApp; I15: SharedLink chofer.", "Parcelas rurales sin 4G/5G y descoordinación bodega-transporte."]
+            ["4. Normativa y Logística", "I9: Simulador ruido vecinal cobertura y distancias; I10: Control peso Ley del Saco N° 20.949; I11: Plan B contingencia (< 2 min).", "Partes municipales, riesgo lumbar en carga y parálisis ante falla en vivo."],
+            ["5. Operación Offline", "I12: Plano 2D perimetral sin cruces centrales; I13: PDF client-side en modo local; I14: Resumen WhatsApp; I15: SharedLink chofer.", "Parcelas rurales sin 4G/5G y descoordinación bodega-transporte."]
         ],
         [1.5, 2.7, 2.3]
     )
@@ -331,8 +334,8 @@ def build_sumativa_02():
             ["2", "I7: Lotes Activa/Pasiva con Power y alerta Speakon < 3.2 Ω", "5.0", "4.8", "4.8", "4.88", "MVP Obligatorio (S2)"],
             ["3", "I3+I12: Plano 2D proporcional + Postes Guía RIC 10 (R ≥ 6d)", "4.9", "4.5", "5.0", "4.81", "Core (S4)"],
             ["4", "I4+I5+I6: Clúster Mono + Delays Haas + Réplica Pioneer DJM", "4.6", "4.7", "4.5", "4.60", "Core (S4)"],
-            ["5", "I8: Iluminación DMX unitaria (x1) y metraje desde Cabina", "4.2", "5.0", "4.3", "4.47", "Core (S2)"],
-            ["6", "I9+I10+I13: Ruido D.S. 38 + Ley del Saco + PDF Offline", "4.5", "4.6", "4.2", "4.44", "Core (S3–S4)"],
+            ["5", "I8: Gestión de Cables de Escenario unitaria (x1) y metraje desde Cabina", "4.2", "5.0", "4.3", "4.47", "Core (S2)"],
+            ["6", "I9+I10+I13: Ruido cobertura acústica + Ley del Saco + PDF Offline", "4.5", "4.6", "4.2", "4.44", "Core (S3–S4)"],
             ["7", "I11+I14+I15: Plan B contingencia + WhatsApp + SharedLink", "4.0", "4.8", "3.8", "4.18", "Complemento (S4)"]
         ],
         [0.45, 2.55, 0.45, 0.45, 0.45, 0.65, 1.5]
@@ -358,7 +361,7 @@ def build_sumativa_02():
         [
             ["Recurso Humano", "Mauricio Vega Castillo — Analista Programador (Arquitectura, Full-Stack, QA, Documentación)", "180 hrs (4 Sprints × 14 días)"],
             ["Contraparte Real", "Amaro Artiaga — Operador Técnico FOH de DISTORSIONCL SPA (Validación terreno)", "8 hrs sesiones de iteración UX"],
-            ["Entorno Dev/QA", "Estación Windows 11, Node.js v24 LTS, PostgreSQL 16, Vitest v3.2.7, GitHub", "$0 CLP (Open Source / Académico)"],
+            ["Entorno Dev/QA", "Estación Windows 11, Node.js v24 LTS, SQLite 3 (dev.db) + Prisma, Vitest v3.2.7, GitHub", "$0 CLP (Open Source / Académico)"],
             ["Despliegue Cloud", "VPS Ubuntu 22.04 LTS (2 vCPU, 4 GB RAM) + Nginx/Caddy TLS 1.3 + Dominio .cl", "~$12.000 CLP/mes proyectado"]
         ],
         [1.3, 3.6, 1.6]
@@ -373,9 +376,9 @@ def build_sumativa_02():
             ["T04", "S1", "Setup Monorepo npm workspaces (shared, backend, frontend)", "M. Vega", "12–14 Oct", "T02", "Must", "SÍ"],
             ["T05", "S2", "Motor eléctrico SEC RIC 03/10 (electrical.ts, cabling.ts)", "M. Vega", "15–18 Oct", "T04", "Must", "SÍ"],
             ["T06", "S2", "Lotes Activa/Pasiva + Power + Speakon < 3.2 Ω (hybrid-roster.ts)", "M. Vega", "19–21 Oct", "T05", "Must", "SÍ"],
-            ["T07", "S2", "Acústica espacial: Clúster +6 dB, Haas y D.S. 38 MMA", "M. Vega", "22–24 Oct", "T05", "Must", "No"],
+            ["T07", "S2", "Acústica espacial: Clúster +6 dB, Haas y cobertura acústica MMA", "M. Vega", "22–24 Oct", "T05", "Must", "No"],
             ["T08", "S2", "DMX unitario x1, Setup DJ y suite 70 tests Vitest", "M. Vega", "25–28 Oct", "T06, T07", "Must", "SÍ"],
-            ["T09", "S3", "Prisma ORM (schema.prisma) + DDL PostgreSQL 16 (12 tablas)", "M. Vega", "29–31 Oct", "T03, T08", "Must", "SÍ"],
+            ["T09", "S3", "Prisma ORM (schema.prisma) + SQLite 3 (dev.db) 4 tablas 3FN + JSON", "M. Vega", "29–31 Oct", "T03, T08", "Must", "SÍ"],
             ["T10", "S3", "API Express: Helmet, CORS, RateLimit, Bcrypt(12), JWT", "M. Vega", "01–04 Nov", "T09", "Must", "SÍ"],
             ["T11", "S3", "Controladores Venues y Calculations con blindaje Anti-IDOR", "M. Vega", "05–07 Nov", "T10", "Must", "No"],
             ["T12", "S3", "Wizard 5 Pasos Vue 3 + Tailwind Dark Mode FOH (WCAG AA)", "M. Vega", "08–11 Nov", "T08, T10", "Must", "SÍ"],
@@ -410,10 +413,10 @@ def build_sumativa_02():
         ["ID", "Historia de Usuario", "Pts", "Prio.", "Criterio de Aceptación (Gherkin)"],
         [
             ["HU01", "Autenticación JWT y blindaje Anti-IDOR", "5", "Must", "Dado un técnico autenticado, cuando solicita /api/venues/:uuidAjeno, entonces recibe HTTP 403 y se audita el intento."],
-            ["HU02", "Recinto ortogonal y ruido vecinal D.S. 38", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta dBA hacia la vivienda vecina."],
+            ["HU02", "Recinto ortogonal y ruido vecinal cobertura acústica", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta dBA hacia la vivienda vecina."],
             ["HU03", "Cálculo SEC RIC 03/10 y líneas L1/L2/L3", "8", "Must", "Dado un tendido de 35 m con 3.250 W (220V), descarta 1.5 mm² y selecciona 2.5 mm² asegurando ΔV = 2.18% ≤ 3%."],
             ["HU04", "Cajas Activa/Pasiva + Power + Speakon", "5", "Must", "Dadas 3 cajas pasivas de 8 Ω en paralelo, calcula Zeq = 2.67 Ω < 3.2 Ω y dispara alerta roja DANGER_PROTECT_SHORT."],
-            ["HU05", "Iluminación DMX unitaria (x1) y cables", "5", "Must", "Dados 4 PAR LED (120W c/u) en Truss Izq, suma 480W, cuenta 4 unidades (no 8) y calcula cables DMX + terminador 120 Ω."],
+            ["HU05", "Gestión de Cables de Escenario unitaria (x1) y cables", "5", "Must", "Dados 4 PAR LED (120W c/u) en Truss Izq, suma 480W, cuenta 4 unidades (no 8) y calcula cables DMX + terminador 120 Ω."],
             ["HU06", "Plano 2D proporcional y Postes Guía RIC 10", "8", "Must", "Dado un recinto de 28 m de fondo, renderiza 4 postes guía (R ≥ 6d), clúster mono (+6 dB) y delays Haas sin solapamiento."],
             ["HU07", "Réplica Hardware Pioneer DJM (VU + Kill)", "5", "Should", "Al subir 2 bajos o forzar Master > 2:00, los 17 LEDs verticales saltan a +12/CLIP rojo y la perilla LOW rota 0°/-135°."],
             ["HU08", "Plan B, Ley del Saco y PDF Offline", "5", "Must", "Al pulsar Descargar PDF sin internet, jsPDF genera el informe en < 1 s marcando bultos > 25 kg (Ley N° 20.949)."]
@@ -429,7 +432,7 @@ def build_sumativa_02():
         [
             ["Sprint 1", "01-Oct – 14-Oct", "Cerrar diagnóstico, contratos Zod, Arquitectura 4+1 y monorepo.", "CU-00..08, schemas.ts y monorepo listo."],
             ["Sprint 2", "15-Oct – 28-Oct", "Construir motor determinista completo SEC, Haas, Pasivos y DMX bajo TDD.", "11 módulos TS y 70/70 tests Vitest PASS."],
-            ["Sprint 3", "29-Oct – 11-Nov", "Implementar persistencia PostgreSQL/Prisma, API segura y Wizard Vue 3.", "API Anti-IDOR + Wizard 5 pasos WCAG AA."],
+            ["Sprint 3", "29-Oct – 11-Nov", "Implementar persistencia SQLite/Prisma (dev.db), API segura y Wizard Vue 3.", "API Anti-IDOR + Wizard 5 pasos WCAG AA."],
             ["Sprint 4", "12-Nov – 25-Nov", "Integrar Plano 2D Postes Guía, Pioneer DJM, PDF Offline, OWASP y entrega U2.", "Prototipo funcional desplegado, benchmark y paquete U2."]
         ],
         [0.75, 1.15, 2.6, 2.0]
@@ -455,9 +458,9 @@ def build_sumativa_02():
             ["Frontend SPA", "Vue 3.5 + Vite 6.1 + Tailwind 3.4 + Pinia", "Recálculo reactivo instantáneo, Dark Mode FOH liviano y diseño responsive.", "PWA con Service Worker e IndexedDB offline."],
             ["Núcleo Shared", "TypeScript 5.7 + Zod 3.24 (11 módulos)", "Código isomórfico cliente/servidor: cero divergencias de fórmulas físicas.", "Paquete reutilizable para app móvil nativa."],
             ["Backend API", "Node.js 24 + Express 4.21 + Helmet + RateLimit", "Unificación en TypeScript, alto rendimiento I/O y defensa HTTP nativa.", "Balanceo horizontal + colas BullMQ."],
-            ["Persistencia", "PostgreSQL 16 + Prisma ORM 6.4 (3FN + JSONB)", "Integridad ACID para seguridad/usuarios + JSONB GIN para riders variables.", "Réplica de solo lectura para analítica histórica."],
+            ["Persistencia", "SQLite 3 (dev.db) + Prisma ORM 6.4 (3FN + JSON)", "Integridad ACID para usuarios/recintos + JSON nativo para riders; auditable en DB Browser.", "Migración transparente a PostgreSQL 16 en VPS vía Prisma (Unidad 3)."],
             ["Auth / Crypto", "bcrypt (cost 12) + JWT + pgcrypto + TLS 1.3", "Resistencia a fuerza bruta, sesiones firmadas y cifrado en tránsito/reposo.", "Rotación automática JWKS y MFA (TOTP)."],
-            ["Salida Terreno", "jsPDF 2.5 + jspdf-autotable (Client-Side)", "Genera fichas técnicas PDF en Modo Avión sin depender de señal 4G/5G.", "Validación QR para inspectores SEC/MMA."]
+            ["Salida Terreno", "jsPDF 2.5 + jspdf-autotable (Client-Side)", "Genera fichas técnicas PDF en modo local sin depender de señal 4G/5G.", "Validación QR para inspectores SEC/MMA."]
         ],
         [0.95, 1.65, 2.25, 1.65]
     )
@@ -466,7 +469,7 @@ def build_sumativa_02():
     c26 = DocCursor(doc, orig[26])
     c26.add_p(
         "El Caso de Uso Cero (CU-00: Planificación Logística Integral) articula la operación del técnico FOH, el bodeguero/chofer "
-        "y el administrador mediante relaciones <<include>> (Auth JWT, Recinto D.S. 38, Ruteo SEC RIC 10 + Postes Guía, DMX x1 y PDF Offline) "
+        "y el administrador mediante relaciones <<include>> (Auth JWT, Recinto cobertura acústica, Ruteo SEC RIC 10 + Postes Guía, DMX x1 y PDF Offline) "
         "y <<extend>> (Cajas Pasivas + Powers y Simulador Pioneer DJM). En el caso crítico CU-03 se validan 3 flujos de excepción: "
         "[E1] rechazo Zod por dimensiones fuera de rango (1..500 m); [E2] Semáforo Rojo SEC por sobrecarga de automático (> 16 A) o "
         "caída de tensión > 3%; y [E3] alerta PROTECT ante impedancia Speakon < 3.2 Ω."
@@ -511,9 +514,9 @@ def build_sumativa_02():
         "Tabla 8. User Personas representativos del flujo real de DISTORSIONCL SPA.",
         ["User Persona", "Rol y Contexto Operacional", "Puntos de Dolor", "Objetivo con STAGE PLAN"],
         [
-            ["Amaro Artiaga (28)", "Operador FOH / DJ en parcelas nocturnas sin 4G (< 2h montaje).", "Cortes de luz, cables sin holgura, clipping en cabina DJ.", "Dimensionar en < 3 min y llevar PDF en Modo Avión."],
+            ["Amaro Artiaga (28)", "Operador FOH / DJ en parcelas nocturnas sin 4G (< 2h montaje).", "Cortes de luz, cables sin holgura, clipping en cabina DJ.", "Dimensionar en < 3 min y llevar PDF en modo local."],
             ["Cristián Morales (34)", "Chofer y Bodeguero encargado de carga de camioneta.", "Olvido de cables DMX/Speakon y bultos > 25 kg (Ley del Saco).", "Recibir checklist exacto por enlace temporal o WhatsApp."],
-            ["Mauricio Vega (Admin)", "Responsable técnico y auditoría de eventos.", "Falta de trazabilidad ante fiscalizaciones SEC o D.S. 38.", "Auditar historial PostgreSQL y revocar enlaces expirados."]
+            ["Mauricio Vega (Admin)", "Responsable técnico y auditoría de eventos.", "Falta de trazabilidad ante fiscalizaciones SEC o cobertura acústica.", "Auditar historial PostgreSQL y revocar enlaces expirados."]
         ],
         [1.25, 1.8, 1.75, 1.7]
     )
@@ -521,7 +524,7 @@ def build_sumativa_02():
     style_anchor(orig[35], "3.2 Lista priorizada de funcionalidades clave (MoSCoW)")
     c35 = DocCursor(doc, orig[35])
     c35.add_p(
-        "Must Have: Acceso Anti-IDOR, dimensiones ortogonales + D.S. 38 MMA, cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con "
+        "Must Have: Acceso Anti-IDOR, dimensiones ortogonales + cobertura acústica MMA, cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con "
         "alerta Speakon < 3.2 Ω, Plano 2D con postes guía RIC 10 y exportación PDF Offline. Should Have: Conteo DMX unitario x1, réplica "
         "hardware Pioneer DJM con vúmetros verticales y Plan B contingencia. Could Have: Copia WhatsApp 1-clic y enlaces compartidos. "
         "Won't Have (fuera de alcance): Procesamiento DSP de audio en tiempo real o control hardware USB-DMX directo."
@@ -580,23 +583,15 @@ def build_sumativa_02():
     orig[44].text = ""
     orig[45].text = ""
     c43 = DocCursor(doc, orig[43])
-    c43.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido PostgreSQL 16 (12 tablas 3FN + JSONB GIN).")
+    c43.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido MVP (4 tablas 3FN + Documentos JSON).")
     c43.add_table(
-        "Tabla 10. Resumen de entidades, claves primarias/foráneas y restricciones del script sql/schema_stageplan_pg16.sql.",
-        ["#", "Tabla", "PK / FKs y Reglas Referenciales", "Restricciones CHECK y Campos JSONB"],
+        "Tabla 10. Diccionario de entidades, claves primarias/foráneas y reglas referenciales implementadas en Prisma y SQLite (dev.db).",
+        ["#", "Tabla", "PK / FKs y Reglas Referenciales", "Atributos Estructurados y Campos JSON"],
         [
-            ["1", "roles", "PK id (smallint)", "UNIQUE nombre IN ('operador_foh','administrador','invitado_chofer')"],
-            ["2", "users", "PK id (uuid) | FK rol_id → roles RESTRICT", "email UNIQUE, Bcrypt(12), intentos_fallidos >= 0, token_version"],
-            ["3", "venues", "PK id (uuid) | FK owner_id → users CASCADE", "CHECK width/depth 1..500, neighbor_distance >= 5, D.S. 38"],
-            ["4", "equipment_catalog", "PK id (uuid)", "UNIQUE(brand, model), specs_json JSONB + índice GIN"],
-            ["5", "rider_calculations", "PK id | FK owner_id, venue_id CASCADE", "rider_input, params_used, calculated_results (JSONB GIN)"],
-            ["6", "equipment_lots", "PK id | FK calculation_id CASCADE, catalog_id", "ACTIVE/PASSIVE, impedance_ohms >= 2.0, Trigger PROTECT"],
-            ["7", "lighting_fixtures", "PK id | FK calculation_id CASCADE", "PAR_LED_X1, watts_per_unit > 0, dmx_cable_meters >= 1.0"],
-            ["8", "electrical_circuits", "PK id | FK calculation_id CASCADE", "voltage_drop_pct <= 3.00, min_bend_radius_mm >= 48, Trigger SEC"],
-            ["9", "audio_routes", "PK id | FK calculation_id CASCADE", "XLR_BALANCED, TRS_TO_XLR_BOOTH, SPEAKON_NL4, haas_delay_ms >= 0"],
-            ["10", "shared_links", "PK id | FK owner_id, rider_calculation_id", "token UNIQUE, expires_at, is_revoked"],
-            ["11", "audit_logs", "PK id (bigint) | FK user_id SET NULL", "event_type (IDOR_BLOCKED_403, LOGIN_FAIL), detail_json JSONB"],
-            ["12", "user_feedback", "PK id (uuid) | FK user_id SET NULL", "Registro trazable de iteraciones UX con DISTORSIONCL SPA"]
+            ["1", "users", "PK id (TEXT/UUID)", "email UNIQUE, passwordHash (Bcrypt 12), name, createdAt, updatedAt"],
+            ["2", "venues", "PK id (TEXT/UUID) | FK owner_id → users CASCADE", "name, width_meters, depth_meters, height_meters, environment_type, electrical_distance_meters"],
+            ["3", "rider_calculations", "PK id | FK owner_id, venue_id CASCADE", "engine_version, rider_input (JSON), params_used (JSON), calculated_results (JSON), alerts_snapshot (JSON)"],
+            ["4", "shared_links", "PK id | FK owner_id, rider_calculation_id CASCADE", "token UNIQUE, expires_at, is_revoked (INTEGER/BOOLEAN), createdAt"]
         ],
         [0.3, 1.35, 2.35, 2.5]
     )
@@ -614,15 +609,16 @@ def build_sumativa_02():
     style_anchor(orig[46], "4.3 Estrategias de integración, consultas híbridas SQL + JSONB y sincronización")
     c46 = DocCursor(doc, orig[46])
     c46.add_code(
-        "SELECT u.name AS operador, v.name AS recinto, ec.line_code, ec.cable_section_mm2, ec.voltage_drop_pct,\n"
-        "       (rc.calculated_results->'acousticSummary'->>'sweetSpotDba') AS sweet_spot_dba,\n"
-        "       (rc.calculated_results->'guidePostsRic10'->>'count')::int AS postes_guia_ric10\n"
+        "-- Consulta h\u00edbrida auditable directamente en DB Browser for SQLite:\n"
+        "SELECT u.name AS operador, v.name AS recinto, rc.engine_version,\n"
+        "       json_extract(rc.calculated_results, '$.totalWatts') AS total_watts,\n"
+        "       json_extract(rc.calculated_results, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,\n"
+        "       json_extract(rc.calculated_results, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,\n"
+        "       json_extract(rc.calculated_results, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba\n"
         "FROM users u\n"
         "JOIN venues v ON u.id = v.owner_id\n"
         "JOIN rider_calculations rc ON v.id = rc.venue_id\n"
-        "JOIN electrical_circuits ec ON rc.id = ec.calculation_id\n"
-        "WHERE ec.sec_compliant = true\n"
-        "  AND rc.calculated_results @> '{\"electricalSummary\": {\"secCompliant\": true}}'::jsonb;",
+        "WHERE json_extract(rc.calculated_results, '$.electricalSummary.secCompliant') = 1;",
         title="Consulta híbrida de auditoría SEC combinando JOIN relacional 3FN y operadores JSONB (@>, ->, ->>):"
     )
 
@@ -705,7 +701,7 @@ def build_sumativa_02():
             ["Automatizada", "Node perf_hooks / k6", "Benchmark real 1.000 iteraciones del motor + prueba carga API 1–5 VUs.", "0,0286 ms prom."],
             ["Automatizada", "npm audit + OWASP ZAP", "Auditoría de dependencias y escaneo pasivo/activo de vulnerabilidades REST.", "Planificada VPS"],
             ["Manual", "Postman / Thunder Client", "Pruebas funcionales de endpoints JWT, Anti-IDOR 403 y contratos JSON.", "Ejecutada"],
-            ["Manual", "Smartphone 412px + Terreno", "Validación ergonómica táctil, Modo Avión PDF y contraste en cabina oscura.", "Validada"]
+            ["Manual", "Smartphone 412px + Terreno", "Validación ergonómica táctil, modo local PDF y contraste en cabina oscura.", "Validada"]
         ],
         [1.0, 1.45, 2.75, 1.3]
     )
@@ -721,14 +717,14 @@ def build_sumativa_02():
             ["PU-03", "Unitaria", "hybrid-roster.ts", "3 cajas pasivas 8 Ω en paralelo → Zeq = 2.67 Ω → DANGER_PROTECT_SHORT.", "PASS"],
             ["PU-04", "Unitaria", "hybrid-roster.ts", "Desacoplo automático de líneas L1 (Subs) y L2 (Tops/Cabina).", "PASS"],
             ["PU-05", "Unitaria", "stage-acoustic-engine.ts", "Recinto 28 m con 4 subs y delays → +6 dB clúster, +44.3 ms / +60.7 ms Haas.", "PASS"],
-            ["PU-06", "Unitaria", "stage-acoustic-engine.ts", "Evaluación Indoor vs. Parcela abierta frente a D.S. N° 38 MMA.", "PASS"],
+            ["PU-06", "Unitaria", "stage-acoustic-engine.ts", "Evaluación Indoor vs. Parcela abierta frente a cobertura y distancias.", "PASS"],
             ["PU-07", "Unitaria", "lighting-dmx.ts", "4 PAR LED (120W) → 480W (conteo x1), cables DMX 3-pin + terminador 120 Ω.", "PASS"],
             ["PU-08", "Unitaria", "dj-setup-audio.ts", "2× CDJ + Mixer DJM + Retorno + Power → rutas RCA, RJ45, TRS-XLR, Speakon.", "PASS"],
             ["PU-09", "Unitaria", "power-distribution.ts", "Asignación zapatillas Z1..Z4 (10A/16A) bajo 80% carga continua.", "PASS"],
             ["PU-10", "Unitaria", "contingency-and-logistics.ts", "Subwoofer 38 kg (> 25 kg) → alerta obligatoria Ley del Saco N° 20.949.", "PASS"],
             ["PF-01", "Funcional", "PioneerMixerSimulator.vue", "2 bajos activos o Master > 2:00 → 17 LEDs en rojo +12/CLIP.", "PASS"],
             ["PF-02", "Funcional", "LayoutSvg2D.vue", "Recinto 28 m → 4 Postes Guía RIC 10 y cableado perimetral sin cruces.", "PASS"],
-            ["PF-03", "Funcional", "pdfReport.ts", "Descarga PDF client-side en Modo Avión en < 1 segundo.", "PASS"],
+            ["PF-03", "Funcional", "pdfReport.ts", "Descarga PDF client-side en modo local en < 1 segundo.", "PASS"],
             ["PI-01", "Integración", "/api/auth/register + login", "Registro bcrypt(12) + emisión JWT → HTTP 201 y HTTP 200.", "Planif. PG"],
             ["PI-02", "Integración", "/api/venues/:id/calculate", "Payload JSON → Zod → Engine → Prisma JSONB → HTTP 201.", "Planif. PG"],
             ["PR-01", "Rendimiento", "@stageplan/shared (1.000×)", "Benchmark real: promedio 0,0286 ms (p95: 0,0479 ms; p99: 0,3241 ms < 50 ms).", "PASS Medido"],
@@ -778,7 +774,7 @@ def build_sumativa_02():
     style_anchor(orig[63], "CONCLUSIONES", 13.0)
     orig[64].text = ""
     c64 = DocCursor(doc, orig[64])
-    c64.add_p("1. Cumplimiento Integral de Objetivos: STAGE PLAN elimina la improvisación empírica en DISTORSIONCL SPA al integrar en un motor determinista la normativa SEC RIC N° 03 y N° 10, el D.S. N° 38 MMA y la Ley del Saco N° 20.949.")
+    c64.add_p("1. Cumplimiento Integral de Objetivos: STAGE PLAN elimina la improvisación empírica en DISTORSIONCL SPA al integrar en un motor determinista la normativa SEC RIC N° 03 y N° 10, el cobertura y distancias y la Ley del Saco N° 20.949.")
     c64.add_p("2. Validación del Marco Solo-Developer (Scrumban + PSP): La combinación de Sprints de 14 días, WIP = 1 y 70 pruebas unitarias automatizadas Vitest (100% PASS, 0,0286 ms promedio) demuestra calidad industrial sin sacrificar velocidad.")
     c64.add_p("3. Excelencia Arquitectónica y Persistencia Híbrida: El monorepo TypeScript bajo paradigma 4+1 (ISO/IEC/IEEE 42010:2022) y el esquema PostgreSQL 16 (12 tablas 3FN + JSONB GIN) equilibran integridad ACID, flexibilidad de inventario y operación Offline-First.")
     c64.add_p("4. Ciberseguridad y Defensa Técnica: La mitigación integral de OWASP Top 10 (A01–A10), el control RBAC/Anti-IDOR y el banco de 20 preguntas preparadas consolidan una entrega lista para calificación máxima.")
@@ -821,8 +817,8 @@ def build_sumativa_02():
             ["2.1.3.5 Desarrolla prototipos interactivos funcionales (5 pts)", "App real Vue 3 + Figuras 8, 9 y 10 (Mosaico, Plano 2D y Pioneer DJM).", "Destacado"],
             ["2.1.3.6 Asegura consistencia visual y adaptabilidad (5 pts)", "Sección 3.3 Dark Mode WCAG 2.1 AA, Figura 7 y Figura 11 (Móvil 412px).", "Destacado"],
             ["2.1.3.7 Integra retroalimentación de usuarios (5 pts)", "Sección 3.6 Tabla 9: 4 iteraciones reales con DISTORSIONCL SPA (Iteraciones 1–3).", "Destacado"],
-            ["2.1.4.8 Define entidades y relaciones PK/FK (10 pts)", "Sección 4.2 Tabla 10, Figura 12 (DER) y script sql/schema_stageplan_pg16.sql.", "Destacado"],
-            ["2.1.4.9 Bases estructuradas y no estructuradas (5 pts)", "Sección 4.1–4.3: PostgreSQL 16 3FN + JSONB GIN + ejemplo JSON y consulta SQL.", "Destacado"],
+            ["2.1.4.8 Define entidades y relaciones PK/FK (10 pts)", "Sección 4.2 Tabla 10 y Figura 12 (DER): 4 tablas 3FN en SQLite (dev.db) con Prisma ORM.", "Destacado"],
+            ["2.1.4.9 Bases estructuradas y no estructuradas (5 pts)", "Sección 4.1–4.3: SQLite 3 3FN + columnas JSON nativas (json_extract) probadas en DB Browser.", "Destacado"],
             ["2.1.5.10 Políticas autenticación y autorización (10 pts)", "Sección 5.1–5.2 Tabla 11: RBAC 3 roles, bcrypt(12), JWT, Anti-IDOR y RateLimit.", "Destacado"],
             ["2.1.5.11 Amenazas comunes y mitigación (10 pts)", "Sección 5.2 Tabla 12: Cobertura íntegra OWASP Top 10 (2021) A01 a A10.", "Destacado"],
             ["2.1.5.12 Estándares de codificación segura (10 pts)", "Sección 5.2: Zod isomórfico, Prisma parametrizado, Helmet, errores y TLS 1.3.", "Destacado"],
@@ -866,17 +862,17 @@ def build_sumativa_02():
             ["4", "¿Qué norma avala las 5 vistas de arquitectura?", "ISO/IEC/IEEE 42010:2022 bajo el modelo 4+1 de Kruchten (Escenarios, Lógica, Desarrollo, Procesos y Física)."],
             ["5", "¿Cómo aplica SEC RIC N° 03 y RIC N° 10?", "Doble criterio en electrical.ts: caída monofásica ΔV = (2·L·I·ρ)/S ≤ 3% y ampacidad con +20% holgura, más postes guía R ≥ 6d."],
             ["6", "¿Por qué incluir Postes Guía en las esquinas?", "Impiden curvas de 90° vivos que fracturan cobre multifilar Clase 5 y generan puntos calientes Joule, cumpliendo RIC N° 10 y despejando la pista."],
-            ["7", "¿Por qué un clúster mono central de subs a piso?", "A distancia < λ/2 (< 1.7 m a 100 Hz) se acoplan en fase otorgando +6 dB acústicos gratuitos sin forzar amplificadores ni causar comb filtering."],
+            ["7", "¿Por qué un clúster mono central de subs a piso?", "A distancia < λ/2 (< 1.7 m a 100 Hz) se acoplan en fase otorgando +6 dB acústicos gratuitos sin forzar amplificadores ni causar cancelaciones acústicas."],
             ["8", "¿Cómo funciona el Efecto Haas en líneas Delay?", "Suma al tiempo de vuelo del sonido (v = 331.3 + 0.606·T) un margen Haas para que el público localice el origen sonoro en el escenario frontal."],
             ["9", "¿Qué pasa con 3 cajas pasivas de 8 Ω en paralelo?", "Zeq = 8/3 = 2.67 Ω < 3.2 Ω seguro; se dispara DANGER_PROTECT_SHORT para evitar corte térmico o destrucción del Power."],
             ["10", "¿Qué demuestra el simulador Pioneer DJM?", "Que mantener 1 solo bajo activo (12:00) y el segundo en Low Kill (-∞ a 7:00) evita +6 dB en graves que cuadruplican potencia de pico y causan CLIP."],
             ["11", "¿Por qué un foco PAR LED se cuenta x1 y no x2?", "PAR significa Parabolic Aluminized Reflector (unidad física); contar por pares duplicaba erróneamente Watts y cables DMX."],
-            ["12", "¿Cómo valida el D.S. N° 38 MMA?", "Calcula atenuación por distancia y tipo de muro contrastando el nivel resultante contra el límite nocturno (48 dBA) o diurno (60 dBA)."],
+            ["12", "¿Cómo valida el cobertura y distancias?", "Calcula atenuación por distancia y tipo de muro contrastando el nivel resultante contra el límite nocturno (48 dBA) o diurno (60 dBA)."],
             ["13", "¿Cómo integra la Ley del Saco (Ley 20.949)?", "contingency-and-logistics.ts alerta automáticamente cualquier equipo > 25 kg exigiendo manipulación entre 2 operarios o carro."],
-            ["14", "¿Por qué base de datos híbrida 3FN + JSONB?", "ACID 3FN asegura integridad referencial en usuarios, circuitos y auditoría, mientras JSONB con índices GIN absorbe el polimorfismo de equipos."],
+            ["14", "¿Por qué base de datos híbrida SQLite + JSON?", "Para el MVP, 4 tablas 3FN en SQLite aseguran integridad referencial y portabilidad total con dev.db (auditable en DB Browser), mientras campos JSON absorben el cálculo sin sobrediseñar tablas intermedias."],
             ["15", "¿Cómo mitiga OWASP A01 (IDOR)?", "authMiddleware extrae req.user.id del JWT y los controladores validan ownerId === req.user.id antes de responder, retornando HTTP 403 + log."],
             ["16", "¿Cómo previene Inyección SQL y XSS?", "Consultas parametrizadas con Prisma ORM, validación Zod en frontera y auto-escapado de Vue 3 sin uso de v-html."],
-            ["17", "¿Por qué generar el PDF en el cliente (jsPDF)?", "Garantiza operatividad Offline-First en Modo Avión en parcelas sin señal 4G/5G y elimina vectores SSRF en el servidor."],
+            ["17", "¿Por qué generar el PDF en el cliente (jsPDF)?", "Garantiza operatividad Offline-First en modo local en parcelas sin señal 4G/5G y elimina vectores SSRF en el servidor."],
             ["18", "¿Qué cobertura tienen las pruebas automatizadas?", "70 tests unitarios en 10 archivos Vitest pasando al 100% en 113 ms cubriendo todos los módulos de ingeniería."],
             ["19", "¿Qué latencia arrojó el benchmark real?", "0,0286 ms promedio (p95 = 0,0479 ms) en 1.000 ejecuciones completas en Node v24, muy por debajo del SLA de 50 ms."],
             ["20", "¿Cómo escalaría STAGE PLAN a SaaS multi-empresa?", "Agregando tabla organizations sobre el aislamiento ownerId/RBAC ya existente, Docker Compose y réplica de lectura PostgreSQL."],
