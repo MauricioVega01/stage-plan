@@ -223,42 +223,47 @@ Para el MVP operacional de STAGE PLAN se seleccionó **SQLite 3 (`dev.db`) admin
 
 #### 4.2 Diccionario de Entidades, Integridad Referencial y Documentos JSON del MVP
 
-*Tabla 6. Diccionario de las 4 tablas normalizadas implementadas en Prisma y SQLite (`dev.db`).*
+*Tabla 6. Diccionario de las 4 tablas normalizadas en español implementadas en SQLite (`dev.db`) con Prisma ORM.*
 
 | # | Tabla | Clave Primaria (PK) | Claves Foráneas (FK) y Reglas | Atributos Estructurados | Campos No Estructurados (JSON) |
 | :-: | :--- | :--- | :--- | :--- | :--- |
-| 1 | `users` | `id (TEXT/UUID)` | — | `email UNIQUE`, `passwordHash` (Bcrypt 12), `name`, `createdAt`, `updatedAt` | — |
-| 2 | `venues` | `id (TEXT/UUID)` | `owner_id → users(id) ON DELETE CASCADE` | `name`, `width_meters`, `depth_meters`, `height_meters`, `environment_type`, `electrical_distance_meters` | — |
-| 3 | `rider_calculations` | `id (TEXT/UUID)` | `owner_id → users(id) CASCADE`, `venue_id → venues(id) CASCADE` | `engine_version` (ej. "3.1.0"), `createdAt` | `rider_input` (lotes de audio/luces), `params_used`, `calculated_results` (resumen SEC/Haas), `alerts_snapshot` |
-| 4 | `shared_links` | `id (TEXT/UUID)` | `owner_id → users(id) CASCADE`, `rider_calculation_id → rider_calculations(id) CASCADE` | `token UNIQUE`, `expires_at`, `is_revoked (INTEGER)`, `createdAt` | — |
+| 1 | `usuarios` | `id (TEXT/UUID)` | — | `correo UNIQUE`, `clave_hash` (Bcrypt 12), `nombre`, `rol` ('ADMIN'), `fecha_creacion`, `fecha_actualizacion` | — |
+| 2 | `recintos` | `id (TEXT/UUID)` | `usuario_id → usuarios(id) ON DELETE CASCADE` | `nombre`, `ancho_metros`, `largo_metros`, `alto_metros`, `tipo_entorno`, `distancia_electrica_metros`, `fecha_creacion`, `fecha_actualizacion` | — |
+| 3 | `calculos_rider` | `id (TEXT/UUID)` | `usuario_id → usuarios(id) CASCADE`, `recinto_id → recintos(id) CASCADE` | `version_motor` (ej. "4.0.0"), `fecha_creacion` | `entrada_rider` (audio activo/pasivo), `parametros_usados`, `resultados_calculados` (resumen SEC/Haas/cables), `alertas_snapshot` |
+| 4 | `enlaces_compartidos` | `id (TEXT/UUID)` | `usuario_id → usuarios(id) CASCADE`, `calculo_rider_id → calculos_rider(id) CASCADE` | `token UNIQUE`, `fecha_expiracion`, `esta_revocado (INTEGER)`, `fecha_creacion` | — |
 
-*Ejemplo de Documento No Estructurado almacenado en la columna `calculated_results` (JSON):*
+*Ejemplo de Documento No Estructurado almacenado en la columna `resultados_calculados` (JSON):*
 ```json
 {
-  "totalWatts": 3250,
-  "designAmps": 17.73,
+  "totalWatts": 2600,
+  "designAmps": 14.18,
   "electricalSummary": {
     "recommendedSectionMm2": 2.5,
-    "voltageDropPct": 2.18,
-    "secCompliant": true,
-    "rule": "Pliego SEC RIC N° 03 (ΔV <= 3%)"
-  },
-  "guidePostsRic10": {
-    "count": 4,
-    "minBendRadiusMm": 72,
-    "rule": "R >= 6 * diámetro conductor (RIC N° 10)"
+    "voltageDropVolts": 4.71,
+    "voltageDropPct": 2.14,
+    "secCompliant": 1,
+    "normativeRule": "Pliego SEC RIC N° 03 (ΔV <= 3%)",
+    "lineDivider": {
+      "line1SubsWatts": 1600,
+      "line1SubsAmps": 8.73,
+      "line2TopsWatts": 1000,
+      "line2TopsAmps": 5.45
+    }
   },
   "acousticSummary": {
     "monoClusterCentral": true,
     "clusterGainDb": 6.0,
-    "delayTowerHaasMs": 44.3,
+    "delayTowerHaasMs": 29.14,
+    "splFront1m": 128.0,
+    "splBack12m": 106.4,
     "sweetSpotDba": "96-102 dBA"
   },
-  "lightingDmx": {
-    "totalFixtures": 4,
-    "totalWatts": 480,
-    "dmxCablesRequired": 4,
-    "terminators120Ohm": 1
+  "cablingLogistics": {
+    "xlrCablesRequired": 6,
+    "speakonCablesRequired": 4,
+    "powerExtensions25mm2": 2,
+    "weightTotalKg": 18.5,
+    "leyDelSacoCompliant": true
   }
 }
 ```
@@ -268,17 +273,17 @@ La combinación entre datos relacionales transaccionales y atributos semiestruct
 
 ```sql
 -- Consulta híbrida auditable directamente en DB Browser for SQLite:
-SELECT u.name AS operador, 
-       v.name AS recinto, 
-       rc.engine_version,
-       json_extract(rc.calculated_results, '$.totalWatts') AS total_watts,
-       json_extract(rc.calculated_results, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,
-       json_extract(rc.calculated_results, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,
-       json_extract(rc.calculated_results, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba
-FROM users u
-JOIN venues v ON u.id = v.owner_id
-JOIN rider_calculations rc ON v.id = rc.venue_id
-WHERE json_extract(rc.calculated_results, '$.electricalSummary.secCompliant') = 1;
+SELECT u.nombre AS operador, 
+       r.nombre AS recinto, 
+       c.version_motor,
+       json_extract(c.resultados_calculados, '$.totalWatts') AS total_watts,
+       json_extract(c.resultados_calculados, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,
+       json_extract(c.resultados_calculados, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,
+       json_extract(c.resultados_calculados, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba
+FROM usuarios u
+JOIN recintos r ON u.id = r.usuario_id
+JOIN calculos_rider c ON r.id = c.recinto_id
+WHERE json_extract(c.resultados_calculados, '$.electricalSummary.secCompliant') = 1;
 ```
 Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (integridad referencial relacional) y **2.1.4.9** (gestión eficaz de datos estructurados y semiestructurados en una sola fuente de datos accesible y portable).
 
@@ -295,8 +300,8 @@ Esta consulta demuestra el cumplimiento pleno de los criterios **2.1.4.8** (inte
 | Autenticación (`/api/auth/login`, `/me`) | Sí | Sí | No (solo token temporal) |
 | CRUD Recintos propios (`/api/venues/*`) | Lectura Global / Auditoría | **CRUD Propios (Anti-IDOR)** | Denegado (`401/403`) |
 | Ejecutar y guardar cálculo (`/calculate`) | Lectura Global | **Crear / Leer Propios** | Denegado (`403`) |
-| Acceso a recursos de otro `owner_id` | Solo lectura auditoría | **Bloqueado (`403` + Log)** | Bloqueado (`403`) |
-| Generar / Revocar `shared_links` | **Revocación Global** | Crear / Revocar Propios | Solo consumo `GET` válido |
+| Acceso a recursos de otro `usuario_id` | Solo lectura auditoría | **Bloqueado (`403` + Log)** | Bloqueado (`403`) |
+| Generar / Revocar `enlaces_compartidos` | **Revocación Global** | Crear / Revocar Propios | Solo consumo `GET` válido |
 | Descarga PDF Ficha Técnica / Camioneta | Sí | Sí (Online y Offline) | **Solo lectura vía enlace vigente** |
 | Consulta de `audit_logs` forenses | **Lectura Completa** | Denegado (`403`) | Denegado (`403`) |
 

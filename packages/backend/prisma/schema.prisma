@@ -8,67 +8,67 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
-  passwordHash     String
-  name             String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  venues           Venue[]
+  id                String             @id @default(uuid())
+  email             String             @unique @map("correo")
+  passwordHash      String             @map("clave_hash")
+  name              String             @map("nombre")
+  role              String             @default("ADMIN") @map("rol")
+  createdAt         DateTime           @default(now()) @map("fecha_creacion")
+  updatedAt         DateTime           @updatedAt @map("fecha_actualizacion")
+  venues            Venue[]
   riderCalculations RiderCalculation[]
-  sharedLinks      SharedLink[]
+  sharedLinks       SharedLink[]
 
-  @@map("users")
+  @@map("usuarios")
 }
 
 model Venue {
-  id                      String             @id @default(uuid())
-  ownerId                 String             @map("owner_id")
-  name                    String
-  widthMeters             Float              @map("width_meters")
-  depthMeters             Float              @map("depth_meters")
-  heightMeters            Float              @map("height_meters")
-  environmentType         String             @map("environment_type") // INDOOR, OUTDOOR_PARCELA, OUTDOOR_OPEN
-  electricalDistanceMeters Float             @map("electrical_distance_meters")
-  createdAt               DateTime           @default(now())
-  updatedAt               DateTime           @updatedAt
+  id                       String             @id @default(uuid())
+  ownerId                  String             @map("usuario_id")
+  name                     String             @map("nombre")
+  widthMeters              Float              @map("ancho_metros")
+  depthMeters              Float              @map("largo_metros")
+  heightMeters             Float              @map("alto_metros")
+  environmentType          String             @map("tipo_entorno") // INDOOR, OUTDOOR_PARCELA, OUTDOOR_OPEN
+  electricalDistanceMeters Float              @map("distancia_electrica_metros")
+  createdAt                DateTime           @default(now()) @map("fecha_creacion")
+  updatedAt                DateTime           @updatedAt @map("fecha_actualizacion")
 
-  owner                   User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  riderCalculations       RiderCalculation[]
+  owner                    User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  riderCalculations        RiderCalculation[]
 
-  @@map("venues")
+  @@map("recintos")
 }
 
 model RiderCalculation {
-  id             String       @id @default(uuid())
-  ownerId        String       @map("owner_id")
-  venueId        String       @map("venue_id")
-  engineVersion  String       @map("engine_version") // e.g. "3.1.0"
-  riderInput     Json         @map("rider_input")
-  paramsUsed     Json         @map("params_used")
-  calculatedResults Json      @map("calculated_results")
-  alertsSnapshot Json         @map("alerts_snapshot")
-  createdAt      DateTime     @default(now())
+  id                String       @id @default(uuid())
+  ownerId           String       @map("usuario_id")
+  venueId           String       @map("recinto_id")
+  engineVersion     String       @map("version_motor") // e.g. "4.0.0"
+  riderInput        Json         @map("entrada_rider")
+  paramsUsed        Json         @map("parametros_usados")
+  calculatedResults Json         @map("resultados_calculados")
+  alertsSnapshot    Json         @map("alertas_snapshot")
+  createdAt         DateTime     @default(now()) @map("fecha_creacion")
 
-  owner          User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  venue          Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  sharedLinks    SharedLink[]
+  owner             User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  venue             Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  sharedLinks       SharedLink[]
 
-  @@map("rider_calculations")
+  @@map("calculos_rider")
 }
 
 model SharedLink {
   id                 String           @id @default(uuid())
-  ownerId            String           @map("owner_id")
-  riderCalculationId String           @map("rider_calculation_id")
+  ownerId            String           @map("usuario_id")
+  riderCalculationId String           @map("calculo_rider_id")
   token              String           @unique
-  expiresAt          DateTime         @map("expires_at")
-  isRevoked          Boolean          @default(false) @map("is_revoked")
-  createdAt          DateTime         @default(now())
+  expiresAt          DateTime         @map("fecha_expiracion")
+  isRevoked          Boolean          @default(false) @map("esta_revocado")
+  createdAt          DateTime         @default(now()) @map("fecha_creacion")
 
   owner              User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   riderCalculation   RiderCalculation @relation(fields: [riderCalculationId], references: [id], onDelete: Cascade)
 
-  @@map("shared_links")
+  @@map("enlaces_compartidos")
 }
-

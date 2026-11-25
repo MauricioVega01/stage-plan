@@ -575,51 +575,68 @@ def build_sumativa_02():
         "Se diseñó un modelo híbrido sobre PostgreSQL 16 que conjuga integridad transaccional ACID en 3FN para entidades de "
         "seguridad, recintos y circuitos normativos, con documentos semi-estructurados JSONB indexados mediante GIN (jsonb_path_ops) "
         "para fichas polimórficas de equipamiento y snapshots inmutables de cálculo. En packages/backend/prisma/schema.prisma "
-        "operan actualmente las 4 tablas núcleo MVP (users, venues, rider_calculations, shared_links), mientras que el script "
-        "autónomo entrega_sumativa_02/sql/schema_stageplan_pg16.sql despliega el esquema completo de 4 tablas con triggers PL/pgSQL."
+        "operan actualmente las 4 tablas núcleo MVP en español (usuarios, recintos, calculos_rider, enlaces_compartidos), "
+        "mientras que el diseño extendido proyecta el clúster relacional para la construcción en Unidad 3."
     )
 
-    style_anchor(orig[43], "4.2 Diseño estructural: DER 3FN (4 tablas) y documentos JSONB")
+    style_anchor(orig[43], "4.2 Diseño estructural: DER 3FN (4 tablas en español) y documentos JSON")
     orig[44].text = ""
     orig[45].text = ""
     c43 = DocCursor(doc, orig[43])
-    c43.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido MVP (4 tablas 3FN + Documentos JSON).")
+    c43.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido MVP (4 tablas 3FN en español + Documentos JSON).")
     c43.add_table(
-        "Tabla 10. Diccionario de entidades, claves primarias/foráneas y reglas referenciales implementadas en Prisma y SQLite (dev.db).",
+        "Tabla 10. Diccionario de entidades, claves primarias/foráneas y reglas referenciales implementadas en español en SQLite (dev.db) y Prisma.",
         ["#", "Tabla", "PK / FKs y Reglas Referenciales", "Atributos Estructurados y Campos JSON"],
         [
-            ["1", "users", "PK id (TEXT/UUID)", "email UNIQUE, passwordHash (Bcrypt 12), name, createdAt, updatedAt"],
-            ["2", "venues", "PK id (TEXT/UUID) | FK owner_id → users CASCADE", "name, width_meters, depth_meters, height_meters, environment_type, electrical_distance_meters"],
-            ["3", "rider_calculations", "PK id | FK owner_id, venue_id CASCADE", "engine_version, rider_input (JSON), params_used (JSON), calculated_results (JSON), alerts_snapshot (JSON)"],
-            ["4", "shared_links", "PK id | FK owner_id, rider_calculation_id CASCADE", "token UNIQUE, expires_at, is_revoked (INTEGER/BOOLEAN), createdAt"]
+            ["1", "usuarios", "PK id (TEXT/UUID)", "correo UNIQUE, clave_hash (Bcrypt 12), nombre, rol ('ADMIN'), fecha_creacion, fecha_actualizacion"],
+            ["2", "recintos", "PK id (TEXT/UUID) | FK usuario_id → usuarios CASCADE", "nombre, ancho_metros, largo_metros, alto_metros, tipo_entorno, distancia_electrica_metros, fecha_creacion, fecha_actualizacion"],
+            ["3", "calculos_rider", "PK id | FK usuario_id, recinto_id CASCADE", "version_motor ('4.0.0'), entrada_rider (JSON), parametros_usados (JSON), resultados_calculados (JSON), alertas_snapshot (JSON), fecha_creacion"],
+            ["4", "enlaces_compartidos", "PK id | FK usuario_id, calculo_rider_id CASCADE", "token UNIQUE, fecha_expiracion, esta_revocado (INTEGER/0), fecha_creacion"]
         ],
-        [0.3, 1.35, 2.35, 2.5]
+        [0.3, 1.45, 2.35, 2.4]
     )
     c43.add_code(
         '{\n'
-        '  "engineVersion": "1.0.0",\n'
-        '  "electricalSummary": { "totalWatts": 3250, "designAmps": 17.73, "sectionMm2": 2.5, "voltageDropPct": 2.18, "secCompliant": true },\n'
-        '  "guidePostsRic10": { "count": 4, "minBendRadiusMm": 72, "rule": "R >= 6 * outerDiameter" },\n'
-        '  "acousticSummary": { "clusterGainDb": 6.0, "delay1HaasMs": 44.3, "delay2HaasMs": 60.7, "sweetSpotDba": "96-102" },\n'
-        '  "lightingDmx": { "totalFixturesX1": 4, "totalWatts": 480, "dmxCablesCount": 4, "terminators120Ohm": 1 }\n'
+        '  "totalWatts": 2600,\n'
+        '  "designAmps": 14.18,\n'
+        '  "electricalSummary": {\n'
+        '    "recommendedSectionMm2": 2.5,\n'
+        '    "voltageDropVolts": 4.71,\n'
+        '    "voltageDropPct": 2.14,\n'
+        '    "secCompliant": 1,\n'
+        '    "normativeRule": "Pliego SEC RIC N° 03 (ΔV <= 3%)"\n'
+        '  },\n'
+        '  "acousticSummary": {\n'
+        '    "monoClusterCentral": true,\n'
+        '    "clusterGainDb": 6.0,\n'
+        '    "delayTowerHaasMs": 29.14,\n'
+        '    "sweetSpotDba": "96-102 dBA"\n'
+        '  },\n'
+        '  "cablingLogistics": {\n'
+        '    "xlrCablesRequired": 6,\n'
+        '    "speakonCablesRequired": 4,\n'
+        '    "powerExtensions25mm2": 2,\n'
+        '    "weightTotalKg": 18.5,\n'
+        '    "leyDelSacoCompliant": true\n'
+        '  }\n'
         '}',
-        title="Ejemplo real de documento no estructurado JSONB (rider_calculations.calculated_results):"
+        title="Ejemplo real de documento no estructurado JSON (calculos_rider.resultados_calculados):"
     )
 
-    style_anchor(orig[46], "4.3 Estrategias de integración, consultas híbridas SQL + JSONB y sincronización")
+    style_anchor(orig[46], "4.3 Estrategias de integración, consultas híbridas SQL + JSON y sincronización")
     c46 = DocCursor(doc, orig[46])
     c46.add_code(
         "-- Consulta h\u00edbrida auditable directamente en DB Browser for SQLite:\n"
-        "SELECT u.name AS operador, v.name AS recinto, rc.engine_version,\n"
-        "       json_extract(rc.calculated_results, '$.totalWatts') AS total_watts,\n"
-        "       json_extract(rc.calculated_results, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,\n"
-        "       json_extract(rc.calculated_results, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,\n"
-        "       json_extract(rc.calculated_results, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba\n"
-        "FROM users u\n"
-        "JOIN venues v ON u.id = v.owner_id\n"
-        "JOIN rider_calculations rc ON v.id = rc.venue_id\n"
-        "WHERE json_extract(rc.calculated_results, '$.electricalSummary.secCompliant') = 1;",
-        title="Consulta híbrida de auditoría SEC combinando JOIN relacional 3FN y operadores JSONB (@>, ->, ->>):"
+        "SELECT u.nombre AS operador, r.nombre AS recinto, c.version_motor,\n"
+        "       json_extract(c.resultados_calculados, '$.totalWatts') AS total_watts,\n"
+        "       json_extract(c.resultados_calculados, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,\n"
+        "       json_extract(c.resultados_calculados, '$.electricalSummary.voltageDropPct') AS caida_tension_pct,\n"
+        "       json_extract(c.resultados_calculados, '$.acousticSummary.sweetSpotDba') AS sweet_spot_dba\n"
+        "FROM usuarios u\n"
+        "JOIN recintos r ON u.id = r.usuario_id\n"
+        "JOIN calculos_rider c ON r.id = c.recinto_id\n"
+        "WHERE json_extract(c.resultados_calculados, '$.electricalSummary.secCompliant') = 1;",
+        title="Consulta híbrida en español combinando JOIN relacional 3FN y funciones de extracción JSON (json_extract):"
     )
 
     # 7. ESTÁNDARES DE PROGRAMACIÓN SEGURA (P[49]..P[55])
@@ -838,14 +855,11 @@ def build_sumativa_02():
         "  B --> S[@stageplan/shared 11 Módulos + Zod]\n"
         "  B -->|Prisma ACID| D[(PostgreSQL 16 :5432 3FN + JSONB GIN)]\n\n"
         "erDiagram\n"
-        "  ROLES ||--o{ USERS : asigna\n"
-        "  USERS ||--o{ VENUES : posee\n"
-        "  VENUES ||--o{ RIDER_CALCULATIONS : contiene\n"
-        "  RIDER_CALCULATIONS ||--o{ EQUIPMENT_LOTS : detalla\n"
-        "  RIDER_CALCULATIONS ||--o{ LIGHTING_FIXTURES : incluye\n"
-        "  RIDER_CALCULATIONS ||--o{ ELECTRICAL_CIRCUITS : valida_sec\n"
-        "  RIDER_CALCULATIONS ||--o{ AUDIO_ROUTES : rutea\n"
-        "  RIDER_CALCULATIONS ||--o{ SHARED_LINKS : comparte",
+        "  USUARIOS ||--o{ RECINTOS : posee\n"
+        "  USUARIOS ||--o{ CALCULOS_RIDER : ejecuta\n"
+        "  RECINTOS ||--o{ CALCULOS_RIDER : contiene\n"
+        "  USUARIOS ||--o{ ENLACES_COMPARTIDOS : genera\n"
+        "  CALCULOS_RIDER ||--o{ ENLACES_COMPARTIDOS : comparte",
         title="Código Mermaid reproducible (Arquitectura 4+1 y DER):"
     )
 
