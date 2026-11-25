@@ -83,7 +83,7 @@ def create_and_seed_spanish_db(db_path):
     """, (
         user_id,
         "mauricio.vega@distorsioncl.cl",
-        "$2b$12$e8xL2/4K2xZ6c1L.oJbHh.n7wG7sK8x5Z4e.1wK6P9yO1f8hN6fWq", # bcrypt hash
+        "$2a$12$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW", # bcrypt hash de 'password123' (cost 12)
         "Mauricio Vega Castillo",
         "ADMIN",
         now,
