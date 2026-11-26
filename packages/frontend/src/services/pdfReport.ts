@@ -36,6 +36,25 @@ export interface GeneratePdfOptions {
     };
     djBoothNominalWatts: number;
   };
+  cadImageBase64?: string;
+  rentalSummary?: {
+    isRentalMode: boolean;
+    topsCost: number;
+    subsCost: number;
+    ampsCost: number;
+    generatorCost: number;
+    lightingCost: number;
+    laborCost: number;
+    totalCostClp: number;
+    formattedTotalClp: string;
+  };
+  passivePowerAmp?: {
+    hasPassiveUnits: boolean;
+    totalAdditionalAcPowerWatts: number;
+    totalAmplifiersCount: number;
+    suggestedRackModels: string[];
+    technicalRackDirective: string;
+  };
   results: {
     totalWatts: number;
     powerValidation: {
@@ -119,7 +138,15 @@ export interface GeneratePdfOptions {
 }
 
 export function generateOperationalReportPdf(options: GeneratePdfOptions): void {
-  const { venue, rider, results, authorName = 'Técnico Operador (DISTORSIONCL SPA)' } = options;
+  const {
+    venue,
+    rider,
+    results,
+    cadImageBase64,
+    rentalSummary,
+    passivePowerAmp,
+    authorName = 'Técnico Operador (DISTORSIONCL SPA)',
+  } = options;
 
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -472,11 +499,80 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
       columnStyles: { 0: { cellWidth: 14, halign: 'center', fontStyle: 'bold' } },
       margin: { left: 14, right: 14 },
     });
+    currentY = (doc as any).lastAutoTable.finalY + 8;
   }
 
-  // Pie de página legal SEC y ético
-  const totalPages = (doc as any).internal.getNumberOfPages();
-  for (let i = 1; i <= totalPages; i++) {
+  // 9. Rack de Amplificación Externa & Potencias Pasivas (Si existen cajas pasivas)
+  if (passivePowerAmp && passivePowerAmp.hasPassiveUnits) {
+    if (currentY + 45 > pageHeight) {
+      doc.addPage();
+      currentY = 16;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(24, 24, 27);
+    doc.text('9. Dimensionamiento de Rack de Potencias (Cajas Pasivas)', 14, currentY);
+    currentY += 4;
+
+    const ampRows = [
+      ['Potencias Requeridas', `${passivePowerAmp.totalAmplifiersCount} unidad(es) de rack 19" clase D/I`],
+      ['Modelos Recomendados', passivePowerAmp.suggestedRackModels.join('  |  ')],
+      ['Criterio Headroom RMS', 'Reserva 1.6x a 2.0x RMS para transientes y peaks limpios'],
+      ['Carga Eléctrica AC 220V', `+${passivePowerAmp.totalAdditionalAcPowerWatts} W continuos integrados a la matriz SEC`],
+      ['Directiva Operativa', passivePowerAmp.technicalRackDirective],
+    ];
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['Parámetro del Rack de Potencia', 'Especificación Técnica de Campo']],
+      body: ampRows,
+      theme: 'grid',
+      headStyles: { fillColor: [67, 56, 202], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      columnStyles: { 0: { cellWidth: 55, fontStyle: 'bold' } },
+      margin: { left: 14, right: 14 },
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // 10. Presupuesto Operativo & Desglose de Inversión en Arriendo (Si modo arriendo está activo)
+  if (rentalSummary && rentalSummary.isRentalMode) {
+    if (currentY + 45 > pageHeight) {
+      doc.addPage();
+      currentY = 16;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(24, 24, 27);
+    doc.text('10. Presupuesto Estimado de Inversión en Arriendo (Rider Externo)', 14, currentY);
+    currentY += 4;
+
+    const rentalRows = [
+      ['Cajas Tops / Medios', `${rider.audio.topsCount} unidades`, `$${rentalSummary.topsCost.toLocaleString('es-CL')}`],
+      ['Subwoofers / Graves', `${rider.audio.subsCount} unidades`, `$${rentalSummary.subsCost.toLocaleString('es-CL')}`],
+      ['Racks de Potencia & Procesamiento', `${passivePowerAmp?.totalAmplifiersCount || results.cablingSummary?.externalAmpsCount || 1} racks`, `$${rentalSummary.ampsCost.toLocaleString('es-CL')}`],
+      ['Generador Eléctrico Móvil', rider.powerSource.type !== 'GRID_220V' ? '1 generador' : 'Red fija ($0)', `$${rentalSummary.generatorCost.toLocaleString('es-CL')}`],
+      ['Iluminación DMX & Estructuras', `${results.lightingDmx?.totalFixtureUnits || 0} luminarias`, `$${rentalSummary.lightingCost.toLocaleString('es-CL')}`],
+      ['Personal Técnico en Terreno', 'Dotación operativa', `$${rentalSummary.laborCost.toLocaleString('es-CL')}`],
+      ['TOTAL ESTIMADO ARRIENDO DIARIO', 'Tarifa consolidada producción', rentalSummary.formattedTotalClp],
+    ];
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['Partida de Equipamiento', 'Cantidad / Detalle', 'Subtotal Diario (CLP)']],
+      body: rentalRows,
+      theme: 'grid',
+      headStyles: { fillColor: [180, 83, 9], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: [39, 39, 42] },
+      columnStyles: { 0: { cellWidth: 65, fontStyle: 'bold' }, 2: { halign: 'right', fontStyle: 'bold' } },
+      margin: { left: 14, right: 14 },
+    });
+    currentY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // Pie de página legal SEC y ético en todas las páginas verticales (Página 1 y subsiguientes)
+  const portraitPagesCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= portraitPagesCount; i++) {
     doc.setPage(i);
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(7.5);
@@ -487,6 +583,62 @@ export function generateOperationalReportPdf(options: GeneratePdfOptions): void 
       pageHeight - 6,
       { align: 'center' }
     );
+  }
+
+  // LÁMINA TÉCNICA 2: PLANO CAD 2D EN FORMATO HORIZONTAL (LANDSCAPE)
+  if (cadImageBase64) {
+    doc.addPage('a4', 'landscape');
+    const p2W = doc.internal.pageSize.getWidth();
+    const p2H = doc.internal.pageSize.getHeight();
+
+    // Fondo Dark Blueprint
+    doc.setFillColor(8, 10, 16);
+    doc.rect(0, 0, p2W, p2H, 'F');
+
+    // Marco técnico perimetral
+    doc.setDrawColor(38, 45, 62);
+    doc.setLineWidth(0.6);
+    doc.rect(6, 6, p2W - 12, p2H - 12);
+
+    // Cabezal superior técnico
+    doc.setFillColor(15, 20, 32);
+    doc.rect(6, 6, p2W - 12, 14, 'F');
+    doc.setFillColor(220, 38, 38);
+    doc.rect(6, 19, p2W - 12, 1, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(255, 255, 255);
+    doc.text('PLANO CAD 2D — DISTRIBUCIÓN ESPACIAL, COBERTURA ACÚSTICA & CABLEADO DE FUERZA', 10, 14);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `Recinto: ${venue.name} (${venue.widthMeters}m × ${venue.depthMeters}m · ${venue.widthMeters * venue.depthMeters} m²) | Operador: ${authorName} | Escala Técnica Orthographic CAD`,
+      p2W - 10,
+      14,
+      { align: 'right' }
+    );
+
+    // Imagen CAD renderizada
+    const imgX = 8;
+    const imgY = 22;
+    const imgW = p2W - 16;
+    const imgH = p2H - 36;
+    try {
+      doc.addImage(cadImageBase64, 'PNG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+    } catch (e) {
+      console.warn('No se pudo incrustar la imagen CAD en el PDF:', e);
+    }
+
+    // Cajetín Técnico Inferior
+    doc.setFillColor(15, 20, 32);
+    doc.rect(6, p2H - 13, p2W - 12, 7, 'F');
+    doc.setFontSize(6.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text('DISTORSIONCL SPA CAD ENGINE · PROYECCIÓN ORTOGONAL 2D · TRAZABILIDAD ACÚSTICA ISO 9613 Y ELÉCTRICA SEC RIC N°03/10', 10, p2H - 8.5);
+    doc.text(`Generado: ${new Date().toLocaleDateString('es-CL')} | Lámina Técnica de Campo (Landscape CAD)`, p2W - 10, p2H - 8.5, { align: 'right' });
   }
 
   const cleanVenueName = (venue.name || 'evento').replace(/[^a-zA-Z0-9]/g, '_');

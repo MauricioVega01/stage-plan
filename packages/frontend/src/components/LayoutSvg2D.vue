@@ -1,71 +1,29 @@
 <template>
   <div class="bg-[#0a0b11] border border-zinc-800/90 rounded-xl p-2.5 sm:p-3 shadow-xl space-y-2.5">
-    <!-- Header de Controles y Filtros del Plano -->
-    <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-zinc-800/80 pb-2">
-      <div class="flex items-center space-x-2">
-        <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full animate-ping"></span>
-        <h3 class="text-xs font-black tracking-wider text-white uppercase font-mono">
-          Plano 2D CAD (Audio + Fuerza SEC + Postes Guía)
-        </h3>
+    <!-- Header de Controles y Filtros del Plano (Blueprint Mode) -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
+      <!-- Selector de Capas Principales (Tabs Exclusivas para Cero Ruido Visual) -->
+      <div class="flex flex-wrap items-center gap-1 bg-[#10131d] p-0.5 rounded-lg border border-zinc-800/80">
+        <button
+          v-for="layer in layerOptions"
+          :key="layer.id"
+          type="button"
+          @click="setLayer(layer.id)"
+          :class="[
+            'px-2.5 py-1 rounded text-[10px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer',
+            activeLayer === layer.id
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-950/80 font-black'
+              : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+          ]"
+        >
+          <span>{{ layer.icon }}</span>
+          <span>{{ layer.label }}</span>
+        </button>
       </div>
-      <div class="flex flex-wrap items-center gap-1">
-        <button
-          type="button"
-          @click="showHeatmap = !showHeatmap"
-          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showHeatmap
-            ? 'bg-red-600 text-white border-red-400 shadow-md shadow-red-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-red-500'"
-        >
-          <span>🔥</span>
-          <span>SPL</span>
-        </button>
-        <button
-          type="button"
-          @click="showPowerCables = !showPowerCables"
-          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showPowerCables
-            ? 'bg-amber-600 text-white border-amber-400 shadow-md shadow-amber-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-amber-500'"
-        >
-          <span>⚡</span>
-          <span>Fuerza L1/L2/L3</span>
-        </button>
-        <button
-          type="button"
-          @click="showPowerStrips = !showPowerStrips"
-          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showPowerStrips
-            ? 'bg-emerald-600 text-white border-emerald-400 shadow-md shadow-emerald-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-emerald-500'"
-        >
-          <span>🔌</span>
-          <span>Zapatillas ({{ powerStrips.length }})</span>
-        </button>
-        <button
-          type="button"
-          @click="showAudioSignal = !showAudioSignal"
-          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showAudioSignal
-            ? 'bg-cyan-600 text-white border-cyan-400 shadow-md shadow-cyan-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-cyan-500'"
-        >
-          <span>🎛️</span>
-          <span>Audio (XLR)</span>
-        </button>
-        <button
-          type="button"
-          @click="showCornerGuides = !showCornerGuides"
-          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
-          :class="showCornerGuides
-            ? 'bg-sky-600 text-white border-sky-400 shadow-md shadow-sky-950/50'
-            : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-sky-500'"
-          title="Guías esquineras y postes de radio de curvatura para cables de fuerza y señal (SEC RIC 10)"
-        >
-          <span>📍</span>
-          <span>Postes ({{ cornerGuidePosts.length }})</span>
-        </button>
-        <div class="text-[10px] text-zinc-200 font-mono bg-[#121520] px-2 py-0.5 rounded border border-zinc-800 font-bold">
+
+      <!-- Medidas del Recinto -->
+      <div class="flex items-center gap-2">
+        <div class="text-[10px] text-zinc-300 font-mono bg-[#10131d] px-2.5 py-1 rounded border border-zinc-800 font-bold">
           📏 {{ venueWidth }}m × {{ venueDepth }}m
         </div>
       </div>
@@ -77,24 +35,25 @@
       :style="{ aspectRatio: `${viewBoxWidth} / ${viewBoxHeight}` }"
     >
       <svg
+        id="stageplan-cad-svg"
         :viewBox="`0 0 ${viewBoxWidth} ${viewBoxHeight}`"
         class="w-full h-full select-none"
         preserveAspectRatio="xMidYMid meet"
       >
-        <!-- Grilla y Gradientes para Mapa de Calor SPL -->
+        <!-- Grilla y Gradientes para Mapa de Calor SPL (Opacidad Calibrada Blueprint) -->
         <defs>
           <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#181820" stroke-width="0.7" />
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#121520" stroke-width="0.6" />
           </pattern>
           <radialGradient id="splHeatFront" cx="50%" cy="25%" r="70%">
-            <stop offset="0%" stop-color="#ef4444" stop-opacity="0.45" />
-            <stop offset="28%" stop-color="#f59e0b" stop-opacity="0.30" />
-            <stop offset="65%" stop-color="#10b981" stop-opacity="0.22" />
-            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.10" />
+            <stop offset="0%" stop-color="#ef4444" stop-opacity="0.18" />
+            <stop offset="28%" stop-color="#f59e0b" stop-opacity="0.12" />
+            <stop offset="65%" stop-color="#10b981" stop-opacity="0.08" />
+            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.03" />
           </radialGradient>
           <radialGradient id="splHeatDelay" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#10b981" stop-opacity="0.35" />
-            <stop offset="70%" stop-color="#10b981" stop-opacity="0.12" />
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.16" />
+            <stop offset="70%" stop-color="#10b981" stop-opacity="0.06" />
             <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
           </radialGradient>
         </defs>
@@ -589,12 +548,28 @@ const props = withDefaults(
   }
 );
 
-const showHeatmap = ref(true);
-const showPowerCables = ref(true);
-const showPowerStrips = ref(true);
-const showAudioSignal = ref(true);
-const showDmxCables = ref(true);
-const showCornerGuides = ref(true);
+export type CadLayerId = 'AUDIO_ARCH' | 'ACOUSTIC_SPL' | 'POWER_SEC' | 'SIGNAL' | 'ALL';
+
+const activeLayer = ref<CadLayerId>('AUDIO_ARCH');
+
+const layerOptions = [
+  { id: 'AUDIO_ARCH' as const, icon: '📐', label: 'Arquitectura & Audio' },
+  { id: 'ACOUSTIC_SPL' as const, icon: '🎯', label: 'Cobertura SPL' },
+  { id: 'POWER_SEC' as const, icon: '⚡', label: 'Fuerza SEC L1/L2/L3' },
+  { id: 'SIGNAL' as const, icon: '🎛️', label: 'Audio & DMX' },
+  { id: 'ALL' as const, icon: '👁️', label: 'Vista Completa' },
+];
+
+function setLayer(id: CadLayerId) {
+  activeLayer.value = id;
+}
+
+const showHeatmap = computed(() => activeLayer.value === 'ACOUSTIC_SPL' || activeLayer.value === 'ALL');
+const showPowerCables = computed(() => activeLayer.value === 'POWER_SEC' || activeLayer.value === 'ALL');
+const showPowerStrips = computed(() => activeLayer.value === 'POWER_SEC' || activeLayer.value === 'ALL');
+const showAudioSignal = computed(() => activeLayer.value === 'SIGNAL' || activeLayer.value === 'ALL');
+const showDmxCables = computed(() => activeLayer.value === 'SIGNAL' || activeLayer.value === 'ALL');
+const showCornerGuides = computed(() => activeLayer.value === 'POWER_SEC' || activeLayer.value === 'ALL');
 
 // -------------------------------------------------------------
 // RELACIÓN DE ASPECTO Y ESCALA PROPORCIONAL AL RECINTO REAL

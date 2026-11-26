@@ -65,7 +65,7 @@
       <button
         v-else-if="currentStep === 4"
         type="button"
-        @click="downloadPdf"
+        @click="() => downloadPdf()"
         :disabled="!isValidated"
         class="px-3.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-[11px] font-mono font-black uppercase tracking-wider transition shadow-md shadow-emerald-950/80 flex items-center gap-1 cursor-pointer"
       >

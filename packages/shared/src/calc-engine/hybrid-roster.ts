@@ -553,6 +553,167 @@ export function analyzePassiveImpedance(
   };
 }
 
+export interface PowerAmpSizingResult {
+  hasPassiveSpeakers: boolean;
+  hasPassiveUnits: boolean;
+  passiveTopsCount: number;
+  passiveSubsCount: number;
+  totalPassiveTopsRmsWatts: number;
+  totalPassiveSubsRmsWatts: number;
+  topsAmplifier?: {
+    requiredChannels: number;
+    wattsPerChannelRms: number;
+    loadImpedanceOhms: number;
+    recommendedHeadroomMultiplier: number;
+    suggestedCommercialModel: string;
+    directiveNote: string;
+  };
+  subsAmplifier?: {
+    requiredChannels: number;
+    wattsPerChannelRms: number;
+    loadImpedanceOhms: number;
+    recommendedHeadroomMultiplier: number;
+    suggestedCommercialModel: string;
+    directiveNote: string;
+  };
+  totalAmplifiersCount: number;
+  totalAdditionalAcPowerWatts: number;
+  suggestedRackModels: string[];
+  technicalSummaryDirective: string;
+  technicalRackDirective: string;
+}
+
+export function calculatePowerAmpSizing(
+  batches: SpeakerBatchInput[],
+  wiringMode: 'INDEPENDENT_CHANNELS' | 'PARALLEL_SPEAKON_LINK' = 'INDEPENDENT_CHANNELS'
+): PowerAmpSizingResult {
+  let passiveTopsCount = 0;
+  let passiveSubsCount = 0;
+  let totalPassiveTopsRmsWatts = 0;
+  let totalPassiveSubsRmsWatts = 0;
+  let topsUnitRms = 350;
+  let subsUnitRms = 600;
+  let topsImpedance = 8;
+  let subsImpedance = 8;
+
+  for (const b of batches) {
+    if (b.systemType !== 'PASSIVE') continue;
+    const qty = Math.max(0, Math.floor(b.quantity || 0));
+    const rms = Math.max(0, b.rmsWatts || 0);
+    const z = b.impedanceOhms || 8;
+    if (b.category === 'top_box') {
+      passiveTopsCount += qty;
+      totalPassiveTopsRmsWatts += qty * rms;
+      if (rms > 0) topsUnitRms = rms;
+      if (z > 0) topsImpedance = z;
+    } else {
+      passiveSubsCount += qty;
+      totalPassiveSubsRmsWatts += qty * rms;
+      if (rms > 0) subsUnitRms = rms;
+      if (z > 0) subsImpedance = z;
+    }
+  }
+
+  const hasPassiveSpeakers = passiveTopsCount > 0 || passiveSubsCount > 0;
+  if (!hasPassiveSpeakers) {
+    return {
+      hasPassiveSpeakers: false,
+      hasPassiveUnits: false,
+      passiveTopsCount: 0,
+      passiveSubsCount: 0,
+      totalPassiveTopsRmsWatts: 0,
+      totalPassiveSubsRmsWatts: 0,
+      totalAmplifiersCount: 0,
+      totalAdditionalAcPowerWatts: 0,
+      suggestedRackModels: [],
+      technicalSummaryDirective: 'Sistema 100% Activo: No requiere etapas de potencia externas.',
+      technicalRackDirective: 'Sistema 100% Activo: No requiere etapas de potencia externas.',
+    };
+  }
+
+  // Regla Pro Audio Headroom: 1.6x RMS para evitar clipping y proteger bobinas
+  const HEADROOM = 1.6;
+
+  // Sizing para Tops Pasivos
+  let topsAmplifier: PowerAmpSizingResult['topsAmplifier'];
+  if (passiveTopsCount > 0) {
+    const channels = 2;
+    const boxesPerChannel = Math.max(1, Math.ceil(passiveTopsCount / channels));
+    const loadOhms = wiringMode === 'PARALLEL_SPEAKON_LINK'
+      ? Number((topsImpedance / boxesPerChannel).toFixed(1))
+      : topsImpedance;
+    const wattsPerCh = Math.round(boxesPerChannel * topsUnitRms * HEADROOM);
+
+    let suggestedModel = 'Crown XLi 1500 / Powersoft Mezzo (2×600W @ 4Ω)';
+    if (wattsPerCh > 1000) {
+      suggestedModel = 'Crown XTi 4002 / Powersoft T604 (2×1200W @ 4Ω)';
+    } else if (wattsPerCh > 600) {
+      suggestedModel = 'Crown XLi 2500 / Behringer NX3000D (2×800W @ 4Ω)';
+    }
+
+    topsAmplifier = {
+      requiredChannels: channels,
+      wattsPerChannelRms: wattsPerCh,
+      loadImpedanceOhms: loadOhms,
+      recommendedHeadroomMultiplier: HEADROOM,
+      suggestedCommercialModel: suggestedModel,
+      directiveNote: `${passiveTopsCount} cajas tops pasivas (${boxesPerChannel} por canal a ${loadOhms} Ω): Exige ${wattsPerCh}W RMS por canal con margen de cresta 1.6×.`,
+    };
+  }
+
+  // Sizing para Subs Pasivos
+  let subsAmplifier: PowerAmpSizingResult['subsAmplifier'];
+  if (passiveSubsCount > 0) {
+    const channels = 2;
+    const boxesPerChannel = Math.max(1, Math.ceil(passiveSubsCount / channels));
+    const loadOhms = wiringMode === 'PARALLEL_SPEAKON_LINK'
+      ? Number((subsImpedance / boxesPerChannel).toFixed(1))
+      : subsImpedance;
+    const wattsPerCh = Math.round(boxesPerChannel * subsUnitRms * HEADROOM);
+
+    let suggestedModel = 'Crown XTi 4002 / Lab Gruppen IPD 2400 (2×1200W @ 4Ω)';
+    if (wattsPerCh > 1600) {
+      suggestedModel = 'Powersoft X4 / Lab Gruppen FP10000Q (2×2200W @ 4Ω)';
+    } else if (wattsPerCh > 1000) {
+      suggestedModel = 'Crown XTi 6002 / Behringer NX6000D (2×1600W @ 4Ω)';
+    }
+
+    subsAmplifier = {
+      requiredChannels: channels,
+      wattsPerChannelRms: wattsPerCh,
+      loadImpedanceOhms: loadOhms,
+      recommendedHeadroomMultiplier: HEADROOM,
+      suggestedCommercialModel: suggestedModel,
+      directiveNote: `${passiveSubsCount} subwoofers pasivos en ${loadOhms} Ω: Exige ${wattsPerCh}W RMS por canal con alto damping factor para control de graves.`,
+    };
+  }
+
+  const totalAmplifiersCount = (topsAmplifier ? 1 : 0) + (subsAmplifier ? 1 : 0);
+  const totalPassiveAudioRms = totalPassiveTopsRmsWatts + totalPassiveSubsRmsWatts;
+  const totalAdditionalAcPowerWatts = Math.round((totalPassiveAudioRms * 0.35) / 0.85) + totalAmplifiersCount * 60;
+  const technicalSummaryDirective = `Rack de ${totalAmplifiersCount} Etapa(s) de Potencia requerido: Consumo eléctrico adicional estimado en ${totalAdditionalAcPowerWatts}W continuos a 220V.`;
+
+  const suggestedRackModels: string[] = [];
+  if (topsAmplifier) suggestedRackModels.push(topsAmplifier.suggestedCommercialModel);
+  if (subsAmplifier) suggestedRackModels.push(subsAmplifier.suggestedCommercialModel);
+
+  return {
+    hasPassiveSpeakers: true,
+    hasPassiveUnits: true,
+    passiveTopsCount,
+    passiveSubsCount,
+    totalPassiveTopsRmsWatts,
+    totalPassiveSubsRmsWatts,
+    topsAmplifier,
+    subsAmplifier,
+    totalAmplifiersCount,
+    totalAdditionalAcPowerWatts,
+    suggestedRackModels,
+    technicalSummaryDirective,
+    technicalRackDirective: technicalSummaryDirective,
+  };
+}
+
 /**
  * Analiza la mezcla híbrida de hardware y genera el reporte de ruteo, cables, estrategia acústica
  * y separación automática en 2 Líneas Eléctricas (Línea 1 Fuerza Graves / Línea 2 Medios-Agudos + Cabina).

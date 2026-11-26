@@ -227,6 +227,41 @@
           <span>Potencia: <strong class="text-amber-400">{{ totalSubsRmsWatts }}W RMS</strong> / {{ totalSubsPeakWatts }}W Peak</span>
         </div>
       </div>
+
+      <!-- Card Rack de Potencias Sugerido (si hay cajas pasivas) -->
+      <div
+        v-if="powerAmpSizing.hasPassiveUnits"
+        class="cockpit-card p-2.5 sm:p-3 shadow-xl space-y-1.5 relative overflow-hidden border border-indigo-700/60 bg-gradient-to-r from-indigo-950/40 to-purple-950/30"
+      >
+        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+        <div class="flex items-center justify-between border-b border-indigo-800/60 pb-1">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs">⚡🎛️</span>
+            <h3 class="text-[11px] font-black tracking-wider text-indigo-300 uppercase font-mono">
+              Rack de Potencias Sugerido (Cajas Pasivas)
+            </h3>
+          </div>
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-200 border border-indigo-600/60 font-mono">
+            {{ powerAmpSizing.totalAmplifiersCount }}x Amp 19"
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+          <div>
+            <span class="text-zinc-500 text-[8px] uppercase block">Carga Eléctrica Rack:</span>
+            <span class="font-bold text-white">+{{ powerAmpSizing.totalAdditionalAcPowerWatts }} W (AC 220V)</span>
+          </div>
+          <div>
+            <span class="text-zinc-500 text-[8px] uppercase block">Criterio Headroom:</span>
+            <span class="font-bold text-indigo-300">1.6x RMS (Peaks limpios)</span>
+          </div>
+        </div>
+
+        <div class="text-[9px] font-mono text-zinc-300 bg-black/40 p-1.5 rounded border border-indigo-900/40">
+          <span class="text-indigo-400 font-bold">Modelos recomendados: </span>
+          <span>{{ powerAmpSizing.suggestedRackModels.join(' · ') }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- PANEL DERECHO: ENERGÍA, FUENTE Y TACÓMETRO DE CARGA (HUD) -->
@@ -415,6 +450,7 @@ const {
   powerSource,
   powerFeasibility,
   powerAlertLevel,
+  powerAmpSizing,
   resetValidation,
 } = useStagePlanState();
 

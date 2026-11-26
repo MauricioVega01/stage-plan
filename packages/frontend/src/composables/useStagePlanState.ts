@@ -23,6 +23,8 @@ import {
   simulateContingencyPlan,
   calculateLoadLogistics,
   analyzeDjSetupAndAudioRouting,
+  calculatePowerAmpSizing,
+  type PowerAmpSizingResult,
   type LightingBatchInput,
   type ContingencyScenario,
   type DjSetupMode,
@@ -82,6 +84,29 @@ const validationMessage = ref('');
 const activePresetId = ref<string | null>(null);
 const storageFeedbackMsg = ref('');
 const passiveWiringMode = ref<'INDEPENDENT_CHANNELS' | 'PARALLEL_SPEAKON_LINK'>('INDEPENDENT_CHANNELS');
+
+// Configuración Financiera de Inversión / Arriendo de Audio
+export interface RentalConfig {
+  isRentalMode: boolean; // false = Equipos Propios, true = Rider Arrendado
+  topBoxDailyRateClp: number;
+  subDailyRateClp: number;
+  powerAmpDailyRateClp: number;
+  generatorDailyRateClp: number;
+  lightingDailyRateClp: number;
+  technicianDailyRateClp: number;
+  techniciansCount: number;
+}
+
+const rentalConfig = reactive<RentalConfig>({
+  isRentalMode: false,
+  topBoxDailyRateClp: 25000,
+  subDailyRateClp: 35000,
+  powerAmpDailyRateClp: 30000,
+  generatorDailyRateClp: 65000,
+  lightingDailyRateClp: 8000,
+  technicianDailyRateClp: 80000,
+  techniciansCount: 2,
+});
 
 // 0. Estado del Operador y Autenticación
 const operator = reactive({
@@ -385,6 +410,7 @@ function loadProjectFromStorage() {
       if (Array.isArray(data.subBatches)) subBatches.value = data.subBatches;
       if (data.powerSource) Object.assign(powerSource, data.powerSource);
       if (data.djSetup) Object.assign(djSetup, data.djSetup);
+      if (data.rentalConfig) Object.assign(rentalConfig, data.rentalConfig);
       isValidated.value = true;
     }
   } catch (e) {
@@ -401,6 +427,7 @@ function saveProjectToStorage() {
       subBatches: subBatches.value,
       powerSource: { ...powerSource },
       djSetup: { ...djSetup },
+      rentalConfig: { ...rentalConfig },
     };
     localStorage.setItem('stageplan_project_data', JSON.stringify(payload));
   } catch (e) {
@@ -437,7 +464,7 @@ export function useStagePlanState() {
 
   // Watcher profundo para auto-guardar cambios automáticamente
   watch(
-    [venue, topBatches, subBatches, powerSource, djSetup],
+    [venue, topBatches, subBatches, powerSource, djSetup, rentalConfig],
     () => {
       saveProjectToStorage();
     },
@@ -685,6 +712,33 @@ export function useStagePlanState() {
     return analyzePassiveImpedance(allBatches.value, passiveWiringMode.value);
   });
 
+  const powerAmpSizing = computed<PowerAmpSizingResult>(() => {
+    return calculatePowerAmpSizing(allBatches.value, passiveWiringMode.value);
+  });
+
+  const rentalCostSummary = computed(() => {
+    const topsCost = totalTopsCount.value * rentalConfig.topBoxDailyRateClp;
+    const subsCost = totalSubsCount.value * rentalConfig.subDailyRateClp;
+    const ampsCost = (powerAmpSizing.value.totalAmplifiersCount || hybridAnalysis.value.externalAmpsRequiredCount) * rentalConfig.powerAmpDailyRateClp;
+    const generatorCost = powerSource.type !== 'GRID_220V' ? rentalConfig.generatorDailyRateClp : 0;
+    const lightingCost = (lightingDmxAnalysis.value.totalFixtureUnits || 0) * rentalConfig.lightingDailyRateClp;
+    const laborCost = rentalConfig.techniciansCount * rentalConfig.technicianDailyRateClp;
+
+    const totalCostClp = topsCost + subsCost + ampsCost + generatorCost + lightingCost + laborCost;
+
+    return {
+      isRentalMode: rentalConfig.isRentalMode,
+      topsCost,
+      subsCost,
+      ampsCost,
+      generatorCost,
+      lightingCost,
+      laborCost,
+      totalCostClp,
+      formattedTotalClp: new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(totalCostClp),
+    };
+  });
+
   const topSubBottleneck = computed(() => {
     return evaluateTopToSubBalance({
       totalTopRmsWatts: totalTopsRmsWatts.value,
@@ -803,7 +857,10 @@ export function useStagePlanState() {
     const regimeMultiplier =
       powerSource.driveRegime === 'MAX_TECHNO_1_3' ? 1.0 : powerSource.driveRegime === 'STANDARD_CLUB_1_5' ? 0.60 : 0.38;
 
-    const extraWatts = lightingDmxAnalysis.value.totalLightingWatts + djSetupAnalysis.value.boothMonitorsTotal220vWatts;
+    const extraWatts =
+      lightingDmxAnalysis.value.totalLightingWatts +
+      djSetupAnalysis.value.boothMonitorsTotal220vWatts +
+      powerAmpSizing.value.totalAdditionalAcPowerWatts;
     const adjustedDemandWatts = Math.round(audioOnlyTechno * regimeMultiplier + 800 + extraWatts);
     const transientPeakWatts = hybridAnalysis.value.totalPeakWatts220v > 0
       ? Math.round(hybridAnalysis.value.totalPeakWatts220v * regimeMultiplier)
@@ -876,7 +933,7 @@ export function useStagePlanState() {
     return true;
   }
 
-  // Exportaciones
+  // Exportaciones CAD & PDF
   const whatsappCopied = ref(false);
   function copyWhatsAppSummary() {
     const text = `🎧 *STAGE PLAN PRO — FICHA TÉCNICA DE EVENTO*
@@ -902,8 +959,80 @@ export function useStagePlanState() {
     setTimeout(() => { whatsappCopied.value = false; }, 3500);
   }
 
-  function downloadPdf() {
+  async function exportCadSvgAsPng(): Promise<string> {
+    const svgEl = document.getElementById('stageplan-cad-svg') as SVGSVGElement | null;
+    if (!svgEl) {
+      return '';
+    }
+    return new Promise((resolve) => {
+      try {
+        const serializer = new XMLSerializer();
+        let svgStr = serializer.serializeToString(svgEl);
+
+        if (!svgStr.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+          svgStr = svgStr.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+
+        const img = new Image();
+        const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const viewBox = svgEl.viewBox?.baseVal;
+          const origW = (viewBox && viewBox.width > 0) ? viewBox.width : (svgEl.clientWidth || 1200);
+          const origH = (viewBox && viewBox.height > 0) ? viewBox.height : (svgEl.clientHeight || 800);
+
+          canvas.width = 1920;
+          canvas.height = Math.round((1920 / origW) * origH);
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            URL.revokeObjectURL(url);
+            resolve('');
+            return;
+          }
+
+          // Fondo Dark Blueprint
+          ctx.fillStyle = '#080a10';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/png'));
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          resolve('');
+        };
+
+        img.src = url;
+      } catch (e) {
+        console.warn('Error al exportar CAD SVG a PNG:', e);
+        resolve('');
+      }
+    });
+  }
+
+  async function downloadCadPng() {
+    const dataUrl = await exportCadSvgAsPng();
+    if (!dataUrl) {
+      alert('Para exportar el plano 2D en alta resolución, asegúrate de visualizar el plano en la vista 3 o previsualización.');
+      return;
+    }
+    const link = document.createElement('a');
+    link.download = `Plano_CAD_2D_${(venue.name || 'evento').replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  async function downloadPdf(customCadImage?: string | Event) {
     if (!isValidated.value) return;
+
+    let cadImage = typeof customCadImage === 'string' ? customCadImage : undefined;
+    if (!cadImage) {
+      cadImage = await exportCadSvgAsPng();
+    }
+
     generateOperationalReportPdf({
       venue: {
         name: venue.name || 'Sin Nombre',
@@ -925,6 +1054,9 @@ export function useStagePlanState() {
         powerSource: powerSource as any,
         djBoothNominalWatts: 350,
       },
+      cadImageBase64: cadImage || undefined,
+      rentalSummary: rentalCostSummary.value,
+      passivePowerAmp: powerAmpSizing.value,
       results: {
         totalWatts: powerFeasibility.value.totalSystemDemandWatts,
         powerValidation: {
@@ -1037,6 +1169,9 @@ export function useStagePlanState() {
     powerAlertLevel,
     passiveWiringMode,
     passiveImpedanceAudit,
+    powerAmpSizing,
+    rentalConfig,
+    rentalCostSummary,
     topSubBottleneck,
     hybridAnalysis,
     powerDistributionPlan,
@@ -1054,6 +1189,8 @@ export function useStagePlanState() {
     whatsappCopied,
     copyWhatsAppSummary,
     downloadPdf,
+    exportCadSvgAsPng,
+    downloadCadPng,
     storageFeedbackMsg,
   };
 }
