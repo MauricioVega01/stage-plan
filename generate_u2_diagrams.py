@@ -170,7 +170,7 @@ d2.append(box(38, 395, 224, 115, "Salida Operacional Terreno", ["PDF Dual-Page (
 
 d2.append(zone(310, 20, 830, 610, "ENTORNO SERVIDOR: MVP LOCAL U2 (SQLite) Y PROYECCIÓN PRODUCCIÓN U3 (VPS TLS 1.3)"))
 d2.append(box(335, 110, 195, 110, "Reverse Proxy Nginx", ["Proyección U3: TLS 1.3 + HSTS", "Único Puerto Expuesto :443", "En PoC U2: Vite :5173 local"], "#ffffff", "#c81e1e", "PROXY :443"))
-d2.append(box(585, 65, 250, 130, "Frontend SPA (@stageplan/frontend)", ["Vue 3.5 + Vite 6.1 + Tailwind 3.4", "Vue Router 4 + useStagePlanState", "Bundle estático modular"], "#ffffff", "#1F497D", "FRONTEND"))
+d2.append(box(585, 65, 250, 130, "Frontend SPA (@stageplan/frontend)", ["Vue 3.5 + Vite 6.4 + Tailwind 3.4", "Vue Router 4 + useStagePlanState", "Bundle estático modular"], "#ffffff", "#1F497D", "FRONTEND"))
 d2.append(box(585, 240, 250, 190, "API REST (@stageplan/backend)", ["Node.js v24 + Express 4.21 :3000", "Helmet + CORS + RateLimit (10/15m)", "Bcrypt(12) + Bloqueo 423 (5 fallos)", "JWT (12h) + Anti-IDOR (HTTP 404)"], "#ffffff", "#c81e1e", "BACKEND :3000"))
 d2.append(box(875, 195, 245, 115, "PoC Local U2: SQLite 3 (dev.db)", ["Prisma ORM 6.4 (ACID)", "4 Tablas 3FN en Español", "Documentos JSON auditables"], "#ecfdf5", "#059669", "SQLITE POC U2"))
 d2.append(box(875, 330, 245, 115, "Proy. U3: PostgreSQL 16 (:5432)", ["12 Tablas 3FN + JSONB (GIN)", "audit_logs + pgcrypto + Triggers", "Migración transparente Prisma"], "#eff6ff", "#1F497D", "TARGET PG16 U3", dashed=True))

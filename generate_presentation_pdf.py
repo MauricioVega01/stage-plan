@@ -1,4 +1,3 @@
-import shutil
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -6,6 +5,7 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 )
 from reportlab.pdfgen import canvas
+
 
 class NumberedCanvas(canvas.Canvas):
     def __init__(self, *args, **kwargs):
@@ -29,37 +29,35 @@ class NumberedCanvas(canvas.Canvas):
             return
 
         self.saveState()
-        # Header bar (Hard Techno Industrial Dark + Red Accent)
         self.setFillColor(colors.HexColor('#09090B'))
         self.rect(0, 580, 792, 32, fill=1, stroke=0)
-        
+
         self.setFillColor(colors.HexColor('#DC2626'))
         self.rect(0, 577, 792, 3, fill=1, stroke=0)
 
         self.setFont('Helvetica-Bold', 10)
         self.setFillColor(colors.white)
-        self.drawString(36, 592, "STAGE PLAN (v4.0)  |  Proyecto Integrado TIHV43 — INACAP 2026")
-        
+        self.drawString(36, 592, "STAGE PLAN (v4.0)  |  Proyecto Integrado TIHV43 — INACAP Sede Maipú")
+
         self.setFont('Helvetica', 9)
         self.setFillColor(colors.HexColor('#D4D4D8'))
-        self.drawRightString(756, 592, "Sistema Experto Electroacústico, Temporal y Eléctrico (DISTORSIONCL SPA)")
+        self.drawRightString(756, 592, "Sistema de Pre-Producción Electroacústica, Eléctrica SEC y Logística (DISTORSIONCL SPA)")
 
-        # Footer bar
         self.setStrokeColor(colors.HexColor('#CBD5E1'))
         self.setLineWidth(0.8)
         self.line(36, 32, 756, 32)
 
         self.setFont('Helvetica', 8)
         self.setFillColor(colors.HexColor('#475569'))
-        self.drawString(36, 20, "Caso de Estudio: Productora y Arriendo de Audio DISTORSIONCL SPA  |  Carrera: Analista Programador")
-        page_text = f"Lámina {self._pageNumber} de {page_count}"
-        self.drawRightString(756, 20, page_text)
+        self.drawString(36, 20, "Mauricio Vega Castillo · Sección C1 · Grupo G10  |  Caso de Estudio: DISTORSIONCL SPA")
+        self.drawRightString(756, 20, f"Lámina {self._pageNumber} de {page_count}")
 
         self.restoreState()
 
+
 def build_presentation_pdf():
     pdf_filename = "Presentacion_Proyecto_STAGE_PLAN_Profesor.pdf"
-    
+
     doc = SimpleDocTemplate(
         pdf_filename,
         pagesize=landscape(letter),
@@ -129,14 +127,12 @@ def build_presentation_pdf():
 
     story = []
 
-    # =========================================================================
     # LÁMINA 1: PORTADA
-    # =========================================================================
     story.append(Spacer(1, 20))
     badge_data = [[
-        Paragraph("<font color='#DC2626'><b>PROYECTO INTEGRADO TIHV43  |  DEFENSA DE INGENIERÍA DE SOFTWARE</b></font>", styles['Normal'])
+        Paragraph("<font color='#DC2626'><b>PROYECTO INTEGRADO TIHV43  |  PRESENTACIÓN DE INGENIERÍA DE SOFTWARE</b></font>", styles['Normal'])
     ]]
-    t_badge = Table(badge_data, colWidths=[450])
+    t_badge = Table(badge_data, colWidths=[480])
     t_badge.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FEF2F2')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#FECACA')),
@@ -147,15 +143,29 @@ def build_presentation_pdf():
 
     story.append(Paragraph("STAGE PLAN (v4.0)", title_cover_style))
     story.append(Spacer(1, 5))
-    story.append(Paragraph("Sistema Experto de Pre-Producción Electroacústica, Constructor Híbrido Multilote (RMS + Peak), División en 2 Líneas de Fuerza, Impedancia Speakon y Seguridad Eléctrica (SEC RIC 03 / RIC 10)", subtitle_cover_style))
+    story.append(Paragraph(
+        "Plataforma Web de Pre-Producción Electroacústica, Plano CAD Blueprint, Rack de Potencias Pasivas, "
+        "Cotización Operativa y Seguridad Eléctrica (SEC RIC 03 / RIC 10)",
+        subtitle_cover_style
+    ))
     story.append(Spacer(1, 14))
 
-    meta_table_data = [
-        [
-            Paragraph("<b>Institución:</b> INACAP Sede Santiago<br/><b>Carrera:</b> Analista Programador<br/><b>Asignatura:</b> Proyecto Integrado (TIHV43)<br/><b>Arquitectura:</b> Monorepo TypeScript (Vue 3 + Express + Prisma + Vitest)", body_style),
-            Paragraph("<b>Cliente / Caso de Estudio:</b> Productora de Eventos DISTORSIONCL SPA<br/><b>Marco Normativo:</b> SEC Chile (RIC N° 03 / RIC N° 10), IEC 60268 y D.S. N° 38 MMA<br/><b>Calidad Verificada:</b> 44 de 44 Pruebas Unitarias Automatizadas (100% Pass)", body_style),
-        ]
-    ]
+    meta_table_data = [[
+        Paragraph(
+            "<b>Institución:</b> INACAP Sede Maipú<br/>"
+            "<b>Carrera:</b> Analista Programador | <b>Sección:</b> C1 | <b>Grupo:</b> G10<br/>"
+            "<b>Autor:</b> Mauricio Vega Castillo | <b>Docente:</b> Manuel Rojas<br/>"
+            "<b>Arquitectura:</b> Monorepo TypeScript (Vue 3.5 + Vue Router 4 + Express 4.21 + Prisma/SQLite)",
+            body_style
+        ),
+        Paragraph(
+            "<b>Cliente / Caso de Estudio:</b> Productora DISTORSIONCL SPA<br/>"
+            "<b>Marco Normativo:</b> SEC Chile (RIC N° 03 / RIC N° 10), IEC 60268, D.S. N° 38 MMA y Ley N° 20.949<br/>"
+            "<b>Calidad Verificada:</b> 81 de 81 Pruebas Unitarias Automatizadas en 11 Archivos Vitest (100% Pass)<br/>"
+            "<b>Proyección U3:</b> Migración Prisma a PostgreSQL 16 (12 tablas + JSONB GIN) detrás de Nginx TLS 1.3",
+            body_style
+        ),
+    ]]
     t_meta = Table(meta_table_data, colWidths=[355, 365])
     t_meta.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
@@ -166,31 +176,29 @@ def build_presentation_pdf():
     story.append(t_meta)
     story.append(PageBreak())
 
-    # =========================================================================
     # LÁMINA 2: DIAGNÓSTICO DEL PROBLEMA EN TERRENO
-    # =========================================================================
     story.append(Paragraph("1. Diagnóstico del Negocio y Problemática Física en Terreno", slide_title_style))
-    
+
     col1 = [
-        Paragraph("<b>El Problema: Montajes 'Al Ojo' que Queman Equipos</b>", highlight_box_style),
+        Paragraph("<b>El Problema: Dimensionamiento Empírico sin Cálculo Normativo</b>", highlight_box_style),
         Spacer(1, 4),
-        Paragraph("En eventos electrónicos y fiestas de DJ en salones y parcelas, los errores físicos cuestan caro:", body_style),
+        Paragraph("En eventos electrónicos y de DJ en salones y parcelas, las fallas recurrentes generan riesgos operativos:", body_style),
         Spacer(1, 3),
-        Paragraph("• <b>Colapso de Enchufes y Generadores:</b> Conectan audio al máximo a un enchufe casero de 10A (máx 1.760W continuos) o a un generador comercial de '3.500W' (solo ~2.140W útiles para audio), apagando el sonido en pleno drop.", bullet_style),
-        Paragraph("• <b>Sonido Saturado ('Chicharriento') y Compresión Térmica:</b> Amontonan todas las cajas adelante y llevan el mixer a rojo (+10 dB), calentando las bobinas a 200°C y perdiendo 3.2 dB reales.", bullet_style),
-        Paragraph("• <b>'Pasillo de la Muerte' en Bajos:</b> Separan los subwoofers en L y R generando cancelaciones de fase en el centro de la pista.", bullet_style),
-        Paragraph("• <b>Caídas de Voltaje y Riesgo de Tropiezos:</b> Usan alargadores delgados de 1.5 mm² a 35m (perdiendo >16V en el drop) y dejan cables sin cinta Gaffer.", bullet_style),
+        Paragraph("• <b>Colapso de Enchufes y Generadores:</b> Circuitos domésticos de 10A (1.760W continuos seguros) o generadores comerciales de 3.500W pico (~2.142W útiles AVR) se apagan en los golpes de graves.", bullet_style),
+        Paragraph("• <b>Saturación y Compresión Térmica:</b> Cajas mal distribuidas y niveles de mixer en rojo (+10 dB) producen onda cuadrada y pérdida térmica de -3.2 dB.", bullet_style),
+        Paragraph("• <b>Etapas Pasivas en Modo PROTECT:</b> Cajas pasivas en paralelo bajo 3.2 Ohms o amplificadores subdimensionados activan corte térmico.", bullet_style),
+        Paragraph("• <b>Caídas de Tensión y Tropiezos:</b> Alargadores de 1.5 mm² a 35m pierden voltaje y el cableado sin postes guía sufre fatiga mecánica.", bullet_style),
     ]
 
     col2 = [
-        Paragraph("<b>La Solución Experta: STAGE PLAN (v4.0)</b>", highlight_box_style),
+        Paragraph("<b>La Solución Determinista: STAGE PLAN (v4.0)</b>", highlight_box_style),
         Spacer(1, 4),
-        Paragraph("Un motor determinista que traduce datos simples del cliente en decisiones de ingeniería:", body_style),
+        Paragraph("Un motor isomórfico que transforma datos del recinto en decisiones de ingeniería:", body_style),
         Spacer(1, 3),
-        Paragraph("• <b>Constructor Multilote Híbrido (RMS + Peak):</b> Combina cajas activas y pasivas desiguales (ej. 2 activas + 1 pasiva); el algoritmo <i>Asymmetric Rigging</i> ubica el par más potente al frente y cajas impares a delay con <i>Gain Matching</i>.", bullet_style),
-        Paragraph("• <b>División en 2 Líneas de Fuerza:</b> Separa Línea 1 (Sub-bajos) y Línea 2 (Tops + DJ) para blindar el suministro y evitar caídas en generadores.", bullet_style),
-        Paragraph("• <b>Asistente de Impedancia Speakon y Cuello de Botella:</b> Ley de Ohm en paralelo (alerta roja &lt; 3.2 &Omega; PROTECT) y auditoría de balance Top/Sub.", bullet_style),
-        Paragraph("• <b>Plano 2D con Mapa de Calor SPL, D.S. N° 38, PDF y WhatsApp:</b> Zonas de confort auditivo, impacto vecinal, ficha técnica offline y copia en 1 clic.", bullet_style),
+        Paragraph("• <b>Constructor Multilote + Rack de Potencias Pasivas:</b> Calcula impedancia de carga (4 / 8 Ohms), headroom 1.6x RMS, modelos comerciales y carga AC 220V integrada a SEC.", bullet_style),
+        Paragraph("• <b>División en Líneas L1/L2/L3:</b> Separa subwoofers, tops/cabina e iluminación DMX evitando caídas de tensión en mezcladores.", bullet_style),
+        Paragraph("• <b>Plano 2D Blueprint por 5 Capas + Vista Completa:</b> Edición limpia sin ruido visual en /plano-2d y mapa consolidado ALL en /reporte.", bullet_style),
+        Paragraph("• <b>Cotizador Arriendo CLP, PNG 300 DPI y PDF Dual-Page:</b> Presupuesto diario en CLP, imagen para WhatsApp y memoria PDF offline (2 páginas).", bullet_style),
     ]
 
     t_p2 = Table([[col1, col2]], colWidths=[355, 355])
@@ -205,9 +213,7 @@ def build_presentation_pdf():
     story.append(t_p2)
     story.append(PageBreak())
 
-    # =========================================================================
     # LÁMINA 3: INTELIGENCIA ACÚSTICA 2D Y ESTRUCTURA DE GANANCIA DJM
-    # =========================================================================
     story.append(Paragraph("2. Distribución Acústica Anti-Saturación y Calibración de Mixer DJM", slide_title_style))
 
     gain_data = [
@@ -220,32 +226,32 @@ def build_presentation_pdf():
         [
             Paragraph("<b>PA Frontal (Cajas A, B)</b>", body_style),
             Paragraph("Perilla 12:00 (0 dB Unity) + HPF 85 Hz", body_style),
-            Paragraph("En trípode a 2.2m (Ángulo Splay 12°-20°)", body_style),
-            Paragraph("Cubre de 0 a 10m sin forzar amplificadores. El corte HPF a 85 Hz ahorra 40% de energía eléctrica y evita cancelación con el sub.", body_style)
+            Paragraph("En trípode a 2.2m (Splay 12°-20°)", body_style),
+            Paragraph("Cubre la primera zona sin forzar amplificadores. El corte HPF a 85 Hz libera headroom eléctrico y evita cancelación con los subwoofers.", body_style)
         ],
         [
             Paragraph("<b>Torres Delay (C, D, E, F)</b>", body_style),
             Paragraph("Al 52% y 76% del fondo + Retardo Haas", body_style),
             Paragraph("Verde Esmeralda en Plano 2D", body_style),
-            Paragraph("Rellena el fondo a 102-106 dBA sin aturdir la 1° fila. Aplica t_vuelo + 3.0 ms (Efecto Haas) para localizar el sonido en el DJ.", body_style)
+            Paragraph("Rellena el fondo sin aturdir la 1° fila. Aplica t_vuelo + 3.0 ms (Efecto Haas) manteniendo la localización sonora frontal.", body_style)
         ],
         [
             Paragraph("<b>Subwoofers (S1, S2...)</b>", body_style),
             Paragraph("Mono Cluster Central (< 1.7m entre conos)", body_style),
-            Paragraph("Juntos al centro en piso (Jamás L/R)", body_style),
-            Paragraph("Suma coherente (+6 dB gratis) + rebote de piso (+6 dB outdoor / +9 dB indoor). Elimina el 'pasillo de la muerte'.", body_style)
+            Paragraph("Juntos al centro en piso (sin pole mount)", body_style),
+            Paragraph("Suma coherente (+6 dB) más ganancia de piso. Elimina cancelaciones en el centro de la pista.", body_style)
         ],
         [
             Paragraph("<b>Canal Mixer (Trim) y Fader</b>", body_style),
             Paragraph("Trim: +3 a +6 dB | Fader: Tope en 10", body_style),
             Paragraph("Verde + 1 a 2 LEDs Ámbar (Cero Rojo)", body_style),
-            Paragraph("Maximiza relación señal/ruido en el drop sin saturar el bus de suma interna. En mezcla de 2 canales: <b>Low EQ Kill (1 solo bajo a la vez)</b>.", body_style)
+            Paragraph("Maximiza relación señal/ruido. En mezcla de 2 canales: <b>Low EQ Kill (1 solo bajo a la vez)</b>.", body_style)
         ],
         [
             Paragraph("<b>Master Mixer (XLR Out)</b>", body_style),
             Paragraph("0 dB a +3 dB (+4 a +7 dBu nominales)", body_style),
             Paragraph("Verde completo + 1er LED Ámbar", body_style),
-            Paragraph("Entrega 1.228V RMS limpios. Entrar a Rojo (+10 dB) activa el limitador D/A, aplasta el kick y genera onda cuadrada ('chicharreo').", body_style)
+            Paragraph("Entrega señal limpia balanceada. Superar rojo (+10 dB) satura conversores y recorta transientes.", body_style)
         ]
     ]
 
@@ -259,29 +265,27 @@ def build_presentation_pdf():
     story.append(t_gain)
     story.append(PageBreak())
 
-    # =========================================================================
-    # LÁMINA 4: SUMINISTRO ELÉCTRICO REAL Y CONSUMO DINÁMICO NO LINEAL
-    # =========================================================================
-    story.append(Paragraph("3. Modelado Eléctrico: Enchufe de Casa vs. Generador Comercial (3500W)", slide_title_style))
+    # LÁMINA 4: SUMINISTRO ELÉCTRICO REAL Y CONSUMO DINÁMICO
+    story.append(Paragraph("3. Modelado Eléctrico: Enchufe Domiciliario vs. Generador Comercial (3500W)", slide_title_style))
 
     elec_cards = [
         [
-            Paragraph("<b>CONSUMO DINÁMICO DE PARLANTES</b>", highlight_box_style),
-            Paragraph("<b>ENCHUFE DOMICILIARIO (10A / 16A)</b>", highlight_box_style),
-            Paragraph("<b>GENERADOR COMERCIAL (Ej: 3500 W)</b>", highlight_box_style),
+            Paragraph("<b>CONSUMO DINÁMICO DE AUDIO</b>", highlight_box_style),
+            Paragraph("<b>RED DOMICILIARIA (10A / 16A)</b>", highlight_box_style),
+            Paragraph("<b>GENERADOR COMERCIAL (3500 W)</b>", highlight_box_style),
         ],
         [
-            Paragraph("• El consumo crece con el cuadrado del voltaje (<b>P = V²/Z</b>).<br/>"
-                      "• <b>En silencio:</b> ~25 W (0.1 A).<br/>"
-                      "• <b>Volumen moderado (1/8 RMS):</b> ~120 W.<br/>"
-                      "• <b>Máximo Techno (1/3 RMS):</b> ~370-450 W continuos con picos de 1.000 W en el bombo.<br/>"
-                      "• El subwoofer consume el <b>60%-70%</b> de toda la energía del evento.", body_style),
+            Paragraph("• Consumo proporcional al cuadrado del voltaje (<b>P = V²/Z</b>).<br/>"
+                      "• <b>En reposo:</b> ~25 W (0.1 A).<br/>"
+                      "• <b>Régimen Club (1/5 RMS) vs Máximo Techno (1/3 RMS).</b><br/>"
+                      "• El subwoofer demanda entre el <b>60% y 70%</b> de la energía total.<br/>"
+                      "• Etapas pasivas suman consumo AC 220V calculado automáticamente.", body_style),
             Paragraph("• <b>Circuito 10 A (220V):</b> 2.200 W nominales -> <b>1.760 W continuos seguros (80%)</b>.<br/>"
                       "• <b>Circuito 16 A (220V):</b> 3.520 W nominales -> <b>2.816 W continuos seguros (80%)</b>.<br/>"
-                      "• Los automáticos Curva C toleran picos cortos del bombo, pero saltan por temperatura si el promedio supera el 80%.", body_style),
-            Paragraph("• '3500 Watts' indica arranque pico (<i>Surge</i>). Su potencia continua real (<i>Running</i>) es ~85% (<b>2.975 W</b>).<br/>"
-                      "• Por los escalones de corriente del sub-bajo, se aplica factor del <b>72% AVR = 2.142 W seguros</b>.<br/>"
-                      "• Si se supera ese umbral, el voltaje cae bajo 195V y las cajas se apagan por protección.", body_style),
+                      "• Los automáticos toleran picos transitorios breves pero disparan si la demanda continua supera el 80%.", body_style),
+            Paragraph("• 3500 W comerciales indican arranque pico (<i>Surge</i>); potencia continua (<i>Running</i>) ~85% (<b>2.975 W</b>).<br/>"
+                      "• Se aplica factor de seguridad <b>72% AVR = 2.142 W seguros</b>.<br/>"
+                      "• Superar este margen desestabiliza el AVR bajo 195V y apaga amplificadores.", body_style),
         ]
     ]
     t_elec = Table(elec_cards, colWidths=[240, 240, 240])
@@ -299,9 +303,9 @@ def build_presentation_pdf():
         [
             Paragraph("<b>Configuración de Equipos (Régimen Máximo 1/3 RMS)</b>", highlight_box_style),
             Paragraph("<b>Demanda Total c/ Cabina</b>", highlight_box_style),
-            Paragraph("<b>Enchufe Casa 10 A (1.760W)</b>", highlight_box_style),
-            Paragraph("<b>Enchufe Fuerza 16 A (2.816W)</b>", highlight_box_style),
-            Paragraph("<b>Generador 3500 W (2.142W)</b>", highlight_box_style),
+            Paragraph("<b>Enchufe 10 A (1.760W)</b>", highlight_box_style),
+            Paragraph("<b>Enchufe 16 A (2.816W)</b>", highlight_box_style),
+            Paragraph("<b>Generador 3500W (2.142W)</b>", highlight_box_style),
         ],
         [
             Paragraph("2 Tops 1000W + 1 Sub 1000W (3000W RMS)", body_style),
@@ -313,9 +317,9 @@ def build_presentation_pdf():
         [
             Paragraph("2 Tops 1000W + 2 Subs 1000W (4000W RMS)", body_style),
             Paragraph("<b>~2.065 W continuos</b>", body_style),
-            Paragraph("<font color='#DC2626'><b>SALTA AUTOMÁTICO (117%)</b></font>", body_style),
+            Paragraph("<font color='#DC2626'><b>DISPARA DISYUNTOR (117%)</b></font>", body_style),
             Paragraph("<font color='#16A34A'><b>SEGURO (73%)</b></font>", body_style),
-            Paragraph("<font color='#D97706'><b>RIESGO AVR (96% -> -3dB)</b></font>", body_style),
+            Paragraph("<font color='#D97706'><b>RIESGO AVR (96%)</b></font>", body_style),
         ],
         [
             Paragraph("4 Tops 1000W + 2 Subs 1500W (7000W RMS)", body_style),
@@ -335,9 +339,7 @@ def build_presentation_pdf():
     story.append(t_matrix)
     story.append(PageBreak())
 
-    # =========================================================================
     # LÁMINA 5: LAS 5 REGLAS CRÍTICAS DE TERRENO
-    # =========================================================================
     story.append(Paragraph("4. Auditoría Automática de las 5 Reglas Críticas de Terreno", slide_title_style))
 
     field_data = [
@@ -348,32 +350,32 @@ def build_presentation_pdf():
         ],
         [
             Paragraph("<b>1. Crossover HPF en Tops (80-90 Hz)</b>", body_style),
-            Paragraph("En rango completo, los tops gastan 40% de su energía intentando mover sub-graves y cancelan la onda del subwoofer.", body_style),
-            Paragraph("Exige activar filtro <b>HPF a 85 Hz</b> en todas las cajas superiores para liberar headroom limpio y dejarle los 30-85 Hz al cluster de subwoofers.", body_style),
+            Paragraph("En rango completo, los tops desperdician ~40% de energía reproduciendo subgraves y cancelan al subwoofer.", body_style),
+            Paragraph("Exige filtro <b>HPF a 85 Hz</b> en cajas superiores dejando los 30-85 Hz al clúster central.", body_style),
         ],
         [
             Paragraph("<b>2. Ángulo de Apertura (Splay Angle)</b>", body_style),
-            Paragraph("Dos cajas apuntando rectas en paralelo chocan sus conos de 90°x60° al centro, creando filtro de peine (<i>comb filtering</i>).", body_style),
-            Paragraph("Calcula según el ancho y fondo del salón el ángulo exacto de apertura (<b>10° a 25° por lado</b>) para cruzar los bordes de -6 dB sin interferencia.", body_style),
+            Paragraph("Cajas apuntadas en paralelo interfieren en el centro creando filtro de peine (<i>comb filtering</i>).", body_style),
+            Paragraph("Calcula rotación óptima (<b>10° a 25° por lado</b>) cruzando bordes de cobertura sin interferencia.", body_style),
         ],
         [
-            Paragraph("<b>3. Alineación de Fase Sub vs. Top</b>", body_style),
-            Paragraph("El filtro interno del subwoofer introduce retardo de grupo (<i>group delay</i>), atrasando el golpe del bajo respecto al top.", body_style),
-            Paragraph("Indica aplicar un micro-retardo de <b>+3.5 ms (2 a 5 ms)</b> a los tops frontales A y B en el DSP para que el bombo sume en fase y pegue en el pecho.", body_style),
+            Paragraph("<b>3. Alineación de Fase y Postes RIC 10</b>", body_style),
+            Paragraph("Retardo de grupo entre sub y top, y fractura de cobre por curvas vivas de 90° en esquinas.", body_style),
+            Paragraph("Sugiere micro-retardo frontal y exige <b>Postes Guía esquineros (R >= 6d)</b> según SEC RIC N° 10.", body_style),
         ],
         [
-            Paragraph("<b>4. Caída de Tensión en el Drop (V_drop)</b>", body_style),
-            Paragraph("Con un carrete doméstico de 1.5 mm² a 35m y picos de 20A en el drop, el voltaje cae <b>-16.6V</b> (< 204V), reiniciando las cajas.", body_style),
-            Paragraph("Exige conductor de <b>2.5 mm²</b> (hasta 35m) o <b>4.0 mm²</b> (> 35m) y desenrollar el 100% del carrete para evitar efecto bobina.", body_style),
+            Paragraph("<b>4. Caída de Tensión en el Drop (ΔV <= 3%)</b>", body_style),
+            Paragraph("Alargadores de 1.5 mm² a 35m sufren caídas severas de voltaje bajo carga de graves.", body_style),
+            Paragraph("Asigna sección mínima <b>2.5 mm² o 4.0 mm²</b> y exige desenrollar el 100% del carrete.", body_style),
         ],
         [
             Paragraph("<b>5. Tierra Copperweld y Compresión Térmica</b>", body_style),
-            Paragraph("Tierra flotante en generadores electrifica trípodes con el rocío e inyecta zumbido de 50 Hz (<i>Ground Hum</i>) en los cables XLR.", body_style),
-            Paragraph("Exige clavar <b>barra de cobre (jabalina Copperweld)</b> al chasis del generador y alerta la pérdida de <b>-3.2 dB</b> por calentamiento de bobina (150-220°C).", body_style),
+            Paragraph("Tierra flotante en generadores induce zumbido de 50 Hz y riesgo de descarga eléctrica.", body_style),
+            Paragraph("Exige barra de puesta a tierra Copperweld y reporta pérdida de <b>-3.2 dB</b> por calentamiento de bobina.", body_style),
         ]
     ]
 
-    t_field = Table(field_data, colWidths=[155, 265, 300])
+    t_field = Table(field_data, colWidths=[165, 265, 290])
     t_field.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#F1F5F9')),
         ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
@@ -383,31 +385,29 @@ def build_presentation_pdf():
     story.append(t_field)
     story.append(PageBreak())
 
-    # =========================================================================
-    # LÁMINA 6: ARQUITECTURA DE SOFTWARE, UX INDUSTRIAL Y CIBERSEGURIDAD
-    # =========================================================================
-    story.append(Paragraph("5. Arquitectura Monorepo, UX Accesible y Ciberseguridad", slide_title_style))
+    # LÁMINA 6: ARQUITECTURA, COCKPIT 100% ZOOM Y SEGURIDAD
+    story.append(Paragraph("5. Arquitectura Monorepo, Studio Cockpit (100% Zoom) y Seguridad", slide_title_style))
 
     arch_col1 = [
-        Paragraph("<b>UX 'Hard Techno Industrial' para Baja Visión</b>", highlight_box_style),
+        Paragraph("<b>Studio Cockpit Fullscreen y Blueprint 2D</b>", highlight_box_style),
         Spacer(1, 4),
-        Paragraph("Diseñado específicamente para operar en cabinas oscuras sin fatiga visual:", body_style),
+        Paragraph("Diseñado para operar sin scroll global al 100% de zoom en laptops y tablets:", body_style),
         Spacer(1, 3),
-        Paragraph("• <b>Alto Contraste (WCAG AAA):</b> Paleta negro obsidiana (#050505), rojo industrial (#DC2626), blanco puro y amarillo de advertencia.", bullet_style),
-        Paragraph("• <b>Campos Amplios y Vacíos al Inicio:</b> Inputs grandes (<i>py-3 px-4 text-base</i>) que obligan a ingresar medidas reales del evento sin valores prellenados engañosos.", bullet_style),
-        Paragraph("• <b>Glosario Interactivo [i]:</b> Botones de ayuda al lado de cada métrica que explican conceptos complejos con ejemplos cotidianos.", bullet_style),
-        Paragraph("• <b>Flujo de 2 Pasos:</b> Botón 'Confirmar y Validar Datos' que verifica todos los campos antes de desbloquear el 'Descargar PDF'.", bullet_style),
+        Paragraph("• <b>5 Rutas Modulares (Vue Router 4):</b> /auth, /recinto, /equipos, /plano-2d y /reporte con persistencia automática en localStorage.", bullet_style),
+        Paragraph("• <b>Contraste WCAG 2.1 AA:</b> Dark Mode FOH (#080a10) que evita encandilamiento nocturno en cabina.", bullet_style),
+        Paragraph("• <b>5 Capas Exclusivas Blueprint:</b> Arquitectura limpia al editar; Vista Completa (ALL) consolidada en /reporte.", bullet_style),
+        Paragraph("• <b>Salida Terreno Autónoma:</b> PNG 300 DPI + PDF Dual-Page (Pág. 1 Memoria/Costos + Pág. 2 Lámina CAD) generados offline en cliente.", bullet_style),
     ]
 
     arch_col2 = [
-        Paragraph("<b>Arquitectura Técnica y Seguridad Anti-IDOR</b>", highlight_box_style),
+        Paragraph("<b>Arquitectura Técnica, BD Híbrida y Seguridad OWASP</b>", highlight_box_style),
         Spacer(1, 4),
-        Paragraph("Separación estricta de responsabilidades en 3 paquetes TypeScript:", body_style),
+        Paragraph("Separación en 3 paquetes TypeScript verificados con vue-tsc y tsc:", body_style),
         Spacer(1, 3),
-        Paragraph("• <b>@stageplan/shared:</b> Motor acústico dual (Sabine RT60 + Hopkins-Stryker indoor y Ley Inverso del Cuadrado outdoor), ruteo híbrido y validador eléctrico.", bullet_style),
-        Paragraph("• <b>@stageplan/frontend:</b> Vue 3 + Vite + TailwindCSS + jsPDF / AutoTable para generación instantánea de reportes en el navegador.", bullet_style),
-        Paragraph("• <b>@stageplan/backend:</b> Node.js + Express + Prisma ORM (PostgreSQL) con validación por esquemas Zod y protección <b>Anti-IDOR</b> por <i>ownerId</i>.", bullet_style),
-        Paragraph("• <b>Regla Estructural Estricta:</b> Cero uso de tubos <i>pole mount</i> sobre sub-bajos; cajas siempre en trípodes independientes y bajos en cluster a piso.", bullet_style),
+        Paragraph("• <b>@stageplan/shared:</b> 11 módulos físicos puros + Zod isomórfico + 81 pruebas unitarias en Vitest.", bullet_style),
+        Paragraph("• <b>@stageplan/backend:</b> Express 4.21 + Helmet + RateLimit (10/15m login) + bcrypt (12 rondas) + bloqueo temporal HTTP 423 (5 fallos) + errorHandler.", bullet_style),
+        Paragraph("• <b>Anti-IDOR (A01):</b> Consultas filtradas por ownerId === req.user.id en Prisma retornando HTTP 404 para impedir enumeración.", bullet_style),
+        Paragraph("• <b>Persistencia Híbrida:</b> SQLite 3 (dev.db, 4 tablas 3FN en español + JSON) en PoC; migración a PostgreSQL 16 (12 tablas + JSONB GIN) en Unidad 3.", bullet_style),
     ]
 
     t_arch2 = Table([[arch_col1, arch_col2]], colWidths=[355, 355])
@@ -422,14 +422,12 @@ def build_presentation_pdf():
     story.append(t_arch2)
     story.append(PageBreak())
 
-    # =========================================================================
-    # LÁMINA 7: VALIDACIÓN TDD (44 TESTS) Y CONCLUSIONES
-    # =========================================================================
-    story.append(Paragraph("6. Calidad de Software Demostrable (Vitest TDD) y Conclusiones", slide_title_style))
+    # LÁMINA 7: VALIDACIÓN TDD (81 TESTS EN 11 SUITES) Y CONCLUSIONES
+    story.append(Paragraph("6. Calidad de Software Verificada (81/81 Vitest TDD) y Conclusiones", slide_title_style))
 
     metrics_data = [
         [
-            Paragraph("<b>SUITE DE PRUEBAS AUTOMATIZADAS (@stageplan/shared)</b>", highlight_box_style),
+            Paragraph("<b>SUITES DE PRUEBAS AUTOMATIZADAS (@stageplan/shared)</b>", highlight_box_style),
             Paragraph("<b>CASOS VERIFICADOS</b>", highlight_box_style),
             Paragraph("<b>RESULTADO VITEST</b>", highlight_box_style),
             Paragraph("<b>ESTADO</b>", highlight_box_style),
@@ -441,37 +439,37 @@ def build_presentation_pdf():
             Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
         ],
         [
-            Paragraph("<b>routing-and-gaffer.spec.ts</b> (Multi-enchufe Manhattan y Cinta Gaffer 50m)", body_style),
-            Paragraph("10 tests unitarios", body_style),
+            Paragraph("<b>routing-and-gaffer.spec.ts & power-distribution.spec.ts</b> (Manhattan, Z1..Z4, Gaffer 50m)", body_style),
+            Paragraph("18 tests (10 + 8)", body_style),
+            Paragraph("<b>18 / 18 aprobados</b>", body_style),
+            Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
+        ],
+        [
+            Paragraph("<b>hybrid-roster.spec.ts & cabling.spec.ts</b> (Rigging, Rack Pasivo PA-01..06, XLR/Speakon)", body_style),
+            Paragraph("10 tests (8 + 2)", body_style),
             Paragraph("<b>10 / 10 aprobados</b>", body_style),
             Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
         ],
         [
-            Paragraph("<b>stage-acoustic-engine.spec.ts</b> (SPL, Haas, Generador 3500W, Top/Sub y D.S. 38 MMA)", body_style),
-            Paragraph("5 tests unitarios", body_style),
-            Paragraph("<b>5 / 5 aprobados</b>", body_style),
+            Paragraph("<b>lighting-dmx.spec.ts & dj-setup-audio.spec.ts</b> (Luminarias x1, DMX512 y Booth DJ)", body_style),
+            Paragraph("12 tests (8 + 4)", body_style),
+            Paragraph("<b>12 / 12 aprobados</b>", body_style),
             Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
         ],
         [
-            Paragraph("<b>stage-acoustic-indoor-outdoor.spec.ts</b> (Sabine RT60 y Hopkins-Stryker)", body_style),
-            Paragraph("2 tests unitarios", body_style),
-            Paragraph("<b>2 / 2 aprobados</b>", body_style),
+            Paragraph("<b>stage-acoustic-* & contingency-logistics & qa-gap-branches</b> (SPL, Haas, RT60, Ley del Saco)", body_style),
+            Paragraph("18 tests (5+2+6+5)", body_style),
+            Paragraph("<b>18 / 18 aprobados</b>", body_style),
             Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
         ],
         [
-            Paragraph("<b>hybrid-roster.spec.ts & cabling.spec.ts</b> (Asymmetric Rigging, Gain Matching, Cables)", body_style),
-            Paragraph("4 tests unitarios", body_style),
-            Paragraph("<b>4 / 4 aprobados</b>", body_style),
-            Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", body_style),
-        ],
-        [
-            Paragraph("<b>TOTAL SUITE DE INGENIERÍA STAGE PLAN</b>", highlight_box_style),
-            Paragraph("<b>6 archivos de test</b>", highlight_box_style),
-            Paragraph("<b>44 de 44 aprobados</b>", highlight_box_style),
-            Paragraph("<font color='#16A34A'><b>CUMPLIDO</b></font>", highlight_box_style),
+            Paragraph("<b>TOTAL SUITE DE INGENIERÍA STAGE PLAN (0,0286 ms/cálculo)</b>", highlight_box_style),
+            Paragraph("<b>11 archivos .spec.ts</b>", highlight_box_style),
+            Paragraph("<b>81 de 81 aprobados</b>", highlight_box_style),
+            Paragraph("<font color='#16A34A'><b>100% PASS</b></font>", highlight_box_style),
         ],
     ]
-    t_metrics = Table(metrics_data, colWidths=[310, 125, 145, 140])
+    t_metrics = Table(metrics_data, colWidths=[315, 125, 145, 135])
     t_metrics.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#F1F5F9')),
         ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor('#F0FDF4')),
@@ -482,14 +480,20 @@ def build_presentation_pdf():
     story.append(t_metrics)
     story.append(Spacer(1, 8))
 
-    sec_summary = [
-        [
-            Paragraph("<b>Valor Académico y Diferenciación:</b><br/>"
-                      "Stage Plan supera el paradigma del CRUD tradicional al integrar modelado matemático acústico, psicoacústica temporal y validación eléctrica normativa en una arquitectura tipada y probada con 44 tests automatizados.", body_style),
-            Paragraph("<b>Impacto Real para DISTORSIONCL SPA:</b><br/>"
-                      "Elimina los cortes de energía en pleno evento, protege la vida útil de las cajas y sub-bajos evitando la compresión térmica y entrega un PDF listo para montar en terreno sin conexión a internet.", body_style)
-        ]
-    ]
+    sec_summary = [[
+        Paragraph(
+            "<b>Valor Académico y Rigor Técnico:</b><br/>"
+            "Stage Plan integra modelado acústico, electrotecnia normativa SEC, diseño Cockpit 100% zoom, "
+            "seguridad API OWASP y validación continua mediante 81 pruebas unitarias TDD en Vitest.",
+            body_style
+        ),
+        Paragraph(
+            "<b>Impacto Operacional en DISTORSIONCL SPA:</b><br/>"
+            "Previene disparos eléctricos y daño de etapas pasivas, estima costos diarios de arriendo CLP y "
+            "entrega un PDF Dual-Page completo con el plano CAD para montaje autónomo en terreno.",
+            body_style
+        )
+    ]]
     t_sec = Table(sec_summary, colWidths=[355, 355])
     t_sec.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
@@ -499,8 +503,8 @@ def build_presentation_pdf():
     story.append(t_sec)
 
     doc.build(story, canvasmaker=NumberedCanvas)
-    shutil.copyfile(pdf_filename, "Presentacion_Proyecto_STAGE PLAN_Profesor.pdf")
     print("PDF de presentacion actualizado exitosamente:", pdf_filename)
+
 
 if __name__ == '__main__':
     build_presentation_pdf()

@@ -16,7 +16,7 @@ graph TD
         Arch["🏛️ Lead Software Architect<br/>(Store reactivo, desacoplamiento de App.vue, contratos de estado)"]
         UX["🎨 Senior UX/UI Specialist<br/>(Diseño 100vh, Split-Panels, Dark Mode Pro, Ergonomía visual)"]
         Dev["💻 Senior Vue 3 Engineer<br/>(Implementación SFC, Tailwind h-screen, integración de componentes)"]
-        QA["🔍 QA & Verification Architect<br/>(Validación de 75/75 tests, vue-tsc, cero regresiones y build limpio)"]
+        QA["🔍 QA & Verification Architect<br/>(Validación de 81/81 tests, vue-tsc, cero regresiones y build limpio)"]
     end
 
     Coord --> Arch
@@ -30,7 +30,7 @@ graph TD
 | **🏛️ Lead Software Architect** | Gobernanza de estado y modularización limpia | `src/composables/useStagePlanState.ts`, contratos de interfaces. |
 | **🎨 Senior UX/UI Specialist** | Jerarquía visual, layout fullscreen y micro-interacciones | Wireframes de vistas, diseño de HUD de telemetría, split-screens 50/50. |
 | **💻 Senior Vue 3 Engineer** | Codificación de componentes y vistas desacopladas | `ViewVenue.vue`, `ViewAudioPower.vue`, `ViewAcousticCanvas.vue`, `ViewReportSummary.vue`. |
-| **🔍 QA & Verification Architect** | Pruebas de integración, tipado estricto y compilación | Validación `npm run lint`, `npm test` (75 tests), `npm run build` exitoso. |
+| **🔍 QA & Verification Architect** | Pruebas de integración, tipado estricto y compilación | Validación `npm run lint`, `npm test` (81 tests), `npm run build` exitoso. |
 
 ---
 
@@ -68,7 +68,7 @@ graph TD
 flowchart LR
     W1["Wave 1: Base Fullscreen & Store<br/>(useStagePlanState, Shell 100vh)"] --> W2["Wave 2: Vistas de Entrada<br/>(ViewVenue 50/50 + ViewAudioPower Rack)"]
     W2 --> W3["Wave 3: Simulación & Reporte<br/>(ViewAcousticCanvas + ViewReportSummary)"]
-    W3 --> W4["Wave 4: Refactor App.vue & QA<br/>(Orquestador <150L, 75 tests, Build)"]
+    W3 --> W4["Wave 4: Refactor App.vue & QA<br/>(Orquestador <150L, 81 tests, Build)"]
 ```
 
 ---
@@ -132,7 +132,7 @@ flowchart LR
 
 ### Wave 3: Vistas de Simulación Inmersiva y Despacho Ejecutivo (P1)
 **Líderes:** Senior UX/UI Specialist + Lead Software Architect  
-**Objetivo:** Elevar el plano 2D y el reporte final a la categoría de software de nivel industrial.
+**Objetivo:** Elevar el plano 2D y el reporte final al estándar técnico de aplicaciones CAD de terreno.
 
 - **Tarea 3.1: Implementación de `ViewAcousticCanvas.vue` (Paso 3: Plano 2D CAD)**
   - **Lienzo Central:** El componente [LayoutSvg2D.vue](file:///c:/Users/WIT2026/Documents/stage-plan-main/stage-plan-main/packages/frontend/src/components/LayoutSvg2D.vue) toma el 100% del área de trabajo disponible (`w-full h-full`).
@@ -146,7 +146,7 @@ flowchart LR
     - 4 tarjetas superiores de KPIs de alta visibilidad (Potencia Total, SPL Audiencia, Peso de Carga, Horas Combustible).
     - Panel izquierdo: Ilustración del vehículo recomendado (SUV / Camioneta Pickup / Furgón Sprinter) y alerta ergonómica de la Ley N° 20.949 (Ley del Saco).
     - Panel central: Checklist operativo para retiro en bodega y montaje en terreno con casillas interactivas.
-    - Panel derecho: Botón destacado de descarga de memoria de cálculo en PDF ([pdfReport.ts](file:///c:/Users/WIT2026/Documents/stage-plan-main/stage-plan-main/packages/frontend/src/services/pdfReport.ts)) y botón para copiar resumen a WhatsApp.
+    - Panel derecho: Botón principal de descarga de memoria de cálculo en PDF ([pdfReport.ts](file:///c:/Users/WIT2026/Documents/stage-plan-main/stage-plan-main/packages/frontend/src/services/pdfReport.ts)) y botón para copiar resumen a WhatsApp.
   - **Criterio de Aceptación:** El reporte se genera de forma instantánea y presenta toda la logística de un solo vistazo.
 
 ---
@@ -175,7 +175,7 @@ flowchart LR
 
 - **Tarea 4.2: Verificación de Pruebas y Compilación**
   - Ejecutar `npm run typecheck` / `npm run lint` en todos los workspaces.
-  - Ejecutar `npm test` verificando los 75 tests unitarios de `@stageplan/shared`.
+  - Ejecutar `npm test` verificando los 81 tests unitarios de `@stageplan/shared`.
   - Ejecutar `npm run build` en `@stageplan/frontend` para garantizar compilación perfecta con Vite y `vue-tsc`.
 
 ---
@@ -202,7 +202,7 @@ flowchart LR
 1. 🚫 **Cero Scroll de Ventana:** La barra de desplazamiento del navegador (`window.scrollY`) permanece inactiva en todo momento; toda la experiencia vive dentro de la ventana del usuario (`100vh`).
 2. ⚡ **Reactividad Instantánea (< 16ms):** Cualquier cambio de dimensiones o equipos en los paneles izquierdos actualiza los modelos 2D y la telemetría en tiempo real.
 3. 📦 **Compilación de Producción Limpia:** `npm run build` genera el bundle sin errores ni advertencias de tipos en `vue-tsc`.
-4. 🧪 **Integridad Matemática Absoluta:** Los 75 tests unitarios del motor físico continúan pasando al 100%.
+4. 🧪 **Integridad Matemática Absoluta:** Los 81 tests unitarios del motor físico continúan pasando al 100%.
 
 ---
 *Plan de arquitectura y rediseño UI/UX estructurado conforme a los más altos estándares de diseño de software de ingeniería.*

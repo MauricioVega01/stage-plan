@@ -1,73 +1,56 @@
-# MANUAL DE DEFENSA DE TÍTULO: STAGE PLAN (v3.1)
-**Carrera:** Analista Programador — INACAP  
-**Asignatura:** Proyecto Integrado / Tesis de Título  
-**Autor / Desarrollador:** Estudiante en práctica / Titulación  
-**Cliente del Caso de Estudio:** "Productora y Arriendo de Audio DISTORSIONCL SPA" (Santiago, Chile)
+# MANUAL DE DEFENSA DEL PROYECTO: STAGE PLAN (v4.0)
+**Carrera:** Analista Programador — INACAP Sede Maipú (Sección C1 · Grupo G10)  
+**Asignatura:** Proyecto Integrado (`TIHV43`)  
+**Autor:** Mauricio Vega Castillo | **Docente:** Manuel Rojas  
+**Cliente del Caso de Estudio:** Productora y Arriendo de Audio *DISTORSIONCL SPA*
 
 ---
 
-## 1. El Problema Real (Pitch de Apertura ante la Comisión)
-> *"Estimada comisión evaluadora, en los eventos de música en vivo y formato DJ en Chile, el 78% de los incidentes técnicos en terreno ocurren por fallas de pre-producción: cortes imprevistos de energía por sobrecargar disyuntores de 10A, quemaduras de etapas de potencia por conectar parlantes bajo la impedancia mínima, caídas de tensión severas por usar alargadores muy delgados en parcelas de eventos, y sonido deficiente por falta de cobertura en el fondo de la pista.*  
-> *Además, los técnicos operan en recintos aislados (parcelas en Curacaví, Lampa, Pirque) donde **no hay señal móvil 4G/5G**.*  
-> ***STAGE PLAN*** *es un sistema web de ingeniería preventiva que automatiza el cálculo eléctrico bajo pliegos técnicos RIC de la SEC, modela la acústica y genera un Layout 2D y un Reporte PDF descargable que el técnico consulta en su teléfono directamente en su teléfono celular, sin depender de conexión a internet durante el montaje."*
+## 1. El Problema Real (Pitch de Apertura)
+> *"En eventos de música en vivo y formato DJ en Chile, la mayoría de las fallas en terreno ocurren por ausencia de pre-producción normativa: cortes de energía por sobrecargar disyuntores de 10A, protección térmica en amplificadores pasivos por baja impedancia Speakon, caídas de tensión en alargadores extensos y desbalance acústico hacia la pista o viviendas cercanas.*  
+> *Además, muchos montajes ocurren en parcelas rurales (Curacaví, Lampa, Pirque) sin cobertura móvil estable.*  
+> ***STAGE PLAN (v4.0)*** *automatiza el cálculo eléctrico SEC (RIC N° 03 y N° 10), la acústica espacial Haas, el dimensionamiento de rack de potencias pasivas, la cotización diaria en CLP y genera un Plano CAD 2D junto a un Reporte PDF Dual-Page utilizable sin internet."*
 
 ---
 
 ## 2. Decisiones de Arquitectura y Justificación Técnica
 
-### 2.1 ¿Por qué Monorepo con npm workspaces y `@stageplan/shared`?
-- **Problema que resuelve:** En aplicaciones tradicionales, las fórmulas matemáticas y las validaciones se duplican (una en JavaScript para el formulario web y otra en Node.js para la API), generando discrepancias (*contract drift*).
-- **Nuestra solución:** Creamos el paquete `@stageplan/shared`.
-  - Contiene los esquemas de validación **Zod** (`VenueSchema`, `RiderSchema`, `EngineeringParamsSchema`).
-  - Contiene el motor algorítmico **`calc-engine`** (`electrical.ts`, `acoustics.ts`, `inventory.ts`).
-  - **El backend es la única fuente de verdad:** valida y persiste los cálculos oficiales en PostgreSQL.
-  - **El frontend importa el mismo paquete:** para entregar previsualización instantánea en tiempo real sin llamar al servidor en cada pulsación de tecla.
+### 2.1 Monorepo TypeScript (`npm workspaces`) y `@stageplan/shared`
+- **Problema que resuelve:** Evita duplicar fórmulas físicas y reglas de validación entre cliente y servidor (*contract drift*).
+- **Implementación actual:**
+  - **`@stageplan/shared`:** Esquemas Zod (`VenueSchema`, `RiderSchema`, `EngineeringParamsSchema`) y 11 módulos `calc-engine` (`electrical.ts`, `acoustics.ts`, `hybrid-roster.ts` con `calculatePowerAmpSizing`, `stage-acoustic-engine.ts`, `cabling.ts`, etc.).
+  - **`@stageplan/backend`:** API REST Express 4.21 + Prisma ORM 6.4 sobre SQLite 3 (`dev.db`) con migración proyectada a PostgreSQL 16 (`schema_stageplan_pg16.sql`). Recalcula en servidor sin confiar en totales enviados desde el cliente.
+  - **`@stageplan/frontend`:** SPA Vue 3.5 + Vite 6.4 + Vue Router 4 (5 vistas en diseño Studio Cockpit 100% zoom) + `useStagePlanState.ts` (`localStorage`).
 
-### 2.2 ¿Por qué "Online-First + Reporte PDF Autónomo" en vez de una PWA Offline compleja?
-- Las PWAs con Service Workers, IndexedDB y replicación bidireccional agregan una sobrecarga enorme de sincronización y resolución de conflictos de concurrencia.
-- La pre-producción es una tarea de **planificación previa** (se hace en la oficina o casa con internet).
-- Al generar el **Reporte en PDF directamente en el cliente con jsPDF**, el operador se lleva un archivo portable, inmutable, liviano y con trazabilidad de versión que abre instantáneamente en cualquier smartphone sin consumir batería ni depender de sincronizaciones fallidas.
+### 2.2 Operación Autónoma en Terreno con PDF Dual-Page y PNG 300 DPI
+- La pre-producción se ejecuta en navegador y persiste automáticamente en `localStorage`.
+- `pdfReport.ts` compila client-side con `jsPDF` un reporte de 2 páginas: **Página 1** (Memoria técnica SEC, inventario, rack pasivo, Ley del Saco y presupuesto CLP) y **Página 2** (Lámina horizontal CAD 2D con todas las capas activas), además de exportar el plano como **PNG 300 DPI** para mensajería rápida.
 
-### 2.3 Seguridad de la Información y Mitigación de Vulnerabilidades (OWASP Top 10)
-- **A01 Broken Access Control / Insecure Direct Object References (IDOR):**
-  - Todas las operaciones en la base de datos están vinculadas al `owner_id`. Si un atacante autenticado intenta acceder o modificar por URL `/api/venues/ID-AJENO` o `/api/calculations/ID-AJENO`, la consulta en Prisma ejecuta `where: { id, ownerId: req.user.id }`, devolviendo inmediatamente `404 Not Found` / `403 Forbidden`.
-- **Inyecciones SQL:** Erradicadas mediante el uso de **Prisma ORM** con consultas completamente parametrizadas.
-- **Autenticación:** Tokens JWT de corta duración y contraseñas hasheadas con `bcrypt` (10 rondas de salting).
-- **Protección de API:** Cabeceras HTTP endurecidas con `helmet` y limitación de peticiones con `express-rate-limit`.
+### 2.3 Seguridad de la Información y OWASP Top 10
+- **Anti-IDOR (A01):** Toda operación sobre `Venue` o `RiderCalculation` exige `ownerId === req.user.id` en Prisma ORM, retornando **`HTTP 404`** si el recurso no pertenece al usuario autenticado (evitando enumeración de UUIDs).
+- **Inyecciones SQL y XSS (A03):** Consultas parametrizadas con Prisma ORM, validación Zod en frontera y auto-escapado nativo de Vue 3 sin uso de `v-html`.
+- **Autenticación y Fuerza Bruta (A02/A07):** Contraseñas hasheadas con **`bcrypt` (12 rondas)**, JWT firmado (`12h`), `loginLimiter` (**10 peticiones / 15 min**) y bloqueo temporal de cuenta por 15 minutos tras 5 fallos retornando **`HTTP 423 Locked`**.
+- **Cabeceras y Manejo de Errores (A05/A09):** `helmet()`, CORS acotado a `FRONTEND_URL`, `asyncHandler` y `errorHandler` centralizado sin exposición de *stack traces*.
 
 ---
 
-## 3. Demostración en Vivo: Casos Numéricos Verificables
+## 3. Casos Numéricos Verificables en Demostración
 
-Durante la defensa, puedes demostrar la exactitud de los cálculos con estos casos de prueba reales:
+### Caso 1: Caída de Tensión y Selección de Conductor (SEC RIC 03/10)
+- **Entrada:** Carga de $1.800\text{ W}$, distancia $30\text{ m}$, $220\text{ V}$, holgura $20\%$, caída máxima $\le 3\%$.
+- **Resultado:** Corriente de diseño $9,82\text{ A}$; sección comercial adoptada **$2,5\text{ mm}^2$**; metraje sugerido $33\text{ m}$; caída real resultante **$4,12\text{ V}$ ($1,87\%$)**.
 
-### Caso 1: Caída de Tensión y Selección de Cable (SEC RIC 03 / RIC 10)
-- **Entrada:** Carga de $1.800\text{ W}$, distancia de $30\text{ metros}$ al tablero, tensión $220\text{ V}$, holgura del $20\%$, límite de caída $\le 3\%$.
-- **Cálculo de STAGE PLAN:**
-  - Corriente de diseño: $9.82\text{ A}$.
-  - Sección por caída: $1.56\text{ mm}^2$.
-  - Como supera los $1.5\text{ mm}^2$, el sistema adopta automáticamente la sección comercial inmediata: **$2.5\text{ mm}^2$**.
-  - Metraje sugerido: $33\text{ metros}$ ($+10\%$ de holgura).
-  - Caída real resultante: **$4.12\text{ V}$ ($1.87\%$)**, dentro de la norma.
-  - Alerta operativa: *"Desenrolle completamente los alargadores en carrete para evitar efecto bobina inductivo."*
+### Caso 2: Detección de Sobrecarga en Enchufe 10A
+- **Entrada:** $2.000\text{ W}$ en circuito $10\text{ A}$ → corriente de diseño $10,91\text{ A}$ ($109\%$).
+- **Resultado:** Alerta crítica por riesgo inminente de disparo termomagnético.
 
-### Caso 2: Detección de Sobrecarga Eléctrica
-- **Enchufe común de 10 A:** Si se ingresan $2.000\text{ W}$, la corriente de diseño con holgura es de $10.91\text{ A}$ (ratio $109\%$).
-- **Respuesta:** El semáforo cambia a **ROJO CRÍTICO** con alerta de riesgo inminente de disparo del disyuntor térmico.
-
-### Caso 3: Audio Pasivo y Protección de Etapa de Potencia
-- **Entrada:** 2 cajas de $400\text{ W}$ RMS a $8\ \Omega$ en paralelo.
-- **Resultado:** Impedancia equivalente $4\ \Omega$, potencia RMS $800\text{ W}$, potencia recomendada del amplificador con headroom ($1.5\times$): **$1.200\text{ W}$ RMS @ $4\ \Omega$**.
-- Si el usuario conectara 4 cajas ($2\ \Omega$) a un amplificador de mínimo $4\ \Omega$, el sistema bloquea con **Alerta Crítica** por riesgo de cortocircuito o protección térmica.
+### Caso 3: Audio Pasivo, Impedancia Speakon y Rack de Potencias
+- **2 tops pasivos $400\text{ W}$ RMS @ $8\ \Omega$ en canales independientes:** Headroom $1,6\times$ → exige **$640\text{ W}$ RMS/canal @ $8\ \Omega$** más carga AC 220V integrada al cálculo SEC.
+- **3 cajas $8\ \Omega$ en paralelo:** $Z_{eq} = 2,67\ \Omega < 3,2\ \Omega$ → alerta roja `DANGER_PROTECT_SHORT` por riesgo de corte en modo PROTECT.
 
 ---
 
-## 4. Métricas de Calidad de Software (ISO/IEC 25010)
-
-- **Cobertura de Pruebas Unitarias:** **100% de Líneas y Sentencias**, **92.1% de Ramas (Branches)** automatizadas con **Vitest**.
-- **18 pruebas unitarias** ejecutadas en **1.01 segundos**.
-- **Cero dependencias circulares y cero errores de TypeScript** (`vue-tsc` y `tsc` compilando limpiamente).
-
----
-*Este proyecto demuestra dominio integral de ciclo de vida del software: levantamiento con cliente real, modelado matemático, arquitectura limpia de monorepo, TDD riguroso, seguridad de endpoints y despliegue responsivo.*
-
+## 4. Métricas Verificadas de Calidad (Vitest + TypeScript)
+- **Pruebas unitarias TDD:** **81/81 tests aprobados en 11 archivos** (`100% PASS` en `186 ms` de ejecución de tests).
+- **Rendimiento del motor:** Latencia promedio de `0,0286 ms` en 1.000 iteraciones.
+- **Compilación estricta:** `tsc --noEmit`, `vue-tsc --noEmit` y `vite build` con **0 errores**.

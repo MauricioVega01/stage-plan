@@ -1,6 +1,6 @@
 # CASO DE SIMULACIÓN ACÚSTICA: CÁLCULO DE SPL Y REFUERZOS (DELAY)
-**Proyecto de Título: Analista Programador — INACAP**  
-**Sistema:** STAGE PLAN (v3.1) — Módulo `calc-engine/acoustics`  
+**Proyecto Integrado (`TIHV43`) — Analista Programador — INACAP Sede Maipú (Sección C1 · Grupo G10)**  
+**Sistema:** STAGE PLAN (v4.0) — Módulo `calc-engine/stage-acoustic-engine`  
 **Objetivo:** Demostración paso a paso de la pérdida de presión sonora y activación técnica de cajas de refuerzo (*delay line*).
 
 ---
