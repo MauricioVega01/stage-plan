@@ -21,123 +21,123 @@
 <rect width="100%" height="100%" fill="#f8fafc"/>
 <rect x="30" y="30" width="235" height="132" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
 <rect x="30" y="30" width="235" height="26" rx="4" fill="#1F497D"/>
-<text x="147.5" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">User (RBAC)</text>
+<text x="147.5" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">Usuario (Auth / Prisma)</text>
 <text x="38" y="72" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- id: UUID</text>
-<text x="38" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- email: String</text>
-<text x="38" y="100" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- rol: RoleEnum</text>
-<text x="38" y="114" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- passwordHash: String</text>
+<text x="38" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- correo: String</text>
+<text x="38" y="100" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- rol: String</text>
+<text x="38" y="114" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- claveHash: String</text>
 <line x1="30" y1="124" x2="265" y2="124" stroke="#cbd5e1" stroke-width="1"/>
-<text x="38" y="139" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ authenticate(): JWT</text>
-<text x="38" y="153" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ verifyOwnership(id): Bool</text>
+<text x="38" y="139" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ login(): JWT (12h)</text>
+<text x="38" y="153" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ checkLock423(): Bool</text>
 <rect x="30" y="225" width="235" height="146" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
 <rect x="30" y="225" width="235" height="26" rx="4" fill="#1F497D"/>
-<text x="147.5" y="242" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">Venue</text>
+<text x="147.5" y="242" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">Recinto (Venue)</text>
 <text x="38" y="267" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- id: UUID</text>
-<text x="38" y="281" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- widthMeters: Float</text>
-<text x="38" y="295" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- depthMeters: Float</text>
-<text x="38" y="309" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- electricalDistMeters: Float</text>
-<text x="38" y="323" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- wallType: WallEnum</text>
+<text x="38" y="281" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- anchoMetros: Float</text>
+<text x="38" y="295" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- largoMetros: Float</text>
+<text x="38" y="309" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- distElectricaMetros: Float</text>
+<text x="38" y="323" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- tipoEntorno: EnvEnum</text>
 <line x1="30" y1="333" x2="265" y2="333" stroke="#cbd5e1" stroke-width="1"/>
 <text x="38" y="348" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ getAreaM2(): Float</text>
 <text x="38" y="362" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ estimateNoiseDS38(): Db</text>
-<rect x="30" y="440" width="235" height="146" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
+<rect x="30" y="440" width="235" height="132" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
 <rect x="30" y="440" width="235" height="26" rx="4" fill="#1F497D"/>
-<text x="147.5" y="457" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">EquipmentLot</text>
-<text x="38" y="482" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- lotRole: TOP_PA | SUB</text>
-<text x="38" y="496" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- technology: ACTIVE|PASSIVE</text>
-<text x="38" y="510" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- rmsWatts: Int</text>
-<text x="38" y="524" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- powerAmpWatts: Int?</text>
-<text x="38" y="538" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- impedanceOhms: Float</text>
-<line x1="30" y1="548" x2="265" y2="548" stroke="#cbd5e1" stroke-width="1"/>
-<text x="38" y="563" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ isSpeakOnSafe(): Bool</text>
-<text x="38" y="577" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ getTotalWatts(): Int</text>
-<rect x="350" y="30" width="295" height="104" rx="5" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4"/>
-<rect x="350" y="30" width="295" height="26" rx="4" fill="#c81e1e"/>
-<text x="497.5" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">CalculationEngine (Orchestrator)</text>
-<text x="358" y="72" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- engineVersion: String = &#x27;1.0.0&#x27;</text>
-<text x="358" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- MAX_VOLTAGE_DROP: Float = 3.0</text>
-<line x1="350" y1="96" x2="645" y2="96" stroke="#cbd5e1" stroke-width="1"/>
-<text x="358" y="111" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ runFullAudit(venue, lots): Result</text>
-<text x="358" y="125" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ validateWithZod(input): Boolean</text>
-<rect x="350" y="190" width="295" height="118" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
-<rect x="350" y="190" width="295" height="26" rx="4" fill="#1F497D"/>
-<text x="497.5" y="207" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">ElectricalSECValidator</text>
-<text x="358" y="232" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- COPPER_RHO: Float = 0.0175</text>
-<text x="358" y="246" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- SAFETY_MARGIN: Float = 1.25</text>
-<line x1="350" y1="256" x2="645" y2="256" stroke="#cbd5e1" stroke-width="1"/>
-<text x="358" y="271" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcVoltageDropPct(L, I, S): Float</text>
-<text x="358" y="285" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcGuidePostsBendRadius(d): Float</text>
-<text x="358" y="299" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ splitLinesL1L2L3(loads): Circuits</text>
-<rect x="350" y="375" width="295" height="104" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
-<rect x="350" y="375" width="295" height="26" rx="4" fill="#1F497D"/>
-<text x="497.5" y="392" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">AcousticHaasEngine</text>
-<text x="358" y="417" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- SOUND_SPEED_20C: Float = 343.2</text>
-<line x1="350" y1="427" x2="645" y2="427" stroke="#cbd5e1" stroke-width="1"/>
-<text x="358" y="442" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcClusterGainDb(subs): Float</text>
-<text x="358" y="456" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcDelayHaasMs(distM): Float</text>
-<text x="358" y="470" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ computeSplHeatMap(): ZoneMap</text>
-<rect x="350" y="530" width="295" height="90" rx="5" fill="#ffffff" stroke="#059669" stroke-width="1.4"/>
-<rect x="350" y="530" width="295" height="26" rx="4" fill="#059669"/>
+<text x="147.5" y="457" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">SpeakerBatchInput</text>
+<text x="38" y="482" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- category: TOP | SUB</text>
+<text x="38" y="496" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- systemType: ACTIVE|PASSIVE</text>
+<text x="38" y="510" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- rmsWatts / peakWatts: Int</text>
+<text x="38" y="524" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- impedanceOhms: 4|8|16</text>
+<line x1="30" y1="534" x2="265" y2="534" stroke="#cbd5e1" stroke-width="1"/>
+<text x="38" y="549" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ isSpeakOnSafe(): Bool</text>
+<text x="38" y="563" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ getTotalWatts(): Int</text>
+<rect x="345" y="30" width="305" height="118" rx="5" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4"/>
+<rect x="345" y="30" width="305" height="26" rx="4" fill="#c81e1e"/>
+<text x="497.5" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">CalculationEngine (Shared Kernel)</text>
+<text x="353" y="72" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- engineVersion: String = &#x27;4.0.0&#x27;</text>
+<text x="353" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- MAX_VOLTAGE_DROP: Float = 3.0</text>
+<line x1="345" y1="96" x2="650" y2="96" stroke="#cbd5e1" stroke-width="1"/>
+<text x="353" y="111" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ runFullAudit(venue, lots): Result</text>
+<text x="353" y="125" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcPowerAmpSizing(batches): AmpRack</text>
+<text x="353" y="139" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ validateWithZod(input): Boolean</text>
+<rect x="345" y="200" width="305" height="118" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
+<rect x="345" y="200" width="305" height="26" rx="4" fill="#1F497D"/>
+<text x="497.5" y="217" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">ElectricalSECValidator</text>
+<text x="353" y="242" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- COPPER_RHO: Float = 0.0175</text>
+<text x="353" y="256" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- SAFETY_MARGIN: Float = 1.20</text>
+<line x1="345" y1="266" x2="650" y2="266" stroke="#cbd5e1" stroke-width="1"/>
+<text x="353" y="281" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calculateCableSizing(params): Cable</text>
+<text x="353" y="295" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ splitLinesL1L2L3(loads): Circuits</text>
+<text x="353" y="309" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ validateCircuitCapacity(): Alert</text>
+<rect x="345" y="380" width="305" height="104" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
+<rect x="345" y="380" width="305" height="26" rx="4" fill="#1F497D"/>
+<text x="497.5" y="397" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">StageAcousticEngine</text>
+<text x="353" y="422" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- SOUND_SPEED_20C: Float = 343.4</text>
+<line x1="345" y1="432" x2="650" y2="432" stroke="#cbd5e1" stroke-width="1"/>
+<text x="353" y="447" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcClusterGainDb(subs): Float</text>
+<text x="353" y="461" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcDelayHaasMs(distM): Float</text>
+<text x="353" y="475" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ computeSplHeatMap(): ZoneMap</text>
+<rect x="345" y="530" width="305" height="90" rx="5" fill="#ffffff" stroke="#059669" stroke-width="1.4"/>
+<rect x="345" y="530" width="305" height="26" rx="4" fill="#059669"/>
 <text x="497.5" y="547" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">LightingDmxCalculator</text>
-<text x="358" y="572" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- DMX_MAX_CH: Int = 512</text>
-<line x1="350" y1="582" x2="645" y2="582" stroke="#cbd5e1" stroke-width="1"/>
-<text x="358" y="597" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcSingleUnitsX1(fixtures): Int</text>
-<text x="358" y="611" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcDmxCableMeters(cabina, z): Float</text>
-<rect x="740" y="30" width="380" height="146" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
-<rect x="740" y="30" width="380" height="26" rx="4" fill="#1F497D"/>
-<text x="930.0" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">RiderCalculation (Hybrid Persist)</text>
-<text x="748" y="72" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- id: UUID</text>
-<text x="748" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- venueId: UUID</text>
-<text x="748" y="100" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- riderInput: JSONB</text>
-<text x="748" y="114" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- calculatedResults: JSONB</text>
-<text x="748" y="128" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- alertsSnapshot: JSONB</text>
-<line x1="740" y1="138" x2="1120" y2="138" stroke="#cbd5e1" stroke-width="1"/>
-<text x="748" y="153" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ persistAtomically(): RiderCalc</text>
-<text x="748" y="167" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ toPdfPayload(): PdfReport</text>
-<rect x="740" y="240" width="380" height="132" rx="5" fill="#ffffff" stroke="#d97706" stroke-width="1.4"/>
-<rect x="740" y="240" width="380" height="26" rx="4" fill="#d97706"/>
-<text x="930.0" y="257" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">DjSetupAndGainSimulator</text>
-<text x="748" y="282" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- ch1LowActive: Boolean</text>
-<text x="748" y="296" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- ch2LowActive: Boolean</text>
-<text x="748" y="310" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- masterPos: 12_OCLOCK|2_OCLOCK|MAX</text>
-<line x1="740" y1="320" x2="1120" y2="320" stroke="#cbd5e1" stroke-width="1"/>
-<text x="748" y="335" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcMasterOutputDb(): Float</text>
-<text x="748" y="349" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ getLedMeterSegments(): LedState[]</text>
-<text x="748" y="363" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ buildCableChecklist(): AudioRoute[]</text>
-<rect x="740" y="435" width="380" height="118" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
-<rect x="740" y="435" width="380" height="26" rx="4" fill="#1F497D"/>
-<text x="930.0" y="452" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">SharedLink &amp; Logistics</text>
-<text x="748" y="477" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- token: String (Unique)</text>
-<text x="748" y="491" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- expiresAt: DateTime</text>
-<text x="748" y="505" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- maxSackWeightKg: Int = 25</text>
-<line x1="740" y1="515" x2="1120" y2="515" stroke="#cbd5e1" stroke-width="1"/>
-<text x="748" y="530" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ checkLeyDelSaco20949(kg): Alert</text>
-<text x="748" y="544" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ generateVanCubicLoad(): VanPlan</text>
-<line x1="265" y1="95" x2="350" y2="80" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="290.9" y="72.5" width="33.2" height="13" rx="2" fill="#f8fafc"/>
-<text x="307.5" y="82.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">1..*</text>
-<line x1="265" y1="285" x2="350" y2="110" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="288.0" y="182.5" width="39.0" height="13" rx="2" fill="#f8fafc"/>
-<text x="307.5" y="192.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">input</text>
-<line x1="265" y1="500" x2="350" y2="250" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="288.0" y="360.0" width="39.0" height="13" rx="2" fill="#f8fafc"/>
-<text x="307.5" y="370.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">loads</text>
-<line x1="645" y1="95" x2="740" y2="95" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
+<text x="353" y="572" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- DMX_MAX_CH: Int = 512</text>
+<line x1="345" y1="582" x2="650" y2="582" stroke="#cbd5e1" stroke-width="1"/>
+<text x="353" y="597" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcSingleUnitsX1(fixtures): Int</text>
+<text x="353" y="611" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcDmxCableMeters(cabina, z): Float</text>
+<rect x="735" y="30" width="385" height="146" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
+<rect x="735" y="30" width="385" height="26" rx="4" fill="#1F497D"/>
+<text x="927.5" y="47" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">CalculoRider (Persist. Híbrida)</text>
+<text x="743" y="72" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- id: UUID</text>
+<text x="743" y="86" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- recintoId: UUID</text>
+<text x="743" y="100" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- entradaRider: JSON</text>
+<text x="743" y="114" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- resultadosCalculados: JSON</text>
+<text x="743" y="128" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- alertasSnapshot: JSON</text>
+<line x1="735" y1="138" x2="1120" y2="138" stroke="#cbd5e1" stroke-width="1"/>
+<text x="743" y="153" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ persistAtomically(): CalculoRider</text>
+<text x="743" y="167" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ toDualPagePdfPayload(): PdfReport</text>
+<rect x="735" y="240" width="385" height="132" rx="5" fill="#ffffff" stroke="#d97706" stroke-width="1.4"/>
+<rect x="735" y="240" width="385" height="26" rx="4" fill="#d97706"/>
+<text x="927.5" y="257" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">DjSetupAndGainSimulator</text>
+<text x="743" y="282" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- ch1LowActive: Boolean</text>
+<text x="743" y="296" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- ch2LowActive: Boolean</text>
+<text x="743" y="310" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- masterPos: 12_OCLOCK|2_OCLOCK|MAX</text>
+<line x1="735" y1="320" x2="1120" y2="320" stroke="#cbd5e1" stroke-width="1"/>
+<text x="743" y="335" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcMasterOutputDb(): Float</text>
+<text x="743" y="349" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ getLedMeterSegments(): LedState[]</text>
+<text x="743" y="363" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ buildCableChecklist(): AudioRoute[]</text>
+<rect x="735" y="435" width="385" height="118" rx="5" fill="#ffffff" stroke="#1F497D" stroke-width="1.4"/>
+<rect x="735" y="435" width="385" height="26" rx="4" fill="#1F497D"/>
+<text x="927.5" y="452" fill="#ffffff" font-size="11" font-weight="700" font-family="Segoe UI, sans-serif" text-anchor="middle">LogisticsAndRentalService</text>
+<text x="743" y="477" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- maxSackWeightKg: Int = 25</text>
+<text x="743" y="491" fill="#334155" font-size="8.8" font-family="Consolas, monospace">- isRentalMode: Boolean</text>
+<line x1="735" y1="501" x2="1120" y2="501" stroke="#cbd5e1" stroke-width="1"/>
+<text x="743" y="516" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ checkLeyDelSaco20949(kg): Alert</text>
+<text x="743" y="530" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ calcRentalSummaryClp(): CostClp</text>
+<text x="743" y="544" fill="#1F497D" font-size="8.8" font-family="Consolas, monospace">+ exportCadPng300Dpi(): DataURL</text>
+<line x1="265" y1="95" x2="345" y2="80" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="288.4" y="72.5" width="33.2" height="13" rx="2" fill="#f8fafc"/>
+<text x="305.0" y="82.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">1..*</text>
+<line x1="265" y1="285" x2="345" y2="110" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="285.5" y="182.5" width="39.0" height="13" rx="2" fill="#f8fafc"/>
+<text x="305.0" y="192.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">input</text>
+<line x1="265" y1="500" x2="345" y2="260" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="285.5" y="365.0" width="39.0" height="13" rx="2" fill="#f8fafc"/>
+<text x="305.0" y="375.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">loads</text>
+<line x1="650" y1="95" x2="735" y2="95" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
 <rect x="664.3" y="80.0" width="56.4" height="13" rx="2" fill="#f8fafc"/>
 <text x="692.5" y="90.0" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">persiste</text>
-<line x1="495" y1="145" x2="495" y2="190" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
-<rect x="469.7" y="152.5" width="50.6" height="13" rx="2" fill="#f8fafc"/>
-<text x="495.0" y="162.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa SEC</text>
-<line x1="495" y1="336" x2="495" y2="375" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="466.8" y="340.5" width="56.4" height="13" rx="2" fill="#f8fafc"/>
-<text x="495.0" y="350.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa Haas</text>
-<line x1="495" y1="496" x2="495" y2="530" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
-<rect x="469.7" y="498.0" width="50.6" height="13" rx="2" fill="#f8fafc"/>
-<text x="495.0" y="508.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa DMX</text>
-<line x1="645" y1="430" x2="740" y2="310" stroke="#d97706" stroke-width="1.5"  marker-end="url(#arr)"/>
+<line x1="495" y1="155" x2="495" y2="200" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
+<rect x="469.7" y="162.5" width="50.6" height="13" rx="2" fill="#f8fafc"/>
+<text x="495.0" y="172.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa SEC</text>
+<line x1="495" y1="345" x2="495" y2="380" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="466.8" y="347.5" width="56.4" height="13" rx="2" fill="#f8fafc"/>
+<text x="495.0" y="357.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa Haas</text>
+<line x1="495" y1="500" x2="495" y2="530" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
+<rect x="469.7" y="500.0" width="50.6" height="13" rx="2" fill="#f8fafc"/>
+<text x="495.0" y="510.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">usa DMX</text>
+<line x1="650" y1="430" x2="735" y2="310" stroke="#d97706" stroke-width="1.5"  marker-end="url(#arr)"/>
 <rect x="670.1" y="355.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
 <text x="692.5" y="365.0" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">simula</text>
-<line x1="645" y1="120" x2="740" y2="485" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="670.1" y="287.5" width="44.8" height="13" rx="2" fill="#f8fafc"/>
-<text x="692.5" y="297.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">genera</text>
+<line x1="650" y1="120" x2="735" y2="485" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="667.2" y="287.5" width="50.6" height="13" rx="2" fill="#f8fafc"/>
+<text x="692.5" y="297.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">exporta</text>
 </svg>

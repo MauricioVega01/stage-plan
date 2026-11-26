@@ -154,7 +154,7 @@ export class CalculationController {
       data: {
         ownerId,
         venueId: venue.id,
-        engineVersion: '3.1.0',
+        engineVersion: '4.0.0',
         riderInput: rider as any,
         paramsUsed: params as any,
         calculatedResults: calculatedResults as any,

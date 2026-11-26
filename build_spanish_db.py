@@ -18,7 +18,7 @@ def create_and_seed_spanish_db(db_path):
     
     cur.execute("PRAGMA foreign_keys = ON;")
     
-    # DDL en Español
+    # DDL en Español (sincronizado con schema.prisma)
     cur.execute("""
     CREATE TABLE usuarios (
         id TEXT PRIMARY KEY,
@@ -26,6 +26,8 @@ def create_and_seed_spanish_db(db_path):
         clave_hash TEXT NOT NULL,
         nombre TEXT NOT NULL,
         rol TEXT NOT NULL DEFAULT 'ADMIN',
+        intentos_fallidos INTEGER NOT NULL DEFAULT 0,
+        bloqueado_hasta TEXT,
         fecha_creacion TEXT NOT NULL,
         fecha_actualizacion TEXT NOT NULL
     );
@@ -223,9 +225,12 @@ def create_and_seed_spanish_db(db_path):
     print(f"[OK] Base de datos en espanol creada exitosamente en: {db_path}")
 
 if __name__ == "__main__":
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     paths = [
-        r"stage-plan-main/dev.db",
-        r"stage-plan-main/packages/backend/prisma/dev.db"
+        os.path.join(base_dir, "dev.db"),
+        os.path.join(base_dir, "packages", "backend", "prisma", "dev.db"),
+        os.path.join(base_dir, "entrega_sumativa_02", "sql", "dev.db"),
     ]
     for p in paths:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
         create_and_seed_spanish_db(p)

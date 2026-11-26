@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(BASE_DIR, "Formato_propuesto_sumativa 01_2026.docx")
 if not os.path.exists(TEMPLATE_PATH):
     TEMPLATE_PATH = os.path.join(BASE_DIR, "Proyecto Integrado 1.docx")
-# BASE_DIR dinamico ya definido arriba
+
 ENTREGA_DIR = os.path.join(BASE_DIR, "entrega_sumativa_02")
 DIAG_DIR = os.path.join(ENTREGA_DIR, "diagrams")
 SHOT_DIR = os.path.join(ENTREGA_DIR, "prototipo", "capturas")
@@ -22,15 +22,78 @@ COLOR_SUBTITLE = RGBColor(0x59, 0x59, 0x59)   # Gris medio
 COLOR_BODY = RGBColor(0x26, 0x26, 0x26)       # Gris oscuro legible
 COLOR_CAPTION = RGBColor(0x47, 0x55, 0x69)    # Gris pizarra pie de figura
 FONT_NAME = "Open Sans"
-FONT_LIGHT = "Open Sans"
 FONT_MONO = "Consolas"
 
 
-class DocCursor:
-    """Inserta párrafos, tablas y figuras en orden secuencial estricto tras un elemento ancla."""
-    def __init__(self, doc, anchor_p):
+class DocBuilder:
+    """Construye el documento secuencialmente insertando antes de <w:sectPr>."""
+    def __init__(self, doc):
         self.doc = doc
-        self.last_el = anchor_p._p
+        self.body = doc.element.body
+        self.sectPr = self.body.find(qn("w:sectPr"))
+
+    def _attach(self, el):
+        if self.sectPr is not None:
+            self.sectPr.addprevious(el)
+        else:
+            self.body.append(el)
+
+    def add_page_break(self):
+        p = self.doc.add_paragraph()
+        r = p.add_run()
+        r.add_break(docx.enum.text.WD_BREAK.PAGE)
+        self._attach(p._p)
+        return p
+
+    def add_h1(self, text):
+        p = self.doc.add_paragraph()
+        try:
+            p.style = self.doc.styles["Título1"]
+        except KeyError:
+            pass
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_before = Pt(12)
+        p.paragraph_format.space_after = Pt(6)
+        p.paragraph_format.keep_with_next = True
+        r = p.add_run(text)
+        r.bold = True
+        r.font.name = FONT_NAME
+        r.font.size = Pt(13.0)
+        r.font.color.rgb = COLOR_TITLE
+        self._attach(p._p)
+        return p
+
+    def add_h2(self, text, size=11.0):
+        p = self.doc.add_paragraph()
+        try:
+            p.style = self.doc.styles["Título2"]
+        except KeyError:
+            pass
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_before = Pt(9)
+        p.paragraph_format.space_after = Pt(4)
+        p.paragraph_format.keep_with_next = True
+        r = p.add_run(text)
+        r.bold = True
+        r.font.name = FONT_NAME
+        r.font.size = Pt(size)
+        r.font.color.rgb = COLOR_TITLE
+        self._attach(p._p)
+        return p
+
+    def add_h3(self, text, size=10.2):
+        p = self.doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_before = Pt(7)
+        p.paragraph_format.space_after = Pt(3)
+        p.paragraph_format.keep_with_next = True
+        r = p.add_run(text)
+        r.bold = True
+        r.font.name = FONT_NAME
+        r.font.size = Pt(size)
+        r.font.color.rgb = COLOR_TITLE
+        self._attach(p._p)
+        return p
 
     def add_p(self, text="", bold=False, italic=False, color=COLOR_BODY, size=10.0,
               align=WD_ALIGN_PARAGRAPH.LEFT, space_before=0, space_after=6, mono=False):
@@ -46,25 +109,7 @@ class DocCursor:
             r.font.name = FONT_MONO if mono else FONT_NAME
             r.font.size = Pt(size)
             r.font.color.rgb = color
-        self.last_el.addnext(p._p)
-        self.last_el = p._p
-        return p
-
-    def add_runs(self, runs, align=WD_ALIGN_PARAGRAPH.LEFT, space_before=0, space_after=6):
-        p = self.doc.add_paragraph()
-        p.alignment = align
-        p.paragraph_format.space_before = Pt(space_before)
-        p.paragraph_format.space_after = Pt(space_after)
-        p.paragraph_format.line_spacing = 1.15
-        for text, bold, italic, color, size in runs:
-            r = p.add_run(text)
-            r.bold = bold
-            r.italic = italic
-            r.font.name = FONT_NAME
-            r.font.size = Pt(size)
-            r.font.color.rgb = color
-        self.last_el.addnext(p._p)
-        self.last_el = p._p
+        self._attach(p._p)
         return p
 
     def add_code(self, code_text, title=None):
@@ -100,9 +145,9 @@ class DocCursor:
         r.font.name = FONT_MONO
         r.font.size = Pt(8.0)
         r.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
-        self.last_el.addnext(tbl._tbl)
-        self.last_el = tbl._tbl
+        self._attach(tbl._tbl)
         self.add_p("", space_after=4)
+        return tbl
 
     def add_table(self, caption, headers, rows_data, col_widths=None):
         if caption:
@@ -121,7 +166,6 @@ class DocCursor:
         )
         tblPr.append(tblBorders)
 
-        # Header row repeat
         trPr = table.rows[0]._tr.get_or_add_trPr()
         trPr.append(parse_xml(f'<w:tblHeader {nsdecls("w")}/>'))
         trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
@@ -166,7 +210,7 @@ class DocCursor:
                 p.paragraph_format.space_after = Pt(0)
                 p.paragraph_format.line_spacing = 1.08
                 r = p.add_run(str(val))
-                r.font.name = FONT_LIGHT
+                r.font.name = FONT_NAME
                 r.font.size = Pt(8.2)
                 r.font.color.rgb = COLOR_BODY
                 if c_idx == 0:
@@ -177,8 +221,7 @@ class DocCursor:
                 for i, w in enumerate(col_widths):
                     row.cells[i].width = Inches(w)
 
-        self.last_el.addnext(table._tbl)
-        self.last_el = table._tbl
+        self._attach(table._tbl)
         self.add_p("", space_after=5)
         return table
 
@@ -192,33 +235,48 @@ class DocCursor:
         p_img.paragraph_format.keep_with_next = True
         run = p_img.add_run()
         run.add_picture(img_path, width=Inches(width_inches))
-        self.last_el.addnext(p_img._p)
-        self.last_el = p_img._p
+        self._attach(p_img._p)
         self.add_p(caption, italic=True, color=COLOR_CAPTION, size=8.8, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=10)
 
 
-def style_anchor(p, title_text, size=11.0, color=COLOR_TITLE, space_after=6):
-    p.text = ""
-    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    p.paragraph_format.space_before = Pt(8)
-    p.paragraph_format.space_after = Pt(space_after)
-    p.paragraph_format.keep_with_next = True
-    r = p.add_run(title_text)
-    r.bold = True
-    r.font.name = FONT_NAME
-    r.font.size = Pt(size)
-    r.font.color.rgb = color
-    return p
+def clean_template_after_toc(doc):
+    """Conserva portada (0..6) y Tabla de Contenidos (7), eliminando todo resto de plantilla antes de <w:sectPr>."""
+    body = doc.element.body
+    children = list(body)
+    for idx in range(8, len(children)):
+        el = children[idx]
+        if el.tag != qn("w:sectPr"):
+            body.remove(el)
+
+
+def enable_update_fields(doc):
+    """Marca <w:updateFields w:val="true"/> para que Word actualice TOC y número de página al abrir."""
+    settings = doc.settings.element
+    if settings.find(qn("w:updateFields")) is None:
+        uf = OxmlElement("w:updateFields")
+        uf.set(qn("w:val"), "true")
+        settings.append(uf)
 
 
 def build_sumativa_02():
     doc = docx.Document(TEMPLATE_PATH)
-    orig = list(doc.paragraphs)  # Congelar referencias exactas de plantilla antes de insertar nodos
+
+    # Metadatos limpios del autor real
+    cp = doc.core_properties
+    cp.author = "Mauricio Vega Castillo"
+    cp.last_modified_by = "Mauricio Vega Castillo"
+    cp.title = "Proyecto Integrado (TIHV43) — Evaluación Sumativa 2: Diseño de la Solución STAGE PLAN"
+    cp.subject = "Analista Programador — Sección C1 — Grupo G10 — INACAP Sede Maipú"
+    cp.comments = ""
+
+    enable_update_fields(doc)
 
     for s in doc.styles:
         if s.name in ["Estilo3", "Título1", "Normal"]:
             s.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
             s.font.name = FONT_NAME
+
+    orig = list(doc.paragraphs)
 
     # 1. PORTADA OFICIAL
     p1 = orig[1]
@@ -228,9 +286,12 @@ def build_sumativa_02():
     r1.font.name = FONT_NAME
     r1.font.size = Pt(24)
     r1.font.color.rgb = COLOR_TITLE
-    r2 = p1.add_run("Plataforma Web de Pre-Producción Logística, Ruteo Eléctrico SEC RIC N° 03/10, Acústica Espacial Haas, Gestión de Cables de Escenario y Gain Staging Hardware")
+    r2 = p1.add_run(
+        "Plataforma Web de Pre-Producción Logística, Ruteo Eléctrico SEC RIC N° 03/10, "
+        "Acústica Espacial Haas, Dimensionamiento de Potencias Pasivas y Cotización Operativa"
+    )
     r2.font.name = FONT_NAME
-    r2.font.size = Pt(12.5)
+    r2.font.size = Pt(12.0)
     r2.font.color.rgb = COLOR_SUBTITLE
 
     for idx in range(2, 6):
@@ -259,114 +320,113 @@ def build_sumativa_02():
         p.append(r)
 
     p6 = orig[6]
-    for txbx in p6._p.xpath(".//w:txbxContent"):
-        paras = txbx.xpath(".//w:p", namespaces=ns)
-        if len(paras) >= 6:
-            add_val_run(paras[0], " Proyecto Integrado (TIHV43)")
-            add_val_run(paras[1], " C1")
-            r2_nodes = paras[2].xpath(".//w:r")
-            if len(r2_nodes) > 1:
-                r2_nodes[1].xpath(".//w:t")[0].text = " Manuel Rojas"
-                rPr2 = r2_nodes[1].xpath(".//w:rPr")[0]
-                c2 = OxmlElement("w:color")
-                c2.set(qn("w:val"), "1F497D")
-                rPr2.append(c2)
-                rPr2.append(OxmlElement("w:b"))
-            add_val_run(paras[3], " Mauricio Vega Castillo (Grupo G10 — DISTORSIONCL SPA)")
-            r5_nodes = paras[5].xpath(".//w:r")
-            if len(r5_nodes) > 1:
-                r5_nodes[0].xpath(".//w:t")[0].text = "Fecha de entrega: "
-                r5_nodes[1].xpath(".//w:t")[0].text = "Noviembre de 2026"
-                rPr5 = r5_nodes[1].xpath(".//w:rPr")[0]
-                c5 = OxmlElement("w:color")
-                c5.set(qn("w:val"), "1F497D")
-                rPr5.append(c5)
-                rPr5.append(OxmlElement("w:b"))
+    p6.text = ""
+    r6 = p6.add_run(
+        "Carrera: Analista Programador | Asignatura: Proyecto Integrado (TIHV43)\n"
+        "Sección: C1 | Grupo: G10 | Autor: Mauricio Vega Castillo | Docente: Manuel Rojas\n"
+        "Caso de Estudio: Productora y Arriendo de Audio DISTORSIONCL SPA\n"
+        "Sede: INACAP Sede Maipú | Fecha de entrega: Noviembre de 2026"
+    )
+    r6.font.name = FONT_NAME
+    r6.font.size = Pt(10.0)
+    r6.font.color.rgb = COLOR_SUBTITLE
+    r6.italic = True
 
-    # 2. RESUMEN EJECUTIVO (P[9])
-    style_anchor(orig[9], "Resumen Ejecutivo — STAGE PLAN (DISTORSIONCL SPA)", 11.5)
-    orig[10].text = ""
-    cur = DocCursor(doc, orig[9])
-    cur.add_p(
-        "STAGE PLAN es una plataforma web responsiva de pre-producción electroacústica diseñada y validada para "
+    # Limpiar restos de plantilla posteriores al índice TOC
+    clean_template_after_toc(doc)
+
+    b = DocBuilder(doc)
+    b.add_page_break()
+
+    # 2. RESUMEN EJECUTIVO
+    b.add_h1("RESUMEN EJECUTIVO")
+    b.add_p(
+        "STAGE PLAN es una plataforma web responsiva de pre-producción electroacústica desarrollada y validada para "
         "la empresa contraparte DISTORSIONCL SPA (operador técnico Amaro Artiaga), en el marco de la Unidad 2 de la "
-        "asignatura Proyecto Integrado (TIHV43, Sección C1, INACAP Sede Maipú). La solución erradica el dimensionamiento "
-        "empírico de instalaciones temporales de sonido, cables de escenario y fuerza eléctrica, aplicando de forma determinista "
-        "los Pliegos Técnicos Normativos SEC RIC N° 03 y RIC N° 10, la norma ambiental de ruido cobertura y distancias y la Ley del Saco N° 20.949."
+        "asignatura Proyecto Integrado (TIHV43, Sección C1, Grupo G10, INACAP Sede Maipú). La solución sustituye el "
+        "dimensionamiento empírico sin cálculo normativo de instalaciones temporales de sonido, cableado de escenario y "
+        "fuerza eléctrica, aplicando de forma determinista los Pliegos Técnicos Normativos SEC RIC N° 03 y RIC N° 10, "
+        "el Decreto Supremo N° 38 del Ministerio del Medio Ambiente (MMA) sobre emisión de ruidos y la Ley N° 20.949 "
+        "(Ley del Saco)."
     )
-    cur.add_p(
-        "El presente informe consolida los seis ejes exigidos por la rúbrica oficial : (1) planificación "
-        "Scrumban + PSP en 4 Sprints de 14 días (20 tareas con ruta crítica y tablero Kanban WIP=1); (2) arquitectura 4+1 "
-        "(ISO/IEC/IEEE 42010:2022) implementada como monorepo TypeScript; (3) diseño UX/UI Dark Mode FOH (WCAG 2.1 AA) "
-        "con prototipo web real funcional, plano 2D con postes guía SEC RIC N° 10 y réplica hardware interactiva Pioneer DJM; "
-        "(4) base de datos híbrida SQLite 3 dev.db con Prisma ORM (4 tablas normalizadas 3FN + documentos JSON nativos, auditable en DB Browser for SQLite); (5) programación segura "
-        "RBAC, Anti-IDOR y cobertura completa OWASP Top 10 (2021); y (6) plan de pruebas respaldado por 70 tests unitarios "
-        "automatizados en Vitest (10 archivos, 100% PASS en 113 ms) y un benchmark real de 0,0286 ms por cálculo completo."
+    b.add_p(
+        "Este informe técnico consolida los seis ejes de diseño exigidos para la evaluación: (1) planificación Scrumban + "
+        "PSP en 4 Sprints de 14 días (20 tareas con ruta crítica y tablero Kanban con límite WIP=1); (2) arquitectura 4+1 "
+        "(ISO/IEC/IEEE 42010:2022) estructurada como monorepo TypeScript; (3) diseño UX/UI Dark Mode FOH (WCAG 2.1 AA) en "
+        "formato Studio Cockpit calibrado al 100% de zoom del navegador, con plano vectorial 2D por capas exclusivas "
+        "(Blueprint Dark), postes guía SEC RIC N° 10, dimensionamiento automático de rack de potencias pasivas, cotizador "
+        "de arriendo diario en CLP, réplica interactiva Pioneer DJM y exportación PDF Dual-Page; (4) persistencia híbrida "
+        "en SQLite 3 (dev.db) mediante Prisma ORM (4 tablas normalizadas en 3FN en español + documentos JSON) con proyección "
+        "documentada hacia PostgreSQL 16; (5) estándares de programación segura con validación Zod, bcrypt (cost 12), bloqueo "
+        "temporal HTTP 423, limitación de tasa, protección Anti-IDOR y matriz OWASP Top 10 (2021); y (6) aseguramiento de "
+        "calidad verificado mediante 81 pruebas unitarias automatizadas en Vitest (11 archivos, 100% PASS en 186 ms) y "
+        "medición real de rendimiento de 0,0286 ms promedio por cálculo completo."
     )
-    cur.add_p(
-        "Nota Metodológica de Alcance (Unidad 2 — Diseño y Prueba de Concepto): Conforme a la Guía ABPRO Unidad 2, este informe "
-        "corresponde formalmente a la fase de Diseño de la Solución de Software. El código operativo exhibido (frontend Vue 3, "
-        "motor isomórfico @stageplan/shared y 70 tests TDD) se presenta como Prototipo Interactivo Funcional de Alta Fidelidad "
-        "(Criterio 2.1.3.5) y Prueba de Concepto (PoC) para respaldar el Plan de Pruebas (Criterio 2.1.6.13), dejando el despliegue "
-        "productivo con PostgreSQL 16 en VPS, pruebas de carga k6 y auditoría OWASP ZAP para la etapa de construcción (Unidad 3).",
+    b.add_p(
+        "Nota de alcance (Unidad 2 — Diseño y Prueba de Concepto): Conforme a la Guía ABPRO Unidad 2, este documento "
+        "corresponde a la fase de Diseño de la Solución de Software. El código operativo exhibido (frontend Vue 3 con "
+        "Vue Router, núcleo compartido @stageplan/shared, API Express/Prisma sobre SQLite y 81 pruebas TDD) funciona como "
+        "prototipo interactivo funcional y prueba de concepto (PoC) verificable en local, manteniendo para la etapa de "
+        "construcción y despliegue productivo (Unidad 3) la migración a PostgreSQL 16 en servidor VPS, la bitácora forense "
+        "audit_logs, las pruebas de carga con k6 y el escaneo activo con OWASP ZAP.",
         italic=True, color=COLOR_CAPTION, size=9.2
     )
 
-    # ACTIVIDADES FORMATIVAS UNIDAD 2 (GUÍA ABPRO)
-    cur.add_p("Actividades Formativas de la Unidad 2: Brainstorming y Matriz de Priorización (Guía ABPRO)", bold=True, color=COLOR_TITLE, size=11.0, space_before=8, space_after=4)
-    cur.add_table(
+    # ACTIVIDADES FORMATIVAS U2
+    b.add_h2("Actividades Formativas de la Unidad 2: Brainstorming y Matriz de Priorización (Guía ABPRO)")
+    b.add_table(
         "Tabla 1. Parte 1 — Brainstorming categorizado de mejoras técnicas levantadas para DISTORSIONCL SPA.",
         ["Categoría Temática", "Ideas Levantadas en Lluvia de Ideas", "Problemática Resuelta en Terreno"],
         [
-            ["1. Seguridad Eléctrica SEC", "I1: Calibre automático ΔV ≤ 3%; I2: Líneas aisladas L1/L2/L3; I3: Postes guía esquineros R ≥ 6d (RIC N° 10).", "Disparos termomagnéticos, Efecto Joule y fatiga mecánica de conductores."],
-            ["2. Acústica y Gain Staging", "I4: Clúster mono de subs (+6 dB); I5: Retardos Haas para Delays; I6: Réplica hardware Pioneer DJM (VU vertical + Low Kill).", "Saturación (clipping), cancelación acústica y daño de bobinas por 2 bajos activos."],
-        ["3. Equipamiento de Audio Mixto", "I7: Lotes Activa/Pasiva con amplificador y alerta Speakon; I8: Potencia continua vs pico.", "Apagado en modo PROTECT y distorsión por sobrecarga en cajas pasivas."],
-        ["4. Logística y Seguridad Física", "I9: Alerta preventiva peso máximo Ley del Saco; I10: Lista cables poder y señal; I11: Plan contingencia.", "Lesiones lumbares, olvido de cables y parálisis ante falla."],
-            ["5. Operación Offline", "I12: Plano 2D perimetral sin cruces centrales; I13: PDF client-side en modo local; I14: Resumen WhatsApp; I15: SharedLink chofer.", "Parcelas rurales sin 4G/5G y descoordinación bodega-transporte."]
+            ["1. Seguridad Eléctrica SEC", "I1: Calibre automático ΔV ≤ 3%; I2: Líneas aisladas L1/L2/L3; I3: Postes guía esquineros R ≥ 6d (RIC N° 10).", "Disparos termomagnéticos, sobrecalentamiento Joule y fatiga mecánica de conductores."],
+            ["2. Acústica y Gain Staging", "I4: Clúster mono de subs (+6 dB); I5: Retardos Haas para Delays; I6: Réplica hardware Pioneer DJM (VU vertical + Low Kill).", "Saturación (clipping), cancelaciones de graves y daño de bobinas por dos bajos simultáneos."],
+            ["3. Equipamiento Mixto y Potencias", "I7: Lotes Activa/Pasiva con cálculo de rack de potencias (headroom 1.6x) y alerta Speakon; I8: Carga AC 220V de etapas.", "Apagado en modo PROTECT, subdimensionamiento de amplificadores y distorsión térmica."],
+            ["4. Logística y Costos", "I9: Alerta peso máximo Ley del Saco N° 20.949; I10: Lista cables poder/señal; I11: Plan B; I16: Cotizador de arriendo CLP.", "Lesiones lumbares, olvido de cables, parálisis ante falla y falta de presupuesto rápido."],
+            ["5. Operación Autónomo-Terreno", "I12: Plano 2D Blueprint por capas y vista completa en reporte; I13: PDF Dual-Page + PNG 300 DPI; I14: WhatsApp; I15: SharedLink.", "Ruido visual al configurar, recintos rurales sin señal móvil y descoordinación en despacho."]
         ],
         [1.5, 2.7, 2.3]
     )
-    cur.add_table(
+    b.add_table(
         "Tabla 2. Parte 2 — Matriz de priorización ponderada (Impacto 40%, Viabilidad 30%, Urgencia Normativa 30%).",
         ["Rank", "Propuesta Evaluada", "Imp.", "Viab.", "Urg.", "Puntaje", "Decisión de Alcance"],
         [
             ["1", "I1+I2: Cálculo SEC RIC 03/10 (ΔV ≤ 3%) y separación L1/L2/L3", "5.0", "5.0", "5.0", "5.00", "MVP Obligatorio (S1–S2)"],
-            ["2", "I7: Lotes Activa/Pasiva con Power y alerta Speakon < 3.2 Ω", "5.0", "4.8", "4.8", "4.88", "MVP Obligatorio (S2)"],
-            ["3", "I3+I12: Plano 2D proporcional + Postes Guía RIC 10 (R ≥ 6d)", "4.9", "4.5", "5.0", "4.81", "Core (S4)"],
+            ["2", "I7+I8: Lotes Activa/Pasiva, Rack de Potencias y alerta Speakon < 3.2 Ω", "5.0", "4.8", "4.8", "4.88", "MVP Obligatorio (S2–S4)"],
+            ["3", "I3+I12: Plano 2D Blueprint por capas + Postes Guía RIC 10 (R ≥ 6d)", "4.9", "4.5", "5.0", "4.81", "Core (S4)"],
             ["4", "I4+I5+I6: Clúster Mono + Delays Haas + Réplica Pioneer DJM", "4.6", "4.7", "4.5", "4.60", "Core (S4)"],
-            ["5", "I8: Gestión de Cables de Escenario unitaria (x1) y metraje desde Cabina", "4.2", "5.0", "4.3", "4.47", "Core (S2)"],
-            ["6", "I9+I10+I13: Ruido cobertura acústica + Ley del Saco + PDF Offline", "4.5", "4.6", "4.2", "4.44", "Core (S3–S4)"],
-            ["7", "I11+I14+I15: Plan B contingencia + WhatsApp + SharedLink", "4.0", "4.8", "3.8", "4.18", "Complemento (S4)"]
+            ["5", "I9+I10+I13: D.S. N° 38 MMA + Ley del Saco + PDF Dual-Page Offline", "4.5", "4.6", "4.2", "4.44", "Core (S3–S4)"],
+            ["6", "I11+I14+I16: Plan B + WhatsApp + Cotizador de Arriendo CLP", "4.1", "4.8", "3.9", "4.25", "Complemento (S4)"]
         ],
         [0.45, 2.55, 0.45, 0.45, 0.45, 0.65, 1.5]
     )
 
-    # 3. METODOLOGÍA DE DESARROLLO Y PLANIFICACIÓN (P[14]..P[21])
-    style_anchor(orig[14], "1.1 Selección y justificación de la metodología de desarrollo (Scrumban + PSP)")
-    c14 = DocCursor(doc, orig[14])
-    c14.add_p(
-        "Dado que el proyecto es ejecutado de manera individual por Mauricio Vega Castillo (Grupo G10), se adoptó el marco "
-        "híbrido ágil Scrumban complementado con prácticas de PSP (Personal Software Process). Scrum puro impone ceremonias "
-        "grupales inviables en desarrollo unipersonal, mientras que Cascada carece de agilidad frente al feedback directo del "
-        "operador de DISTORSIONCL SPA. Scrumban + PSP combina: (a) 4 Sprints fijos de 14 días con metas verificables; "
-        "(b) tablero Kanban con política estricta WIP = 1 en 'In Progress'; y (c) Quality Gate automatizado TDD (70 pruebas "
-        "unitarias en Vitest + verificación estricta vue-tsc) que reemplaza la revisión por pares."
+    # SECCIÓN 1: METODOLOGÍA
+    b.add_h1("1. METODOLOGÍA DE DESARROLLO Y PLANIFICACIÓN")
+    b.add_h2("1.1 Selección y justificación de la metodología de desarrollo (Scrumban + PSP)")
+    b.add_p(
+        "Dado que el proyecto es desarrollado de forma individual por Mauricio Vega Castillo (Sección C1, Grupo G10), "
+        "se seleccionó el marco ágil híbrido Scrumban complementado con prácticas de PSP (Personal Software Process). "
+        "El enfoque Cascada resulta rígido frente a las iteraciones recogidas con el operador de DISTORSIONCL SPA, "
+        "mientras que Scrum puro introduce ceremonias diseñadas para equipos numerosos. Scrumban + PSP articula: "
+        "(a) 4 Sprints fijos de 14 días con entregables verificables; (b) tablero Kanban con límite estricto WIP = 1 en la "
+        "columna 'In Progress' para evitar cambios de contexto; y (c) compuerta de calidad automatizada (Quality Gate) "
+        "compuesta por compilación estricta TypeScript (vue-tsc + tsc) y 81 pruebas unitarias TDD en Vitest que compensan "
+        "la ausencia de revisión por pares."
     )
 
-    style_anchor(orig[15], "1.2 Cronograma de trabajo, hitos, dependencias, ruta crítica y estimación de recursos")
-    c15 = DocCursor(doc, orig[15])
-    c15.add_table(
+    b.add_h2("1.2 Cronograma de trabajo, hitos, dependencias, ruta crítica y estimación de recursos")
+    b.add_table(
         "Tabla 3. Estimación de recursos humanos, técnicos e infraestructura del proyecto.",
         ["Tipo de Recurso", "Detalle Técnico / Rol Asignado", "Dedicación / Costo"],
         [
             ["Recurso Humano", "Mauricio Vega Castillo — Analista Programador (Arquitectura, Full-Stack, QA, Documentación)", "180 hrs (4 Sprints × 14 días)"],
             ["Contraparte Real", "Amaro Artiaga — Operador Técnico FOH de DISTORSIONCL SPA (Validación terreno)", "8 hrs sesiones de iteración UX"],
             ["Entorno Dev/QA", "Estación Windows 11, Node.js v24 LTS, SQLite 3 (dev.db) + Prisma, Vitest v3.2.7, GitHub", "$0 CLP (Open Source / Académico)"],
-            ["Despliegue Cloud", "VPS Ubuntu 22.04 LTS (2 vCPU, 4 GB RAM) + Nginx/Caddy TLS 1.3 + Dominio .cl", "~$12.000 CLP/mes proyectado"]
+            ["Despliegue Cloud U3", "VPS Linux Ubuntu 22.04 LTS (2 vCPU, 4 GB RAM) + PostgreSQL 16 + Nginx TLS 1.3", "~$12.000 CLP/mes proyectado"]
         ],
         [1.3, 3.6, 1.6]
     )
-    c15.add_table(
+    b.add_table(
         "Tabla 4. Cronograma de 20 tareas (T01–T20) con responsables, plazos, dependencias, MoSCoW y ruta crítica.",
         ["ID", "Sprint", "Actividad Técnica", "Resp.", "Plazo", "Dep.", "MoSCoW", "Crítica"],
         [
@@ -375,227 +435,214 @@ def build_sumativa_02():
             ["T03", "S1", "Arquitectura 4+1 (5 vistas) y modelo híbrido DER 4 tablas", "M. Vega", "09–11 Oct", "T02", "Must", "No"],
             ["T04", "S1", "Setup Monorepo npm workspaces (shared, backend, frontend)", "M. Vega", "12–14 Oct", "T02", "Must", "SÍ"],
             ["T05", "S2", "Motor eléctrico SEC RIC 03/10 (electrical.ts, cabling.ts)", "M. Vega", "15–18 Oct", "T04", "Must", "SÍ"],
-            ["T06", "S2", "Lotes Activa/Pasiva + Power + Speakon < 3.2 Ω (hybrid-roster.ts)", "M. Vega", "19–21 Oct", "T05", "Must", "SÍ"],
+            ["T06", "S2", "Lotes Activa/Pasiva, Rack Potencias y Speakon (hybrid-roster.ts)", "M. Vega", "19–21 Oct", "T05", "Must", "SÍ"],
             ["T07", "S2", "Acústica espacial: Clúster mono +6 dB y retardos Haas", "M. Vega", "22–24 Oct", "T05", "Must", "No"],
-            ["T08", "S2", "Ruteo cables audio, Setup DJ y 70 tests Vitest", "M. Vega", "25–28 Oct", "T06, T07", "Must", "SÍ"],
+            ["T08", "S2", "Ruteo cables audio, Setup DJ y suite TDD en Vitest", "M. Vega", "25–28 Oct", "T06, T07", "Must", "SÍ"],
             ["T09", "S3", "Prisma ORM (schema.prisma) + SQLite 3 (dev.db) 4 tablas 3FN + JSON", "M. Vega", "29–31 Oct", "T03, T08", "Must", "SÍ"],
-            ["T10", "S3", "API Express: Helmet, CORS, RateLimit, Bcrypt(12), JWT", "M. Vega", "01–04 Nov", "T09", "Must", "SÍ"],
-            ["T11", "S3", "Controladores Venues y Calculations con blindaje Anti-IDOR", "M. Vega", "05–07 Nov", "T10", "Must", "No"],
-            ["T12", "S3", "Wizard 5 Pasos Vue 3 + Tailwind Dark Mode FOH (WCAG AA)", "M. Vega", "08–11 Nov", "T08, T10", "Must", "SÍ"],
-            ["T13", "S4", "Plano vectorial LayoutSvg2D.vue + Postes Guía SEC RIC 10", "M. Vega", "12–15 Nov", "T12", "Must", "SÍ"],
+            ["T10", "S3", "API Express: Helmet, CORS, RateLimit, Bcrypt(12), JWT y bloqueo 423", "M. Vega", "01–04 Nov", "T09", "Must", "SÍ"],
+            ["T11", "S3", "Controladores Venues y Calculations con Anti-IDOR y errorHandler", "M. Vega", "05–07 Nov", "T10", "Must", "No"],
+            ["T12", "S3", "Arquitectura modular Vue Router (5 rutas) + Dark Mode FOH WCAG AA", "M. Vega", "08–11 Nov", "T08, T10", "Must", "SÍ"],
+            ["T13", "S4", "Cockpit 100% zoom, LayoutSvg2D Blueprint (5 capas) + Postes RIC 10", "M. Vega", "12–15 Nov", "T12", "Must", "SÍ"],
             ["T14", "S4", "Réplica hardware PioneerMixerSimulator.vue (17 LEDs + Kill)", "M. Vega", "16–18 Nov", "T12", "Should", "No"],
-            ["T15", "S4", "Exportación PDF Offline (jsPDF), Ley del Saco y Plan B", "M. Vega", "18–19 Nov", "T13, T14", "Must", "SÍ"],
-            ["T16", "S4", "Validación UX con Amaro Artiaga (iteraciones UX en terreno)", "M. Vega", "19–20 Nov", "T15", "Should", "No"],
-            ["T17", "S4", "Auditoría OWASP Top 10 (A01–A10) y casos seguridad", "M. Vega", "21–22 Nov", "T11, T15", "Must", "No"],
-            ["T18", "S4", "Benchmark rendimiento (1.000 iters) y 70/70 Vitest PASS", "M. Vega", "23 Nov", "T15, T17", "Must", "SÍ"],
-            ["T19", "S4", "8 diagramas vectoriales, capturas reales y mosaico", "M. Vega", "24 Nov", "T16, T18", "Must", "No"],
-            ["T20", "S4", "Consolidación Informe U2, paquete .zip y banco defensa oral", "M. Vega", "25 Nov", "T18, T19", "Must", "SÍ"]
+            ["T15", "S4", "Cotizador arriendo CLP, exportación PDF Dual-Page, PNG 300 DPI y Plan B", "M. Vega", "18–19 Nov", "T13, T14", "Must", "SÍ"],
+            ["T16", "S4", "Validación UX con Amaro Artiaga (iteraciones de usabilidad y capas)", "M. Vega", "19–20 Nov", "T15", "Should", "No"],
+            ["T17", "S4", "Auditoría OWASP Top 10 (A01–A10) y casos de seguridad", "M. Vega", "21–22 Nov", "T11, T15", "Must", "No"],
+            ["T18", "S4", "Benchmark rendimiento (1.000 iters) y verificación 81/81 Vitest PASS", "M. Vega", "23–25 Nov", "T15, T17", "Must", "SÍ"],
+            ["T19", "S4", "Regeneración de 8 diagramas vectoriales, capturas reales y mosaico", "M. Vega", "25–26 Nov", "T16, T18", "Must", "No"],
+            ["T20", "S4", "Consolidación Informe Sumativa 2, empaquetado .zip y cierre", "M. Vega", "26 Nov", "T18, T19", "Must", "SÍ"]
         ],
         [0.42, 0.45, 2.38, 0.65, 0.78, 0.62, 0.62, 0.58]
     )
-    c15.add_p("Ruta Crítica del Proyecto (holgura = 0 días): T01 → T02 → T04 → T05 → T06 → T08 → T09 → T10 → T12 → T13 → T15 → T18 → T20.", bold=True, color=COLOR_ACCENT, size=9.2)
-    c15.add_figure(os.path.join(DIAG_DIR, "diag-01-scrumban-cronograma-kanban.png"), "Figura 1. Cronograma Scrumban + PSP (4 Sprints de 14 días), ruta crítica y tablero Kanban con límites WIP.")
+    b.add_p("Ruta Crítica del Proyecto (holgura = 0 días): T01 → T02 → T04 → T05 → T06 → T08 → T09 → T10 → T12 → T13 → T15 → T18 → T20.", bold=True, color=COLOR_ACCENT, size=9.2)
+    b.add_figure(os.path.join(DIAG_DIR, "diag-01-scrumban-cronograma-kanban.png"), "Figura 1. Cronograma Scrumban + PSP (4 Sprints de 14 días), ruta crítica y tablero Kanban con límites WIP.")
 
-    style_anchor(orig[16], "1.3 Herramientas de gestión y seguimiento (Opción B: Metodología Ágil — Jira & GitHub)")
-    c16 = DocCursor(doc, orig[16])
-    c16.add_p(
-        "El seguimiento operativo se gestiona mediante Jira Software Cloud enlazado al repositorio GitHub "
-        "(https://github.com/MauricioVega01/stage-plan, rama main, commit b027650) aplicando Conventional Commits "
-        "(feat, fix, test) vinculados a cada historia de usuario y criterio de aceptación."
+    b.add_h2("1.3 Herramientas de gestión y seguimiento (Jira & GitHub)")
+    b.add_p(
+        "El seguimiento operativo se administra mediante Jira Software enlazado al repositorio GitHub "
+        "(https://github.com/MauricioVega01/stage-plan, rama main), aplicando Conventional Commits (feat, fix, test, docs) "
+        "vinculados a cada historia de usuario y criterio de aceptación."
     )
-    orig[17].text = ""
-    orig[18].text = ""
 
-    style_anchor(orig[19], "1.4 Product Backlog priorizado (Historias de Usuario y Criterios de Aceptación Gherkin)")
-    c19 = DocCursor(doc, orig[19])
-    c19.add_table(
+    b.add_h2("1.4 Product Backlog priorizado (Historias de Usuario y Criterios de Aceptación Gherkin)")
+    b.add_table(
         "Tabla 5. Product Backlog priorizado por valor de seguridad y negocio (MoSCoW).",
         ["ID", "Historia de Usuario", "Pts", "Prio.", "Criterio de Aceptación (Gherkin)"],
         [
-            ["HU01", "Autenticación JWT y blindaje Anti-IDOR", "5", "Must", "Dado un técnico autenticado, cuando solicita /api/venues/:uuidAjeno, entonces recibe HTTP 403 y se audita el intento."],
-            ["HU02", "Dimensiones ortogonales del recinto y distancias", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta dBA hacia la vivienda vecina."],
+            ["HU01", "Autenticación JWT, bloqueo 423 y control Anti-IDOR", "5", "Must", "Dado un técnico autenticado, cuando solicita /api/venues/:uuidAjeno, entonces el controlador filtra por ownerId y retorna HTTP 404 evitando enumeración; tras 5 fallos de login bloquea 15 min con HTTP 423."],
+            ["HU02", "Dimensiones ortogonales del recinto y D.S. N° 38", "3", "Must", "Dada una distancia <= 0 o > 500 m, Zod rechaza la entrada; con medidas válidas proyecta atenuación sonora (dBA) hacia la vivienda vecina."],
             ["HU03", "Cálculo SEC RIC 03/10 y líneas L1/L2/L3", "8", "Must", "Dado un tendido de 35 m con 3.250 W (220V), descarta 1.5 mm² y selecciona 2.5 mm² asegurando ΔV = 2.18% ≤ 3%."],
-            ["HU04", "Cajas Activa/Pasiva + Power + Speakon", "5", "Must", "Dadas 3 cajas pasivas de 8 Ω en paralelo, calcula Zeq = 2.67 Ω < 3.2 Ω y dispara alerta roja DANGER_PROTECT_SHORT."],
-        ["HU05", "Ruteo y metraje de cables de audio (XLR / Speakon)", "5", "Must", "Dada una configuración de 2 Tops y 2 Subs, calcula los cables XLR y Speakon exactos sin faltantes."],
-            ["HU06", "Plano 2D proporcional y Postes Guía RIC 10", "8", "Must", "Dado un recinto de 28 m de fondo, renderiza 4 postes guía (R ≥ 6d), clúster mono (+6 dB) y delays Haas sin solapamiento."],
-            ["HU07", "Réplica Hardware Pioneer DJM (VU + Kill)", "5", "Should", "Al subir 2 bajos o forzar Master > 2:00, los 17 LEDs verticales saltan a +12/CLIP rojo y la perilla LOW rota 0°/-135°."],
-            ["HU08", "Plan B, Ley del Saco y PDF Offline", "5", "Must", "Al pulsar Descargar PDF sin internet, jsPDF genera el informe en < 1 s marcando bultos > 25 kg (Ley N° 20.949)."]
+            ["HU04", "Lotes Activa/Pasiva, Rack de Potencias y Speakon", "5", "Must", "Dadas 3 cajas pasivas de 8 Ω en paralelo, calcula Zeq = 2.67 Ω < 3.2 Ω y dispara alerta DANGER_PROTECT_SHORT; si hay cajas pasivas, dimensiona etapas 19\" con headroom 1.6x y suma su consumo AC 220V."],
+            ["HU05", "Ruteo y metraje de cables de audio (XLR / Speakon)", "5", "Must", "Dada una configuración de 2 Tops y 2 Subs, calcula la cantidad exacta de cables balanceados XLR y Speakon sin faltantes."],
+            ["HU06", "Plano 2D Blueprint por capas y Postes Guía RIC 10", "8", "Must", "Dado un recinto de 28 m de fondo, renderiza capas exclusivas al configurar (sin ruido visual) y vista completa en reporte con postes guía (R ≥ 6d), clúster mono (+6 dB) y delays Haas."],
+            ["HU07", "Réplica Hardware Pioneer DJM (VU + Kill)", "5", "Should", "Al activar 2 bajos simultáneos o forzar Master > 2:00, los 17 LEDs verticales saltan a +12/CLIP rojo y la perilla LOW rota 0°/-135°."],
+            ["HU08", "Cotizador Arriendo CLP, Ley del Saco y PDF Dual-Page", "5", "Must", "Al pulsar Descargar PDF sin red, jsPDF compila Memoria Técnica SEC + costos CLP en Pág. 1 y Lámina CAD 2D completa horizontal en Pág. 2, además de permitir descarga PNG 300 DPI."]
         ],
         [0.5, 1.65, 0.35, 0.5, 3.5]
     )
 
-    style_anchor(orig[20], "1.5 Planificación de los 4 Sprints (Objetivos, duración y entregables)")
-    c20 = DocCursor(doc, orig[20])
-    c20.add_table(
+    b.add_h2("1.5 Planificación de los 4 Sprints y Tablero Kanban")
+    b.add_table(
         "Tabla 6. Planificación de los 4 Sprints fijos de 14 días bajo Scrumban + PSP.",
         ["Sprint", "Ventana Temporal", "Objetivo del Sprint (Sprint Goal)", "Entregable Verificado"],
         [
-            ["Sprint 1", "01-Oct – 14-Oct", "Cerrar diagnóstico, contratos Zod, Arquitectura 4+1 y monorepo.", "CU-00..08, schemas.ts y monorepo listo."],
-            ["Sprint 2", "15-Oct – 28-Oct", "Construir motor determinista completo SEC, Haas, Pasivos y Ruteo de Cables bajo TDD.", "11 módulos TS y 70/70 tests Vitest PASS."],
-            ["Sprint 3", "29-Oct – 11-Nov", "Implementar persistencia SQLite/Prisma (dev.db), API segura y Wizard Vue 3.", "API Anti-IDOR + Wizard 5 pasos WCAG AA."],
-            ["Sprint 4", "12-Nov – 25-Nov", "Integrar Plano 2D Postes Guía, Pioneer DJM, PDF Offline, OWASP y entrega U2.", "Prototipo funcional desplegado, benchmark y paquete U2."]
+            ["Sprint 1", "01-Oct – 14-Oct", "Cerrar diagnóstico, contratos Zod, Arquitectura 4+1 y monorepo.", "CU-00..08, schemas.ts y monorepo configurado."],
+            ["Sprint 2", "15-Oct – 28-Oct", "Construir motor determinista SEC, Haas, Pasivos y Ruteo bajo TDD.", "11 módulos TS y suite TDD en Vitest aprobada."],
+            ["Sprint 3", "29-Oct – 11-Nov", "Implementar SQLite/Prisma (dev.db), API Express segura y Vue Router.", "API Anti-IDOR + 5 vistas modulares WCAG AA."],
+            ["Sprint 4", "12-Nov – 26-Nov", "Integrar Cockpit 100%, Blueprint por capas, Rack Pasivo, Arriendo CLP y PDF Dual-Page.", "PoC funcional verificada, 81/81 tests Vitest PASS y entrega U2."]
         ],
         [0.75, 1.15, 2.6, 2.0]
     )
-
-    style_anchor(orig[21], "1.6 Tablero Kanban (Estados, política WIP y Definition of Done)")
-    c21 = DocCursor(doc, orig[21])
-    c21.add_p(
-        "Flujo de estados: [ Backlog ] → [ Selected for Dev (WIP: 3) ] → [ In Progress (WIP: 1) ] → [ Testing / TDD (WIP: 2) ] → [ Done ]. "
-        "Política DoD: ninguna tarjeta pasa a Done sin compilación limpia (vue-tsc + tsc), 100% PASS en los 70 tests Vitest, "
-        "revisión de accesibilidad visual y commit semántico enlazado en GitHub."
+    b.add_p(
+        "Política Kanban y Definition of Done (DoD): El flujo [ Backlog ] → [ Selected for Dev (WIP: 3) ] → "
+        "[ In Progress (WIP: 1) ] → [ Testing / TDD (WIP: 2) ] → [ Done ] exige que ninguna tarea cierre sin compilación "
+        "limpia (vue-tsc + tsc), 100% PASS en los 81 tests de Vitest, revisión en navegador al 100% de zoom y registro en GitHub."
     )
 
-    # 4. ARQUITECTURA 4+1 (P[24]..P[29])
-    style_anchor(orig[24], "Arquitectura de la Solución – Paradigma 4+1 (ISO/IEC/IEEE 42010:2022)", 13.0)
-
-    style_anchor(orig[25], "2.1 Requerimientos tecnológicos y de infraestructura del negocio (Criterio 2.1.2.4)")
-    c25 = DocCursor(doc, orig[25])
-    c25.add_table(
-        "Tabla 7. Stack tecnológico justificado y hoja de ruta de infraestructura futura.",
-        ["Capa", "Tecnología y Versión", "Justificación Técnica", "Escalabilidad Futura"],
+    # SECCIÓN 2: ARQUITECTURA 4+1
+    b.add_h1("2. ARQUITECTURA DE LA SOLUCIÓN – PARADIGMA 4+1 (ISO/IEC/IEEE 42010:2022)")
+    b.add_h2("2.1 Requerimientos tecnológicos y de infraestructura del negocio")
+    b.add_table(
+        "Tabla 7. Stack tecnológico justificado y hoja de ruta de infraestructura hacia Unidad 3.",
+        ["Capa", "Tecnología y Versión Real", "Justificación Técnica", "Proyección / Escalabilidad (Unidad 3)"],
         [
-            ["Frontend SPA", "Vue 3.5 + Vite 6.1 + Tailwind 3.4 + Pinia", "Recálculo reactivo instantáneo, Dark Mode FOH liviano y diseño responsive.", "PWA con Service Worker e IndexedDB offline."],
-            ["Núcleo Shared", "TypeScript 5.7 + Zod 3.24 (11 módulos)", "Código isomórfico cliente/servidor: cero divergencias de fórmulas físicas.", "Paquete reutilizable para app móvil nativa."],
-            ["Backend API", "Node.js 24 + Express 4.21 + Helmet + RateLimit", "Unificación en TypeScript, alto rendimiento I/O y defensa HTTP nativa.", "Balanceo horizontal + colas BullMQ."],
-            ["Persistencia", "SQLite 3 (dev.db) + Prisma ORM 6.4 (3FN + JSON)", "Integridad ACID para usuarios/recintos + JSON nativo para riders; auditable en DB Browser.", "Migración transparente a PostgreSQL 16 en VPS vía Prisma (Unidad 3)."],
-            ["Auth / Crypto", "bcrypt (cost 12) + JWT + pgcrypto + TLS 1.3", "Resistencia a fuerza bruta, sesiones firmadas y cifrado en tránsito/reposo.", "Rotación automática JWKS y MFA (TOTP)."],
-            ["Salida Terreno", "jsPDF 2.5 + jspdf-autotable (Client-Side)", "Genera fichas técnicas PDF en modo local sin depender de señal 4G/5G.", "Validación QR para inspectores SEC/MMA."]
+            ["Frontend SPA", "Vue 3.5 + Vite 6.4 + Vue Router 4 + Tailwind 3.4", "Arquitectura modular en 5 rutas (/auth, /recinto, /equipos, /plano-2d, /reporte), estado reactivo centralizado en composable useStagePlanState.ts con persistencia localStorage.", "Empaquetado PWA con Service Worker e IndexedDB para sincronización offline."],
+            ["Núcleo Shared", "TypeScript 5.7 + Zod 3.24 (11 módulos)", "Código isomórfico compartido por navegador y API: garantiza las mismas fórmulas físicas y validación estricta en frontera.", "Publicación como librería interna reutilizable en clientes móviles."],
+            ["Backend API", "Node.js 24 + Express 4.21 + Helmet + RateLimit", "Ecosistema unificado TypeScript, validación Zod, bloqueo temporal HTTP 423, limitador de tasa y manejo centralizado de excepciones.", "Despliegue en contenedor Docker detrás de Nginx TLS 1.3 en VPS."],
+            ["Persistencia", "SQLite 3 (dev.db) + Prisma ORM 6.4 (3FN + JSON)", "En PoC local (U2), 4 tablas normalizadas en español + campos JSON auditables directamente en DB Browser for SQLite.", "Migración transparente de provider en Prisma hacia PostgreSQL 16 (12 tablas + JSONB GIN)."],
+            ["Auth / Seguridad", "bcrypt (cost 12) + jsonwebtoken (JWT 12h)", "Hashing resistente a fuerza bruta, verificación en authMiddleware con exigencia de JWT_SECRET en producción y Anti-IDOR por ownerId.", "Cookies HttpOnly/SameSite=Strict, token_version, pgcrypto y bitácora audit_logs."],
+            ["Salida Terreno", "jsPDF 2.5 + jspdf-autotable + Canvas SVG", "Genera PDF Dual-Page (Memoria + Lámina CAD 2D horizontal) e imagen PNG 300 DPI client-side sin requerir conexión móvil en parcelas.", "Inclusión de código QR verificable para inspección técnica."]
         ],
         [0.95, 1.65, 2.25, 1.65]
     )
 
-    style_anchor(orig[26], "2.2 Vista de Escenarios: Caso de Uso Cero (CU-00) y Especificación Estructurada")
-    c26 = DocCursor(doc, orig[26])
-    c26.add_p(
-        "El Caso de Uso Cero (CU-00: Planificación Logística Integral) articula la operación del técnico FOH, el bodeguero/chofer "
-        "y el administrador mediante relaciones <<include>> (Auth JWT, Dimensiones del Recinto, Ruteo SEC RIC 10 + Postes Guía, Ruteo Cables Audio y Reporte PDF) "
-        "y <<extend>> (Cajas Pasivas + Powers y Simulador Pioneer DJM). En el caso crítico CU-03 se validan 3 flujos de excepción: "
-        "[E1] rechazo Zod por dimensiones fuera de rango (1..500 m); [E2] Semáforo Rojo SEC por sobrecarga de automático (> 16 A) o "
-        "caída de tensión > 3%; y [E3] alerta PROTECT ante impedancia Speakon < 3.2 Ω."
+    b.add_h2("2.2 Vista de Escenarios: Caso de Uso Cero (CU-00) y Especificación Estructurada")
+    b.add_p(
+        "El Caso de Uso Cero (CU-00: Planificación Logística Integral) coordina al Operador Técnico FOH, al Chofer/Bodeguero "
+        "y al Administrador mediante relaciones <<include>> (CU-01 Acceso JWT/Anti-IDOR, CU-02 Recinto y D.S. N° 38, "
+        "CU-03 Ruteo SEC RIC 10 + Postes Guía, CU-05 Iluminación DMX y Cables, CU-08 PDF Dual-Page, Arriendo y Carga) y "
+        "<<extend>> (CU-04 Cajas Activa/Pasiva + Rack de Potencias + Speakon, CU-06 Plano Blueprint + Pioneer DJM). "
+        "En el caso crítico CU-03 se controlan tres excepciones principales: [E1] rechazo Zod fuera de rango (1..500 m); "
+        "[E2] alerta SEC por sobrecarga de disyuntor o caída de tensión > 3%; y [E3] alerta PROTECT ante impedancia < 3.2 Ω."
     )
-    c26.add_figure(os.path.join(DIAG_DIR, "diag-03-escenarios-caso-uso-cero.png"), "Figura 2. Vista de Escenarios (4+1) — Caso de Uso Cero (CU-00), actores e inclusiones/extensiones.")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-03-escenarios-caso-uso-cero.png"), "Figura 2. Vista de Escenarios (4+1) — Caso de Uso Cero (CU-00), actores e inclusiones/extensiones.")
 
-    style_anchor(orig[27], "2.3 Vista Lógica: Diagrama de Clases del Dominio")
-    c27 = DocCursor(doc, orig[27])
-    c27.add_p(
-        "El modelo orientado a objetos separa las entidades persistentes (User, Venue, EquipmentLot, LightingFixture, RiderCalculation, "
-        "SharedLink) de los servicios de dominio puros (CalculationEngine, ElectricalSECValidator, AcousticHaasEngine, LightingDmxCalculator, "
-        "DjSetupAndGainSimulator), asegurando bajo acoplamiento y pruebas unitarias deterministas."
+    b.add_h2("2.3 Vista Lógica: Diagrama de Clases del Dominio")
+    b.add_p(
+        "El diseño orientado a objetos desacopla las entidades persistentes (Usuario, Recinto, CalculoRider, EnlaceCompartido) "
+        "de los motores matemáticos puros (CalculationEngine con calculatePowerAmpSizing, ElectricalSECValidator, "
+        "StageAcousticEngine, LightingDmxCalculator, DjSetupAndGainSimulator y LogisticsAndRentalService), garantizando "
+        "correspondencia directa entre los métodos modelados y las pruebas unitarias."
     )
-    c27.add_figure(os.path.join(DIAG_DIR, "diag-04-vista-logica-clases.png"), "Figura 3. Vista Lógica (4+1) — Diagrama de Clases UML del dominio STAGE PLAN.")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-04-vista-logica-clases.png"), "Figura 3. Vista Lógica (4+1) — Diagrama de Clases UML del dominio STAGE PLAN v4.0.")
 
-    style_anchor(orig[28], "2.4 Vista de Desarrollo: Diagrama de Componentes Monorepo")
-    c28 = DocCursor(doc, orig[28])
-    c28.add_p(
-        "El repositorio adopta una arquitectura Monorepo (npm workspaces) en tres paquetes desacoplados: @stageplan/frontend "
-        "(App.vue, LayoutSvg2D.vue, PioneerMixerSimulator.vue, pdfReport.ts), @stageplan/shared (schemas.ts + 11 módulos calc-engine + "
-        "10 suites Vitest) y @stageplan/backend (server.ts, authMiddleware Anti-IDOR, controladores REST y Prisma ORM)."
+    b.add_h2("2.4 Vista de Desarrollo: Diagrama de Componentes Monorepo")
+    b.add_p(
+        "El proyecto se organiza como monorepo npm workspaces en tres paquetes desacoplados: @stageplan/frontend "
+        "(Vue Router con 5 vistas especializadas: ViewAuth, ViewVenue, ViewAudioPower, ViewAcousticCanvas, ViewReportSummary, "
+        "el composable useStagePlanState.ts, LayoutSvg2D.vue, PioneerMixerSimulator.vue y pdfReport.ts), @stageplan/shared "
+        "(schemas.ts + 11 módulos calc-engine + 11 suites Vitest con 81 tests) y @stageplan/backend (server.ts, authMiddleware, "
+        "errorHandler, controladores Auth/Venue/Calculation y Prisma ORM)."
     )
-    c28.add_figure(os.path.join(DIAG_DIR, "diag-05-vista-desarrollo-componentes.png"), "Figura 4. Vista de Desarrollo (4+1) — Diagrama de Componentes del Monorepo TypeScript.")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-05-vista-desarrollo-componentes.png"), "Figura 4. Vista de Desarrollo (4+1) — Diagrama de Componentes del Monorepo TypeScript.")
 
-    style_anchor(orig[29], "2.5 Vista de Procesos (BPMN 2.0) y 2.6 Vista Física de Despliegue")
-    c29 = DocCursor(doc, orig[29])
-    c29.add_p(
-        "La Vista de Procesos (Figura 5) modela en BPMN 2.0 los tres carriles operacionales con compuertas XOR de validación Zod, "
-        "verificación SEC (ΔV ≤ 3%) e impedancia Speakon (Zeq ≥ 3.2 Ω). La Vista Física (Figura 6) completa los 5 puntos de vista del "
-        "estándar ISO/IEC/IEEE 42010:2022, aislando los contenedores de aplicación y base de datos tras un proxy inverso TLS 1.3 (:443) "
-        "mientras preserva la autonomía en terreno en el dispositivo móvil del técnico."
+    b.add_h2("2.5 Vista de Procesos (BPMN 2.0) y 2.6 Vista Física de Despliegue")
+    b.add_p(
+        "La Vista de Procesos (Figura 5) modela mediante BPMN 2.0 los tres carriles operacionales con compuertas XOR de "
+        "validación Zod, cumplimiento SEC (ΔV ≤ 3%) e impedancia Speakon (Zeq ≥ 3.2 Ω). La Vista Física (Figura 6) "
+        "distingue claramente el entorno PoC ejecutable de Unidad 2 (SPA local + Express :3000 + SQLite dev.db + PDF autónomo) "
+        "y la arquitectura objetivo de Unidad 3 (VPS Linux detrás de proxy inverso Nginx TLS 1.3 con PostgreSQL 16)."
     )
-    c29.add_figure(os.path.join(DIAG_DIR, "diag-06-vista-procesos-bpmn.png"), "Figura 5. Vista de Procesos (4+1) — Diagrama BPMN 2.0 de pre-producción y compuertas normativas SEC.")
-    c29.add_figure(os.path.join(DIAG_DIR, "diag-02-arquitectura-4plus1-despliegue.png"), "Figura 6. Vista Física y de Despliegue (4+1) — Infraestructura segura TLS 1.3 y ejecución local.")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-06-vista-procesos-bpmn.png"), "Figura 5. Vista de Procesos (4+1) — Diagrama BPMN 2.0 de pre-producción y compuertas normativas SEC.")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-02-arquitectura-4plus1-despliegue.png"), "Figura 6. Vista Física y de Despliegue (4+1) — Arquitectura PoC local, proyección VPS TLS 1.3 y operación autónoma en terreno.")
 
-    # 5. DISEÑO UX/UI (P[33]..P[38])
-    style_anchor(orig[33], "Diseño de Experiencia e Interfaz de Usuario – UX/UI", 13.0)
-
-    style_anchor(orig[34], "3.1 Definición de perfiles de usuario (User Personas)")
-    c34 = DocCursor(doc, orig[34])
-    c34.add_table(
-        "Tabla 8. User Personas representativos del flujo real de DISTORSIONCL SPA.",
+    # SECCIÓN 3: UX/UI Y PROTOTIPO
+    b.add_h1("3. DISEÑO DE EXPERIENCIA E INTERFAZ DE USUARIO (UX/UI)")
+    b.add_h2("3.1 Definición de perfiles de usuario (User Personas)")
+    b.add_table(
+        "Tabla 8. User Personas representativos del flujo operacional de DISTORSIONCL SPA.",
         ["User Persona", "Rol y Contexto Operacional", "Puntos de Dolor", "Objetivo con STAGE PLAN"],
         [
-            ["Amaro Artiaga (28)", "Operador FOH / DJ en parcelas nocturnas sin 4G (< 2h montaje).", "Cortes de luz, cables sin holgura, clipping en cabina DJ.", "Dimensionar en < 3 min y llevar PDF en modo local."],
-            ["Cristián Morales (34)", "Chofer y Bodeguero encargado de carga de camioneta.", "Olvido de cables de poder o Speakon y bultos > 25 kg (Ley del Saco).", "Recibir checklist exacto por enlace temporal o WhatsApp."],
-            ["Mauricio Vega (Admin)", "Responsable técnico y auditoría de eventos.", "Falta de trazabilidad ante fiscalizaciones SEC o cobertura acústica.", "Auditar historial PostgreSQL y revocar enlaces expirados."]
+            ["Amaro Artiaga (28)", "Operador FOH / DJ en parcelas nocturnas sin 4G (< 2h montaje).", "Cortes de luz, ruido visual en planos, dudas de etapas pasivas y clipping en cabina.", "Dimensionar en < 3 min al 100% de zoom y llevar PDF Dual-Page en terreno."],
+            ["Cristián Morales (34)", "Chofer y Bodeguero encargado de carga de camioneta.", "Olvido de cables de poder o Speakon y bultos > 25 kg (Ley del Saco N° 20.949).", "Recibir checklist exacto, plano PNG 300 DPI y resumen por WhatsApp."],
+            ["Mauricio Vega (Admin)", "Responsable técnico, costos y auditoría de montajes.", "Falta de historial técnico y estimación rápida de arriendo externo.", "Auditar cálculos en SQLite/Prisma y cotizar rider propio vs arrendado."]
         ],
         [1.25, 1.8, 1.75, 1.7]
     )
 
-    style_anchor(orig[35], "3.2 Lista priorizada de funcionalidades clave (MoSCoW)")
-    c35 = DocCursor(doc, orig[35])
-    c35.add_p(
-        "Must Have: Acceso Anti-IDOR, dimensiones ortogonales + dimensiones ortogonales, cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con "
-        "alerta Speakon < 3.2 Ω, Plano 2D con postes guía RIC 10 y exportación PDF Offline. Should Have: Réplica "
-        "hardware Pioneer DJM con vúmetros verticales y Plan B contingencia. Could Have: Copia WhatsApp 1-clic y enlaces compartidos. "
-        "Won't Have (fuera de alcance): Procesamiento DSP de audio en tiempo real o control de luminarias por protocolo DMX."
+    b.add_h2("3.2 Priorización MoSCoW, arquitectura de información y sistema visual (WCAG 2.1 AA)")
+    b.add_p(
+        "Alcance MoSCoW: Must Have — Autenticación JWT y control Anti-IDOR, geometría ortogonal y ruido vecinal D.S. N° 38, "
+        "cálculo eléctrico SEC RIC 03/10, lotes Activa/Pasiva con dimensionamiento de rack de potencias y alerta Speakon "
+        "< 3.2 Ω, Plano 2D Blueprint por capas con postes guía RIC 10 y exportación PDF Dual-Page + PNG 300 DPI. "
+        "Should Have — Réplica Pioneer DJM con vúmetros verticales, cotizador de arriendo en CLP y Plan B contingencia. "
+        "Could Have — Copia WhatsApp en 1 clic y enlaces compartidos de consulta. Won't Have (fuera de alcance) — "
+        "Procesamiento DSP de audio en tiempo real o control físico de luminarias por protocolo DMX."
     )
-
-    style_anchor(orig[36], "3.3 Arquitectura de la información y sistema de diseño visual (WCAG 2.1 AA)")
-    c36 = DocCursor(doc, orig[36])
-    c36.add_p(
-        "La interfaz adopta un Technical Dark Mode FOH (#09090d / #14141c) con relación de contraste WCAG 2.1 AA ≥ 4.5:1 para "
-        "operar en cabinas oscuras sin encandilamiento, semáforo normativo de alto contraste (Verde #10B981, Ámbar #F59E0B, Rojo #DC2626), "
-        "tipografía monoespaciada para lecturas técnicas y áreas táctiles mínimas de 44×44 px adaptables a Escritorio (1280 px), "
-        "Tablet (768 px) y Smartphone de terreno (412 px)."
+    b.add_p(
+        "Sistema de Diseño Fullscreen Studio Cockpit (100% Zoom): Para eliminar scroll vertical innecesario en laptops y "
+        "pantallas estándar al 100% de zoom, la aplicación adopta una grilla fullscreen de altura fija (100vh) con barra "
+        "superior de navegación por rutas URL (/auth, /recinto, /equipos, /plano-2d, /reporte), barra inferior de "
+        "telemetría en vivo y paleta Dark Mode técnico (#080a10 / #0c0e15) con contraste WCAG 2.1 AA (≥ 4.5:1), semáforo "
+        "normativo (Verde #10B981, Ámbar #F59E0B, Rojo #DC2626) y adaptación responsive para escritorio (1440 px), tablet "
+        "(768 px) y smartphone en terreno (412 px)."
     )
+    b.add_figure(os.path.join(DIAG_DIR, "diag-08-mapa-navegacion-ux.png"), "Figura 7. Arquitectura de información y mapa de navegación Cockpit (5 rutas Vue Router y adaptación responsive).")
 
-    style_anchor(orig[37], "3.4 Mapa del sitio y diagrama de navegación del Wizard")
-    c37 = DocCursor(doc, orig[37])
-    c37.add_figure(os.path.join(DIAG_DIR, "diag-08-mapa-navegacion-ux.png"), "Figura 7. Arquitectura de información y mapa de navegación del Wizard responsivo de 5 pasos.")
-
-    style_anchor(orig[38], "3.5 Prototipo funcional real (STAGE PLAN) y 3.6 Retroalimentación de usuarios")
-    c38 = DocCursor(doc, orig[38])
-    c38.add_p(
-        "A diferencia de un prototipo estático, STAGE PLAN cuenta con la interfaz real operativa en Vue 3 + Vite. "
-        "Las Figuras 8 a 11 exhiben capturas directas de la aplicación ejecutándose en escritorio y móvil de terreno:"
+    b.add_h2("3.3 Prototipo funcional actual e integración de retroalimentación real")
+    b.add_p(
+        "Las Figuras 8 a 11 muestran capturas directas de la aplicación web en ejecución tras las cuatro iteraciones de "
+        "mejora realizadas junto al operador de DISTORSIONCL SPA:"
     )
-    c38.add_figure(os.path.join(SHOT_DIR, "prototipo-mosaico-stageplan.png"), "Figura 8. Mosaico funcional de pantallas reales P01–P06 del prototipo web STAGE PLAN.")
-    c38.add_figure(os.path.join(SHOT_DIR, "prototipo-P05-plano-2d-postes-guia-sec.png"), "Figura 9. Captura real Paso 3 — Plano 2D inteligente con Postes Guía SEC RIC N° 10, Clúster Mono y Delays Haas.")
-    c38.add_figure(os.path.join(SHOT_DIR, "prototipo-P04-simulador-pioneer-djm.png"), "Figura 10. Captura real Paso 3 — Réplica hardware Pioneer DJM con vúmetros verticales (17 LEDs), Low Kill y Master Rotary.")
-    c38.add_figure(os.path.join(SHOT_DIR, "prototipo-movil-terreno.png"), "Figura 11. Captura real adaptativa móvil (412×915 px) demostrando ergonomía táctil y responsividad en terreno.", width_inches=2.7)
+    b.add_figure(os.path.join(SHOT_DIR, "prototipo-mosaico-stageplan.png"), "Figura 8. Mosaico funcional actualizado (P01–P06) del prototipo web STAGE PLAN en configuración Studio Cockpit al 100% de zoom.")
+    b.add_figure(os.path.join(SHOT_DIR, "prototipo-P05-plano-2d-postes-guia-sec.png"), "Figura 9. Captura real Vista 3 (/plano-2d) — Plano 2D Blueprint Dark con selector de 5 capas exclusivas, Postes Guía SEC RIC N° 10 y controles de zoom.")
+    b.add_figure(os.path.join(SHOT_DIR, "prototipo-P04-simulador-pioneer-djm.png"), "Figura 10. Captura real Vista 3 — Réplica interactiva Pioneer DJM con vúmetros verticales de 17 LEDs, Low Kill y Master Rotary.")
+    b.add_figure(os.path.join(SHOT_DIR, "prototipo-movil-terreno.png"), "Figura 11. Captura real adaptativa móvil (412×915 px) de Vista 4 (/reporte), verificando legibilidad y cotizador en terreno.", width_inches=2.7)
 
-    c38.add_table(
-        "Tabla 9. Integración verificada de retroalimentación del operador real (Amaro Artiaga — DISTORSIONCL SPA).",
-        ["Versión", "Hallazgo / Solicitud del Usuario", "Mejora Integrada en el Software", "Estado"],
+    b.add_table(
+        "Tabla 9. Registro de retroalimentación recogida con DISTORSIONCL SPA (Amaro Artiaga) e iteraciones aplicadas.",
+        ["Iteración", "Hallazgo / Solicitud del Usuario", "Mejora Implementada en STAGE PLAN", "Estado"],
         [
-            ["Iteración 1", "Evitar ingreso manual de Watts en terreno y facilitar envío al chofer.", "Catálogo de presets 1-clic y botón de resumen WhatsApp.", "Integrado"],
-        ["Iteración 2", "Soportar cajas activas/pasivas con amplificador y cálculo de cables Speakon.", "Selector Activo/Pasivo y cálculo métrico de cables de audio sin sobrantes.", "Integrado"],
-            ["Iteración 3", "Evitar solapamiento en el plano y guiar curvas de cable en esquinas.", "LayoutSvg2D proporcional con Postes Guía R ≥ 6d (SEC RIC 10).", "Integrado"],
-            ["Iteración 3", "Mostrar visualmente un mixer Pioneer real para explicar Low Kill.", "Nuevo componente PioneerMixerSimulator.vue con 17 LEDs verticales.", "Integrado"]
+            ["Iteración 1", "Evitar ingreso manual repetitivo de Watts en terreno y facilitar envío al chofer.", "Catálogo de 8 escalas preset en 1 clic y botón de resumen técnico para WhatsApp.", "Integrado"],
+            ["Iteración 2", "Combinar cajas activas y pasivas calculando cables Speakon y señal sin sobrantes.", "Selector Activa/Pasiva multilote y ruteo métrico exacto XLR / Speakon NL4.", "Integrado"],
+            ["Iteración 3", "Evitar cruces de líneas sobre la pista y visualizar la regla de un solo bajo en DJM.", "LayoutSvg2D proporcional con Postes Guía R ≥ 6d (RIC 10) y PioneerMixerSimulator.vue.", "Integrado"],
+            ["Iteración 4", "Reducir saturación visual del mapa al editar, dimensionar el rack de potencias pasivas, cotizar arriendo y adjuntar el plano completo al PDF.", "Diseño Studio Cockpit al 100% zoom, Plano Blueprint con 5 capas exclusivas (Vista Completa ALL en /reporte), calculatePowerAmpSizing (headroom 1.6x), cotizador CLP y PDF Dual-Page + PNG 300 DPI.", "Integrado"]
         ],
         [0.85, 2.2, 2.55, 0.9]
     )
 
-    # 6. MODELO Y ADMINISTRACIÓN DE BASE DE DATOS (P[41]..P[46])
-    style_anchor(orig[41], "Modelo y Administración de Base de Datos", 13.0)
-
-    style_anchor(orig[42], "4.1 Selección y justificación del modelo híbrido (Relacional 3FN + JSONB)")
-    c42 = DocCursor(doc, orig[42])
-    c42.add_p(
-        "Se diseñó un modelo híbrido sobre PostgreSQL 16 que conjuga integridad transaccional ACID en 3FN para entidades de "
-        "seguridad, recintos y circuitos normativos, con documentos semi-estructurados JSONB indexados mediante GIN (jsonb_path_ops) "
-        "para fichas polimórficas de equipamiento y snapshots inmutables de cálculo. En packages/backend/prisma/schema.prisma "
-        "operan actualmente las 4 tablas núcleo MVP en español (usuarios, recintos, calculos_rider, enlaces_compartidos), "
-        "mientras que el diseño extendido proyecta el clúster relacional para la construcción en Unidad 3."
+    # SECCIÓN 4: BASE DE DATOS
+    b.add_h1("4. MODELO Y ADMINISTRACIÓN DE BASE DE DATOS")
+    b.add_h2("4.1 Implementación PoC en SQLite 3 + Prisma ORM y proyección a PostgreSQL 16")
+    b.add_p(
+        "Para garantizar un entorno de pruebas y demostración portable, autocontenido y verificable sin dependencias de "
+        "servicios externos, la prueba de concepto de Unidad 2 implementa una arquitectura híbrida (Relacional 3FN + "
+        "documentos JSON) sobre SQLite 3 (dev.db) administrado mediante Prisma ORM 6.4 (packages/backend/prisma/schema.prisma). "
+        "Las 4 tablas núcleo en español garantizan integridad referencial estricta (llaves primarias UUID/TEXT, claves "
+        "foráneas con ON DELETE CASCADE y control de intentos fallidos de login), mientras que las columnas JSON absorben "
+        "la variabilidad polimórfica de equipos y resultados sin proliferación innecesaria de tablas pivote."
+    )
+    b.add_p(
+        "De forma complementaria, se diseñó el esquema físico objetivo de producción para Unidad 3 en PostgreSQL 16 "
+        "(entrega_sumativa_02/sql/schema_stageplan_pg16.sql), el cual expande el modelo a 12 tablas normalizadas, añade "
+        "índices GIN (jsonb_path_ops) sobre documentos JSONB, triggers PL/pgSQL de validación SEC (ΔV ≤ 3%), bitácora "
+        "inmutable audit_logs y soporte de cifrado pgcrypto. Gracias a Prisma ORM, la migración entre ambos motores se "
+        "realiza cambiando la directiva datasource en schema.prisma."
     )
 
-    style_anchor(orig[43], "4.2 Diseño estructural: DER 3FN (4 tablas en español) y documentos JSON")
-    orig[44].text = ""
-    orig[45].text = ""
-    c43 = DocCursor(doc, orig[43])
-    c43.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido MVP (4 tablas 3FN en español + Documentos JSON).")
-    c43.add_table(
-        "Tabla 10. Diccionario de entidades, claves primarias/foráneas y reglas referenciales implementadas en español en SQLite (dev.db) y Prisma.",
+    b.add_h2("4.2 Diseño estructural implementado (DER 4 tablas 3FN en español + JSON)")
+    b.add_figure(os.path.join(DIAG_DIR, "diag-07-modelo-datos-der.png"), "Figura 12. Diagrama Entidad-Relación (DER) del modelo híbrido implementado en SQLite (dev.db) y proyección PostgreSQL 16 (U3).")
+    b.add_table(
+        "Tabla 10. Diccionario de las 4 tablas normalizadas en español implementadas en SQLite (dev.db) y Prisma ORM.",
         ["#", "Tabla", "PK / FKs y Reglas Referenciales", "Atributos Estructurados y Campos JSON"],
         [
-            ["1", "usuarios", "PK id (TEXT/UUID)", "correo UNIQUE, clave_hash (Bcrypt 12), nombre, rol ('ADMIN'), fecha_creacion, fecha_actualizacion"],
+            ["1", "usuarios", "PK id (TEXT/UUID)", "correo (UNIQUE), clave_hash (bcrypt 12), nombre, rol ('ADMIN'), intentos_fallidos (INTEGER), bloqueado_hasta (DATETIME?), fecha_creacion, fecha_actualizacion"],
             ["2", "recintos", "PK id (TEXT/UUID) | FK usuario_id → usuarios CASCADE", "nombre, ancho_metros, largo_metros, alto_metros, tipo_entorno, distancia_electrica_metros, fecha_creacion, fecha_actualizacion"],
             ["3", "calculos_rider", "PK id | FK usuario_id, recinto_id CASCADE", "version_motor ('4.0.0'), entrada_rider (JSON), parametros_usados (JSON), resultados_calculados (JSON), alertas_snapshot (JSON), fecha_creacion"],
-            ["4", "enlaces_compartidos", "PK id | FK usuario_id, calculo_rider_id CASCADE", "token UNIQUE, fecha_expiracion, esta_revocado (INTEGER/0), fecha_creacion"]
+            ["4", "enlaces_compartidos", "PK id | FK usuario_id, calculo_rider_id CASCADE", "token (UNIQUE), fecha_expiracion, esta_revocado (INTEGER 0/1), fecha_creacion"]
         ],
-        [0.3, 1.45, 2.35, 2.4]
+        [0.3, 1.35, 2.35, 2.5]
     )
-    c43.add_code(
+    b.add_code(
         '{\n'
         '  "totalWatts": 2600,\n'
         '  "designAmps": 14.18,\n'
@@ -620,13 +667,12 @@ def build_sumativa_02():
         '    "leyDelSacoCompliant": true\n'
         '  }\n'
         '}',
-        title="Ejemplo real de documento no estructurado JSON (calculos_rider.resultados_calculados):"
+        title="Ejemplo de documento JSON almacenado en calculos_rider.resultados_calculados (dev.db):"
     )
 
-    style_anchor(orig[46], "4.3 Estrategias de integración, consultas híbridas SQL + JSON y sincronización")
-    c46 = DocCursor(doc, orig[46])
-    c46.add_code(
-        "-- Consulta h\u00edbrida auditable directamente en DB Browser for SQLite:\n"
+    b.add_h2("4.3 Estrategia de consultas híbridas SQL + JSON y migración a producción")
+    b.add_code(
+        "-- Consulta híbrida verificable directamente en DB Browser for SQLite sobre dev.db:\n"
         "SELECT u.nombre AS operador, r.nombre AS recinto, c.version_motor,\n"
         "       json_extract(c.resultados_calculados, '$.totalWatts') AS total_watts,\n"
         "       json_extract(c.resultados_calculados, '$.electricalSummary.recommendedSectionMm2') AS seccion_cable_mm2,\n"
@@ -636,262 +682,236 @@ def build_sumativa_02():
         "JOIN recintos r ON u.id = r.usuario_id\n"
         "JOIN calculos_rider c ON r.id = c.recinto_id\n"
         "WHERE json_extract(c.resultados_calculados, '$.electricalSummary.secCompliant') = 1;",
-        title="Consulta híbrida en español combinando JOIN relacional 3FN y funciones de extracción JSON (json_extract):"
+        title="Consulta SQL + extracción JSON (json_extract) sobre el archivo físico dev.db:"
     )
 
-    # 7. ESTÁNDARES DE PROGRAMACIÓN SEGURA (P[49]..P[55])
-    style_anchor(orig[49], "Estándares de Programación Segura", 13.0)
-
-    style_anchor(orig[50], "5.1 Matriz de roles, perfiles, privilegios y responsabilidades (RBAC — Criterio 2.1.5.10)")
-    c50 = DocCursor(doc, orig[50])
-    c50.add_table(
+    # SECCIÓN 5: SEGURIDAD
+    b.add_h1("5. ESTÁNDARES DE PROGRAMACIÓN SEGURA")
+    b.add_h2("5.1 Matriz de roles, perfiles y control de acceso (RBAC y Anti-IDOR)")
+    b.add_p(
+        "En la PoC actual se implementa el control de propiedad estricto por usuario autenticado (ownerId === req.user.id) "
+        "y el campo rol en la tabla usuarios. La tabla siguiente consolida la política RBAC completa, distinguiendo las "
+        "capacidades ya operativas en la API de aquellas diseñadas para el despliegue multi-perfil de Unidad 3."
+    )
+    b.add_table(
         "Tabla 11. Matriz de Control de Acceso Basado en Roles (RBAC) y aislamiento Anti-IDOR.",
-        ["Operación / Recurso", "Administrador", "Operador FOH (Owner)", "Chofer / Invitado"],
+        ["Operación / Recurso", "Administrador (Diseñado U3)", "Operador FOH (Implementado PoC)", "Chofer / Invitado (Diseñado U3)"],
         [
-            ["Autenticación (/api/auth/login, /me)", "Sí", "Sí", "No (token enlace)"],
-            ["CRUD Recintos propios (/api/venues/*)", "Lectura Global", "CRUD Propios (Anti-IDOR)", "Denegado (401/403)"],
-            ["Ejecutar cálculo (/calculate)", "Lectura Global", "Crear / Leer Propios", "Denegado (403)"],
-            ["Acceso a recursos de otro owner_id", "Auditoría", "Bloqueado (403 + Log)", "Bloqueado (403)"],
-            ["Generar / Revocar shared_links", "Revocación Global", "Crear / Revocar Propios", "Solo consumo vigente"],
-            ["Descarga PDF Terreno / Camioneta", "Sí", "Sí (Online y Offline)", "Solo lectura vía enlace"],
-            ["Bitácora forense audit_logs", "Lectura Completa", "Denegado (403)", "Denegado (403)"]
+            ["Autenticación (/api/auth/login, /me)", "Sí (Bcrypt + JWT)", "Sí (Bcrypt 12 + JWT 12h + Bloqueo 423)", "No (token de enlace temporal)"],
+            ["CRUD Recintos propios (/api/venues/*)", "Auditoría global", "CRUD Propios (Anti-IDOR → HTTP 404 ajeno)", "Denegado (401/403)"],
+            ["Ejecutar y listar cálculos (/calculate, /history)", "Auditoría global", "Crear / Leer Propios (ownerId === req.user.id)", "Denegado (403)"],
+            ["Generar / Revocar enlaces_compartidos", "Revocación global", "Modelo BD creado (Endpoints planif. U3)", "Solo consumo lectura vigente"],
+            ["Descarga PDF Terreno (Client-Side)", "Sí", "Sí (PDF Dual-Page y PNG 300 DPI offline)", "Solo lectura vía enlace"],
+            ["Bitácora forense audit_logs", "Lectura completa (DDL PG16 U3)", "Denegado", "Denegado"]
         ],
-        [2.25, 1.35, 1.6, 1.3]
+        [2.1, 1.35, 1.75, 1.3]
     )
 
-    style_anchor(orig[51], "5.2 Lineamientos y estándares de codificación segura (Criterio 2.1.5.12)")
-    style_anchor(orig[52], "a. Validación y saneamiento de entradas (Zod Isomórfico)", 10.2)
-    DocCursor(doc, orig[52]).add_p(
-        "Toda entrada de formulario y petición REST se valida contra esquemas estrictos en @stageplan/shared/schemas.ts y "
-        "auth.controller.ts (RegisterSchema, LoginSchema), exigiendo rangos físicos positivos (1..500 m, Watts > 0) y descartando propiedades no declaradas."
+    b.add_h2("5.2 Lineamientos de codificación segura implementados y proyección OWASP Top 10")
+    b.add_h3("a. Validación y saneamiento de entradas (Zod Isomórfico)")
+    b.add_p(
+        "Todas las peticiones HTTP (RegisterSchema, LoginSchema en auth.controller.ts, VenueSchema y RiderSchema en "
+        "@stageplan/shared/src/schemas.ts) se validan con Zod antes de alcanzar lógica de cálculo o base de datos, "
+        "imponiendo rangos físicos positivos y retornando HTTP 400 ante payloads malformados."
     )
-    style_anchor(orig[53], "b. Control de autenticación, autorización y Anti-IDOR", 10.2)
-    DocCursor(doc, orig[53]).add_p(
-        "Contraseñas hasheadas con bcrypt (cost factor 12); JWT verificado en authMiddleware con bloqueo de arranque en producción "
-        "si falta JWT_SECRET; verificación explícita ownerId === req.user.id en VenueController y CalculationController (HTTP 403 ante IDOR); "
-        "y express-rate-limit (200 req/15m en /api, endurecido a 5 intentos/15m en /api/auth/login)."
+    b.add_h3("b. Autenticación, bloqueo ante fuerza bruta, Anti-IDOR y Rate Limiting")
+    b.add_p(
+        "Controles implementados en backend: hashing con bcrypt (12 rondas de sal); bloqueo temporal automático de cuenta "
+        "por 15 minutos tras 5 intentos fallidos consecutivos (intentos_fallidos y bloqueado_hasta en Prisma) devolviendo "
+        "HTTP 423 Locked; limitador express-rate-limit configurado en 200 req/15 min para /api y 10 req/15 min específicos "
+        "sobre /api/auth/login; firma JWT (12h) verificada en authMiddleware con bloqueo fatal de arranque en producción "
+        "si falta JWT_SECRET; y control Anti-IDOR en VenueController y CalculationController exigiendo ownerId === req.user.id "
+        "en cada consulta Prisma (retornando HTTP 404 para evitar enumeración de UUIDs). Para Unidad 3 se proyecta migrar el "
+        "almacenamiento de sesión hacia cookies HttpOnly/SameSite=Strict e incorporar rotación por token_version."
     )
-    style_anchor(orig[54], "c. Gestión segura de errores y excepciones", 10.2)
-    DocCursor(doc, orig[54]).add_p(
-        "Los errores internos se registran en bitácora del servidor sin exponer stack traces, consultas SQL ni versiones de librerías al cliente, "
-        "entregando mensajes genéricos sanitizados (ej. 'Credenciales incorrectas' para impedir enumeración de correos)."
+    b.add_h3("c. Gestión segura de errores y excepciones")
+    b.add_p(
+        "Las rutas asíncronas están encapsuladas con asyncHandler y canalizadas hacia el middleware centralizado errorHandler "
+        "(packages/backend/src/middlewares/errorHandler.ts), impidiendo promesas no capturadas y devolviendo respuestas JSON "
+        "normalizadas sin filtrar stack traces ni estructura interna al cliente."
     )
-    style_anchor(orig[55], "d. Estándares de cifrado, cabeceras HTTP y matriz OWASP Top 10 (Criterio 2.1.5.11)", 10.2)
-    c55 = DocCursor(doc, orig[55])
-    c55.add_p(
-        "Tráfico cifrado con TLS 1.3 + HSTS en proxy inverso, cabeceras defensivas vía helmet() (CSP, X-Frame-Options, nosniff, "
-        "remoción de X-Powered-By), CORS restringido a FRONTEND_URL y soporte pgcrypto AES-256 en PostgreSQL 16 (Ley N° 19.628 / N° 21.719)."
+    b.add_h3("d. Cabeceras HTTP defensivas, cifrado y matriz OWASP Top 10 (2021)")
+    b.add_p(
+        "El servidor aplica helmet() (CSP, X-Frame-Options, nosniff y remoción de X-Powered-By) y política CORS acotada "
+        "a FRONTEND_URL. El cifrado en tránsito TLS 1.3 con HSTS y el cifrado AES-256 en reposo (pgcrypto) corresponden "
+        "al despliegue productivo en VPS de Unidad 3 conforme a la Ley N° 19.628 / N° 21.719."
     )
-    c55.add_table(
-        "Tabla 12. Identificación exhaustiva de los 10 riesgos OWASP Top 10 (2021) y medidas de mitigación en STAGE PLAN.",
-        ["Categoría OWASP 2021", "Amenaza en STAGE PLAN", "Control Técnico Implementado / Diseñado"],
+    b.add_table(
+        "Tabla 12. Identificación de los 10 riesgos OWASP Top 10 (2021) y estado de mitigación en STAGE PLAN.",
+        ["Categoría OWASP 2021", "Amenaza en STAGE PLAN", "Control Técnico (Implementado en PoC vs. Proyectado U3)"],
         [
-            ["A01: Broken Access Control", "Manipulación UUID en /api/venues/:id (IDOR).", "Validación ownerId === req.user.id + RBAC + HTTP 403 en audit_logs."],
-            ["A02: Cryptographic Failures", "Robo de claves o captura de tokens en Wi-Fi.", "bcrypt(12), TLS 1.3 + HSTS, .env en .gitignore y pgcrypto."],
-            ["A03: Injection", "SQLi en nombres de recinto o XSS en luces.", "Consultas parametrizadas Prisma ORM + Zod + escape nativo Vue 3 (sin v-html)."],
-            ["A04: Insecure Design", "Aprobar cables inseguros o impedancias < 3.2 Ω.", "Reglas físicas inmutables en @stageplan/shared + Triggers CHECK en PG16."],
-            ["A05: Security Misconfiguration", "Cabecera X-Powered-By, CORS * o JWT débil.", "helmet(), CORS acotado a FRONTEND_URL y exigencia JWT_SECRET en prod."],
-            ["A06: Vulnerable Components", "Librerías npm desactualizadas con CVEs.", "package-lock.json íntegro, auditoría npm audit y stack actualizado."],
-            ["A07: Auth & ID Failures", "Fuerza bruta en login o sesiones robadas.", "express-rate-limit, mensajes genéricos, bloqueo 5x y token_version."],
-            ["A08: Integrity Failures", "Alteración cliente de totales eléctricos.", "Recálculo determinista en servidor con @stageplan/shared."],
-            ["A09: Logging Failures", "Falta de trazabilidad ante ataques 403.", "Tabla inmutable audit_logs con IP, evento y marca temporal UTC."],
-            ["A10: SSRF", "Sondeo de puertos internos (:5432) vía API.", "Sin fetch saliente a URLs de usuario; PDF 100% client-side en navegador."]
+            ["A01: Broken Access Control", "Manipulación UUID en /api/venues/:id o /calculations/:id (IDOR).", "Implementado: filtro obligatorio ownerId === req.user.id en Prisma retornando HTTP 404. Proy. U3: registro en audit_logs."],
+            ["A02: Cryptographic Failures", "Robo de claves o captura de tokens en redes Wi-Fi de recintos.", "Implementado: bcrypt(12), .env excluido en .gitignore. Proy. U3: TLS 1.3 + HSTS en Nginx y pgcrypto en PG16."],
+            ["A03: Injection", "SQLi en nombres de recinto o XSS en nombres de equipos/luminarias.", "Implementado: consultas parametrizadas Prisma ORM + validación Zod + escape automático en plantillas Vue 3 (sin v-html)."],
+            ["A04: Insecure Design", "Aprobar cables subdimensionados o impedancias < 3.2 Ω.", "Implementado: reglas físicas inmutables en @stageplan/shared. Proy. U3: refuerzo con Triggers CHECK en PostgreSQL 16."],
+            ["A05: Security Misconfiguration", "Cabecera X-Powered-By, CORS abierto * o arranque sin secreto.", "Implementado: helmet(), CORS acotado a FRONTEND_URL y salida fatal en server.ts si falta JWT_SECRET en producción."],
+            ["A06: Vulnerable Components", "Librerías npm desactualizadas con vulnerabilidades conocidas.", "Implementado: bloqueo de versiones con package-lock.json y stack actualizado (Vue 3.5, Express 4.21, Prisma 6.4)."],
+            ["A07: Auth & ID Failures", "Ataques de fuerza bruta sobre login o enumeración de cuentas.", "Implementado: loginLimiter (10 req/15m), bloqueo HTTP 423 por 15 min tras 5 fallos, mensajes genéricos. Proy. U3: token_version."],
+            ["A08: Integrity Failures", "Alteración desde el cliente de consumos y secciones de cable.", "Implementado: CalculationController ejecuta nuevamente @stageplan/shared en servidor sin confiar en totales del cliente."],
+            ["A09: Logging Failures", "Falta de trazabilidad forense ante intentos fallidos o IDOR.", "Implementado: errorHandler y contador intentos_fallidos en SQLite. Proy. U3: tabla inmutable audit_logs en PG16."],
+            ["A10: SSRF", "Sondeo de puertos internos del servidor vía generación de PDF.", "Implementado: el servidor no realiza fetch a URLs de usuario; la exportación PDF Dual-Page corre 100% en el navegador."]
         ],
-        [1.55, 2.05, 2.9]
+        [1.55, 1.95, 3.0]
     )
 
-    # 8. PLAN DE PRUEBAS Y ASEGURAMIENTO DE LA CALIDAD (P[57]..P[61])
-    style_anchor(orig[57], "Plan de Pruebas y Aseguramiento de la Calidad", 13.0)
-
-    style_anchor(orig[58], "6.1 Estrategia TDD y balance de herramientas automatizadas y manuales (Criterio 2.1.6.14)")
-    c58 = DocCursor(doc, orig[58])
-    c58.add_p(
-        "El núcleo matemático de STAGE PLAN fue desarrollado bajo Desarrollo Guiado por Pruebas (TDD) con Vitest v3.2.7, "
-        "combinando herramientas automatizadas de verificación continua con validaciones manuales de API, seguridad y usabilidad en terreno."
+    # SECCIÓN 6: PLAN DE PRUEBAS Y QA
+    b.add_h1("6. PLAN DE PRUEBAS Y ASEGURAMIENTO DE LA CALIDAD")
+    b.add_h2("6.1 Estrategia TDD y balance de herramientas automatizadas y manuales")
+    b.add_p(
+        "El núcleo de cálculo @stageplan/shared se desarrolló aplicando Desarrollo Guiado por Pruebas (TDD) con Vitest v3.2.7, "
+        "combinando herramientas automatizadas de verificación estática y rendimiento con pruebas manuales de API y usabilidad "
+        "en dispositivos móviles y navegadores al 100% de zoom."
     )
-    c58.add_table(
-        "Tabla 13. Herramientas automatizadas y manuales contempladas en el plan de aseguramiento de calidad.",
+    b.add_table(
+        "Tabla 13. Herramientas automatizadas y manuales del plan de aseguramiento de calidad.",
         ["Tipo", "Herramienta", "Función en STAGE PLAN", "Estado"],
         [
-            ["Automatizada", "Vitest v3.2.7", "Ejecución de 10 suites (70 tests unitarios) sobre los 11 módulos calc-engine.", "70/70 PASS (113 ms)"],
-            ["Automatizada", "vue-tsc + tsc + Vite", "Verificación estricta de tipos TypeScript y build de producción sin errores.", "0 errores"],
-            ["Automatizada", "Node perf_hooks / k6", "Benchmark real 1.000 iteraciones del motor + prueba carga API 1–5 VUs.", "0,0286 ms prom."],
-            ["Automatizada", "npm audit + OWASP ZAP", "Auditoría de dependencias y escaneo pasivo/activo de vulnerabilidades REST.", "Planificada VPS"],
-            ["Manual", "Postman / Thunder Client", "Pruebas funcionales de endpoints JWT, Anti-IDOR 403 y contratos JSON.", "Ejecutada"],
-            ["Manual", "Smartphone 412px + Terreno", "Validación ergonómica táctil, modo local PDF y contraste en cabina oscura.", "Validada"]
+            ["Automatizada", "Vitest v3.2.7", "Ejecución de 11 suites (81 pruebas unitarias) sobre los 11 módulos calc-engine.", "81/81 PASS (186 ms)"],
+            ["Automatizada", "vue-tsc + tsc + Vite", "Comprobación estricta de tipos en 3 workspaces y compilación de producción.", "0 errores"],
+            ["Automatizada", "Node perf_hooks / k6", "Benchmark de 1.000 iteraciones del motor local (medido) + carga API 5 VUs (U3).", "0,0286 ms prom. (local)"],
+            ["Automatizada", "npm audit + OWASP ZAP", "Auditoría de dependencias y escaneo activo de rutas tras despliegue.", "Planificada VPS (U3)"],
+            ["Manual", "Chrome DevTools / Puppeteer", "Inspección de rutas URL, zoom 100%, modal Pioneer DJM y exportación CAD/PDF.", "Verificada (0 errores)"],
+            ["Manual", "Smartphone 412px + Terreno", "Validación ergonómica táctil, contraste Dark Mode y lectura en DISTORSIONCL SPA.", "Validada con operador"]
         ],
-        [1.0, 1.45, 2.75, 1.3]
+        [1.0, 1.5, 2.7, 1.3]
     )
 
-    style_anchor(orig[59], "6.2 Alcance y matriz de 20 casos de prueba (Criterio 2.1.6.13)")
-    c59 = DocCursor(doc, orig[59])
-    c59.add_table(
-        "Tabla 14. Matriz integral de 20 casos de prueba (Unitarias, Funcionales, Integración, Rendimiento, Seguridad y Usabilidad).",
+    b.add_h2("6.2 Matriz de 20 casos de prueba (Unitarias, Funcionales, Integración, Seguridad y Usabilidad)")
+    b.add_table(
+        "Tabla 14. Matriz integral de casos de prueba ejecutados y proyectados.",
         ["ID", "Tipo", "Módulo / Endpoint", "Escenario y Resultado Esperado / Obtenido", "Estado"],
         [
             ["PU-01", "Unitaria", "electrical.ts", "Tendido 35 m, 3.250 W → selecciona 2.5 mm² con ΔV = 2.18% ≤ 3%.", "PASS"],
             ["PU-02", "Unitaria", "electrical.ts", "Carga 4.000 W en 10 m → prevalece ampacidad y asigna 4.0 mm².", "PASS"],
             ["PU-03", "Unitaria", "hybrid-roster.ts", "3 cajas pasivas 8 Ω en paralelo → Zeq = 2.67 Ω → DANGER_PROTECT_SHORT.", "PASS"],
-            ["PU-04", "Unitaria", "hybrid-roster.ts", "Desacoplo automático de líneas L1 (Subs) y L2 (Tops/Cabina).", "PASS"],
+            ["PU-04", "Unitaria", "hybrid-roster.ts (PA-01..06)", "Dimensionamiento de rack de potencias pasivas (headroom 1.6x, carga 4/8 Ω, consumo AC 220V).", "PASS"],
             ["PU-05", "Unitaria", "stage-acoustic-engine.ts", "Recinto 28 m con 4 subs y delays → +6 dB clúster, +44.3 ms / +60.7 ms Haas.", "PASS"],
-            ["PU-06", "Unitaria", "stage-acoustic-engine.ts", "Evaluación Indoor vs. Parcela abierta frente a cobertura y distancias.", "PASS"],
-        ["PU-07", "Unitaria", "cabling.ts", "2 Tops + 2 Subs en 25m: Cables XLR y Speakon necesarios", "PASS"],
+            ["PU-06", "Unitaria", "stage-acoustic-engine.ts", "Evaluación Indoor (Sabine RT60) vs. Parcela abierta frente a cobertura y D.S. N° 38.", "PASS"],
+            ["PU-07", "Unitaria", "cabling.ts", "2 Tops + 2 Subs en 25 m → cálculo exacto de cables XLR y Speakon NL4.", "PASS"],
             ["PU-08", "Unitaria", "dj-setup-audio.ts", "2× CDJ + Mixer DJM + Retorno + Power → rutas RCA, RJ45, TRS-XLR, Speakon.", "PASS"],
-            ["PU-09", "Unitaria", "power-distribution.ts", "Asignación zapatillas Z1..Z4 (10A/16A) bajo 80% carga continua.", "PASS"],
+            ["PU-09", "Unitaria", "power-distribution.ts", "Asignación zapatillas Z1..Z4 (10A/16A) respetando 80% de capacidad continua.", "PASS"],
             ["PU-10", "Unitaria", "contingency-and-logistics.ts", "Subwoofer 38 kg (> 25 kg) → alerta obligatoria Ley del Saco N° 20.949.", "PASS"],
             ["PF-01", "Funcional", "PioneerMixerSimulator.vue", "2 bajos activos o Master > 2:00 → 17 LEDs en rojo +12/CLIP.", "PASS"],
-            ["PF-02", "Funcional", "LayoutSvg2D.vue", "Recinto 28 m → 4 Postes Guía RIC 10 y cableado perimetral sin cruces.", "PASS"],
-            ["PF-03", "Funcional", "pdfReport.ts", "Descarga PDF client-side en modo local en < 1 segundo.", "PASS"],
-            ["PI-01", "Integración", "/api/auth/register + login", "Registro bcrypt(12) + emisión JWT → HTTP 201 y HTTP 200.", "Planif. PG"],
-            ["PI-02", "Integración", "/api/venues/:id/calculate", "Payload JSON → Zod → Engine → Prisma JSONB → HTTP 201.", "Planif. PG"],
-            ["PR-01", "Rendimiento", "@stageplan/shared (1.000×)", "Benchmark real: promedio 0,0286 ms (p95: 0,0479 ms; p99: 0,3241 ms < 50 ms).", "PASS Medido"],
-            ["PR-02", "Rendimiento", "API Express (k6, 5 VUs)", "Carga concurrente 60 s en /calculate → p95 < 250 ms y 0% errores 5xx.", "Planif. VPS"],
-            ["PS-01", "Seguridad", "GET /api/venues/:uuidAjeno", "Prueba Anti-IDOR con JWT de otro usuario → HTTP 403 + audit_logs.", "Diseñada"],
-            ["PS-02", "Seguridad", "POST /api/auth/login", "Fuerza bruta + SQLi (' OR 1=1) → Rate Limit 429 y rechazo Zod 400.", "Diseñada"],
-            ["PU-UX", "Usabilidad", "Móvil 412×915 px Terreno", "Wizard 5 pasos en Dark Mode FOH con botones ≥ 44 px y cero desborde.", "PASS"]
+            ["PF-02", "Funcional", "LayoutSvg2D.vue", "Selector de 5 capas Blueprint al editar y Vista Completa (ALL) en /reporte.", "PASS"],
+            ["PF-03", "Funcional", "pdfReport.ts + useStagePlanState", "Captura CAD PNG 300 DPI + PDF Dual-Page (Memoria + Lámina landscape) y cotizador CLP.", "PASS"],
+            ["PI-01", "Integración", "POST /api/auth/register + login", "Registro bcrypt(12) + emisión JWT (12h) en SQLite dev.db → HTTP 201 / HTTP 200.", "Planif. API E2E"],
+            ["PI-02", "Integración", "POST /api/venues/:id/calculate", "Payload JSON → Zod → Engine v4.0 → Prisma → HTTP 201.", "Planif. API E2E"],
+            ["PR-01", "Rendimiento", "@stageplan/shared (1.000×)", "Benchmark medido: promedio 0,0286 ms (p95: 0,0479 ms; p99: 0,3241 ms < 50 ms).", "PASS Medido"],
+            ["PR-02", "Rendimiento", "API Express (k6, 5 VUs)", "Carga concurrente 60 s en /calculate → p95 < 250 ms y 0% errores 5xx.", "Planif. VPS U3"],
+            ["PS-01", "Seguridad", "GET /api/venues/:uuidAjeno", "Control Anti-IDOR con JWT de otro usuario → HTTP 404 + aislamiento por ownerId.", "Implementado / U3 E2E"],
+            ["PS-02", "Seguridad", "POST /api/auth/login", "5 fallos consecutivos → HTTP 423 Locked 15 min; >10 req/15m → Rate Limit 429.", "Implementado / U3 E2E"],
+            ["PU-UX", "Usabilidad", "Desktop 100% + Móvil 412×915", "Cockpit fullscreen en 5 rutas URL sin desborde horizontal ni scroll roto.", "PASS Verificado"]
         ],
         [0.55, 0.85, 1.5, 2.85, 0.75]
     )
 
-    style_anchor(orig[60], "6.3 Diseño detallado de pruebas críticas y evidencia real de ejecución (70/70 Vitest)")
-    c60 = DocCursor(doc, orig[60])
-    c60.add_p(
-        "Prueba Crítica de Seguridad (PS-01 — OWASP A01 Anti-IDOR): El usuario U2 intenta acceder con su JWT válido al recinto "
-        "V1 perteneciente a U1 mediante GET /api/venues/{V1.id}. El controlador compara venue.ownerId !== req.user.id, bloquea "
-        "inmediatamente la respuesta con HTTP 403 Forbidden y registra el evento IDOR_BLOCKED_403."
+    b.add_h2("6.3 Evidencia de ejecución automatizada y benchmark (81/81 Vitest PASS)")
+    b.add_p(
+        "Prueba de Rendimiento (PR-01): Sobre 1.000 iteraciones completas en Node.js v24 del pipeline completo "
+        "(eléctrico SEC + acústica Haas + lotes pasivos + cables + DJ setup), se registró una latencia promedio de "
+        "0,0286 ms (p50 = 0,0158 ms, p95 = 0,0479 ms, p99 = 0,3241 ms, máx = 4,2926 ms), muy por debajo del umbral de 50 ms."
     )
-    c60.add_p(
-        "Prueba Crítica de Rendimiento y Física (PR-01 + PU-03): Sobre 1.000 iteraciones completas en Node.js v24.20.0 del "
-        "pipeline (eléctrico SEC + acústica Haas + lotes pasivos + cables + DJ setup), se midió una latencia promedio de 0,0286 ms "
-        "(p50 = 0,0158 ms, p95 = 0,0479 ms, p99 = 0,3241 ms, máx = 4,2926 ms), superando en más de 1.000× el SLA de 50 ms."
-    )
-    c60.add_code(
-        "RUN  v3.2.7 D:/Dev/stage-plan-main/stage-plan-main/packages/shared\n"
-        " ✓ tests/contingency-logistics.spec.ts (6 tests) 8ms\n"
-        " ✓ tests/dj-setup-audio.spec.ts (4 tests) 8ms\n"
-        " ✓ tests/hybrid-roster.spec.ts (2 tests) 8ms\n"
-        " ✓ tests/stage-acoustic-engine.spec.ts (5 tests) 11ms\n"
-        " ✓ tests/power-distribution.spec.ts (8 tests) 19ms\n"
-        " ✓ tests/calc-engine.spec.ts (23 tests) 20ms\n"
-        " ✓ tests/routing-and-gaffer.spec.ts (10 tests) 11ms\n"
-        " ✓ tests/stage-acoustic-indoor-outdoor.spec.ts (2 tests) 9ms\n"
-        " ✓ tests/cabling.spec.ts (2 tests) 7ms\n"
-        " Test Files  10 passed (10) | Tests  70 passed (70) | Duration 3.06s (tests 113ms)",
+    b.add_code(
+        "RUN  v3.2.7 packages/shared\n"
+        " ✓ tests/routing-and-gaffer.spec.ts (10 tests) 14ms\n"
+        " ✓ tests/power-distribution.spec.ts (8 tests) 27ms\n"
+        " ✓ tests/calc-engine.spec.ts (23 tests) 25ms\n"
+        " ✓ tests/lighting-dmx.spec.ts (8 tests) 21ms\n"
+        " ✓ tests/qa-gap-branches.spec.ts (5 tests) 14ms\n"
+        " ✓ tests/hybrid-roster.spec.ts (8 tests) 30ms\n"
+        " ✓ tests/stage-acoustic-engine.spec.ts (5 tests) 15ms\n"
+        " ✓ tests/contingency-logistics.spec.ts (6 tests) 12ms\n"
+        " ✓ tests/dj-setup-audio.spec.ts (4 tests) 12ms\n"
+        " ✓ tests/stage-acoustic-indoor-outdoor.spec.ts (2 tests) 8ms\n"
+        " ✓ tests/cabling.spec.ts (2 tests) 7ms\n\n"
+        "Test Files  11 passed (11)\n"
+        "     Tests  81 passed (81)\n"
+        "  Duration  7.65s (tests 186ms)",
         title="Evidencia real de ejecución automatizada (npm test — Vitest v3.2.7):"
     )
 
-    style_anchor(orig[61], "6.4 Alineación del aseguramiento de calidad con OWASP Top 10")
-    DocCursor(doc, orig[61]).add_p(
-        "Los casos PS-01 y PS-02, junto con el análisis estático de tipos y las restricciones CHECK/Trigger en PostgreSQL 16, "
-        "cierran el ciclo de verificación frente a A01 (Broken Access Control), A03 (Injection), A04 (Insecure Design) y A07 (Auth Failures)."
+    b.add_h2("6.4 Alineación del aseguramiento de calidad con OWASP Top 10")
+    b.add_p(
+        "Las validaciones estáticas (vue-tsc y tsc), los esquemas Zod isomórficos y las pruebas unitarias sobre límites "
+        "físicos (SEC RIC N° 03/10 e impedancia Speakon) previenen en origen entradas fuera de rango y cálculos alterados "
+        "desde el cliente (A03, A04 y A08), complementando los controles de acceso y autenticación del backend (A01 y A07) "
+        "que serán sometidos a pruebas automatizadas de carga e intrusión tras el despliegue en Unidad 3."
     )
 
-    # 9. CONCLUSIONES (P[63]..P[64])
-    style_anchor(orig[63], "CONCLUSIONES", 13.0)
-    orig[64].text = ""
-    c64 = DocCursor(doc, orig[64])
-    c64.add_p("1. Cumplimiento Integral de Objetivos: STAGE PLAN elimina la improvisación empírica en DISTORSIONCL SPA al integrar en un motor determinista la normativa SEC RIC N° 03 y N° 10, el cobertura y distancias y la Ley del Saco N° 20.949.")
-    c64.add_p("2. Validación del Marco Solo-Developer (Scrumban + PSP): La combinación de Sprints de 14 días, WIP = 1 y 70 pruebas unitarias automatizadas Vitest (100% PASS, 0,0286 ms promedio) demuestra calidad industrial sin sacrificar velocidad.")
-    c64.add_p("3. Excelencia Arquitectónica y Persistencia Híbrida: El monorepo TypeScript bajo paradigma 4+1 (ISO/IEC/IEEE 42010:2022) y la base de datos SQLite 3 dev.db (4 tablas 3FN + JSON) equilibran integridad ACID, portabilidad total y agilidad operativa en terreno.")
-    c64.add_p("4. Ciberseguridad y Defensa Técnica: La mitigación integral de OWASP Top 10 (A01–A10), el control RBAC/Anti-IDOR y el banco de 20 preguntas preparadas consolidan una entrega lista para calificación máxima.")
+    # CONCLUSIONES
+    b.add_h1("CONCLUSIONES")
+    b.add_p(
+        "1. Cumplimiento de los objetivos de ingeniería: STAGE PLAN transforma la pre-producción técnica de DISTORSIONCL SPA "
+        "desde estimaciones empíricas hacia un flujo determinista trazable bajo normativa chilena (SEC RIC N° 03 y N° 10, "
+        "Decreto Supremo N° 38 del MMA y Ley del Saco N° 20.949), integrando además dimensionamiento de amplificación para "
+        "equipos pasivos y cotización operativa en CLP."
+    )
+    b.add_p(
+        "2. Viabilidad del enfoque Scrumban + PSP en desarrollo individual: La planificación en 4 Sprints de 14 días con "
+        "límite WIP = 1, respaldada por compilación estricta TypeScript y 81 pruebas unitarias en Vitest al 100% de "
+        "aprobación (0,0286 ms promedio), permite sostener consistencia técnica y control de regresiones con un solo desarrollador."
+    )
+    b.add_p(
+        "3. Arquitectura desacoplada y persistencia híbrida: El monorepo basado en vista 4+1 (ISO/IEC/IEEE 42010:2022) y "
+        "la base de datos SQLite 3 (dev.db, 4 tablas 3FN en español + JSON) resuelven la portabilidad de la prueba de "
+        "concepto en local mientras dejan estructurada la migración hacia PostgreSQL 16 para producción."
+    )
+    b.add_p(
+        "4. Usabilidad en terreno y seguridad desde el diseño: El entorno Studio Cockpit calibrado al 100% de zoom, el plano "
+        "Blueprint por capas con lámina PDF Dual-Page autónoma y los controles defensivos de la API (Zod, bcrypt, bloqueo "
+        "HTTP 423, Anti-IDOR y errorHandler) cierran la fase de diseño lista para pasar a construcción y despliegue."
+    )
 
-    # 10. REFERENCIAS BIBLIOGRÁFICAS (P[66]..P[67])
-    style_anchor(orig[66], "REFERENCIAS BIBLIOGRÁFICAS (Norma APA 7 / INACAP)", 13.0)
-    orig[67].text = ""
-    c67 = DocCursor(doc, orig[67])
+    # REFERENCIAS BIBLIOGRÁFICAS
+    b.add_h1("REFERENCIAS BIBLIOGRÁFICAS")
     refs = [
         "Beck, K. (2003). Test-Driven Development: By Example. Addison-Wesley Professional.",
-        "Biblioteca del Congreso Nacional de Chile (BCN). (1999). Ley N° 19.628: Sobre protección de la vida privada (y actualización Ley N° 21.719).",
-        "Biblioteca del Congreso Nacional de Chile (BCN). (2016). Ley N° 20.949: Regula el peso máximo de carga humana (Ley del Saco).",
+        "Biblioteca del Congreso Nacional de Chile (BCN). (1999). Ley N° 19.628: Sobre protección de la vida privada (y modificación Ley N° 21.719).",
+        "Biblioteca del Congreso Nacional de Chile (BCN). (2016). Ley N° 20.949: Modifica el Código del Trabajo para reducir el peso de las cargas de manipulación manual (Ley del Saco).",
         "Davis, D., & Patronis, E. (2012). Sound System Engineering (4th ed.). Focal Press.",
         "International Organization for Standardization. (2022). Systems and software engineering — Architecture description (ISO/IEC/IEEE Standard No. 42010:2022).",
         "Kruchten, P. (1995). Architectural Blueprints—The '4+1' View Model of Software Architecture. IEEE Software, 12(6), 42–50.",
         "Ministerio del Medio Ambiente (Chile). (2011). Decreto Supremo N° 38: Norma de emisión de ruidos generados por fuentes que indica.",
         "OWASP Foundation. (2021). OWASP Top 10:2021 — The Ten Most Critical Web Application Security Risks. https://owasp.org/Top10/es/",
-        "Superintendencia de Electricidad y Combustibles (SEC). (2020). Pliegos Técnicos Normativos RIC N° 03 y RIC N° 10. Resolución Exenta N° 33.877.",
+        "Superintendencia de Electricidad y Combustibles (SEC). (2020). Pliegos Técnicos Normativos RIC N° 03 (Alimentadores) y RIC N° 10 (Instalaciones de Uso General). Resolución Exenta N° 33.877.",
         "W3C. (2018). Web Content Accessibility Guidelines (WCAG) 2.1 Level AA. https://www.w3.org/TR/WCAG21/"
     ]
     for rf in refs:
-        c67.add_p(f"• {rf}", size=9.2, space_after=3)
+        b.add_p(f"• {rf}", size=9.2, space_after=3)
 
-    # 11. ANEXOS (P[70]..P[71])
-    style_anchor(orig[70], "ANEXOS", 13.0)
-    orig[71].text = ""
-    c71 = DocCursor(doc, orig[71])
-
-    # ANEXO A: MATRIZ DE TRAZABILIDAD 100/100
-    c71.add_p("Anexo A. Matriz de Trazabilidad Completa con la Rúbrica Oficial de Evaluación (Unidad 2 — 100/100 Puntos)", bold=True, color=COLOR_TITLE, size=11.0, space_before=6, space_after=4)
-    c71.add_table(
-        "Tabla 15. Trazabilidad punto a punto contra los 15 criterios oficiales de la rúbrica INACAP.",
-        ["Criterio de la Rúbrica (Puntaje)", "Sección del Informe y Evidencia Verificable", "Nivel"],
+    # ANEXOS (SOLO ANEXO A DE TRAZABILIDAD SOBRIA Y ANEXO B MERMAID; SIN BANCO DE PREGUNTAS DE DEFENSA)
+    b.add_h1("ANEXOS")
+    b.add_h2("Anexo A. Matriz de Trazabilidad de Entregables (Unidad 2)")
+    b.add_table(
+        "Tabla 15. Correspondencia entre los componentes documentados y la evidencia técnica del proyecto.",
+        ["Área / Requisito de Ingeniería", "Sección del Informe y Evidencia Verificable", "Estado"],
         [
-            ["Actividades Formativas U2 (Guía ABPRO)", "Sección Actividades Formativas: Tablas 1 y 2 (Brainstorming + Matriz Priorización).", "Completo"],
-            ["2.1.1.1 Actividades, fases, plazos y responsables (5 pts)", "Sección 1.1–1.2: Scrumban+PSP, Tablas 3 y 4 (T01–T20) y Figura 1.", "Destacado"],
-            ["2.1.1.2 Dependencias y prioridades cronograma (5 pts)", "Tabla 4 (Depende de + Ruta Crítica) y Tabla 5 (Backlog MoSCoW Gherkin).", "Destacado"],
-            ["2.1.2.3 Define 5 puntos de vista paradigma 4+1 (5 pts)", "Sección 2.2–2.6: Escenarios, Lógica, Desarrollo, Procesos y Física (Figuras 2–6).", "Destacado"],
-            ["2.1.2.4 Tecnologías y herramientas infraestructura (5 pts)", "Sección 2.1 Tabla 7: Stack completo justificado + escalabilidad futura.", "Destacado"],
-            ["2.1.3.5 Desarrolla prototipos interactivos funcionales (5 pts)", "App real Vue 3 + Figuras 8, 9 y 10 (Mosaico, Plano 2D y Pioneer DJM).", "Destacado"],
-            ["2.1.3.6 Asegura consistencia visual y adaptabilidad (5 pts)", "Sección 3.3 Dark Mode WCAG 2.1 AA, Figura 7 y Figura 11 (Móvil 412px).", "Destacado"],
-            ["2.1.3.7 Integra retroalimentación de usuarios (5 pts)", "Sección 3.6 Tabla 9: 4 iteraciones reales con DISTORSIONCL SPA (Iteraciones 1–3).", "Destacado"],
-            ["2.1.4.8 Define entidades y relaciones PK/FK (10 pts)", "Sección 4.2 Tabla 10 y Figura 12 (DER): 4 tablas 3FN en SQLite (dev.db) con Prisma ORM.", "Destacado"],
-            ["2.1.4.9 Bases estructuradas y no estructuradas (5 pts)", "Sección 4.1–4.3: SQLite 3 3FN + columnas JSON nativas (json_extract) probadas en DB Browser.", "Destacado"],
-            ["2.1.5.10 Políticas autenticación y autorización (10 pts)", "Sección 5.1–5.2 Tabla 11: RBAC 3 roles, bcrypt(12), JWT, Anti-IDOR y RateLimit.", "Destacado"],
-            ["2.1.5.11 Amenazas comunes y mitigación (10 pts)", "Sección 5.2 Tabla 12: Cobertura íntegra OWASP Top 10 (2021) A01 a A10.", "Destacado"],
-            ["2.1.5.12 Estándares de codificación segura (10 pts)", "Sección 5.2: Zod isomórfico, Prisma parametrizado, Helmet, errores y TLS 1.3.", "Destacado"],
-            ["2.1.6.13 Pruebas unitarias, integrales y rendimiento (10 pts)", "Sección 6.2–6.3 Tabla 14: 20 casos + 70/70 Vitest PASS + Benchmark 0,0286 ms.", "Destacado"],
-            ["2.1.6.14 Herramientas automatizadas y manuales (5 pts)", "Sección 6.1 Tabla 13: Vitest, vue-tsc, perf_hooks/k6, ZAP, Postman y terreno.", "Destacado"],
-            ["2.1.6.15 Responde preguntas con fundamentos sólidos (5 pts)", "Anexo C Tabla 16: Banco de 21 preguntas técnicas y respuestas fundamentadas.", "Preparado"]
+            ["Actividades Formativas U2 (Guía ABPRO)", "Sección Actividades Formativas: Tablas 1 y 2 (Brainstorming + Matriz Priorización).", "Documentado"],
+            ["Metodología, Cronograma, Dependencias y Backlog", "Sección 1.1–1.5: Scrumban+PSP, Tablas 3–6 (T01–T20, Ruta Crítica, Gherkin) y Figura 1.", "Documentado"],
+            ["Arquitectura 4+1 (ISO/IEC/IEEE 42010) y Stack", "Sección 2.1–2.6: Tabla 7 (Vue Router, shared, Express, SQLite/PG16) y Figuras 2–6.", "Implementado en PoC"],
+            ["Prototipo Interactivo, UX/UI y Retroalimentación", "Sección 3.1–3.3: Cockpit 100% zoom, Blueprint capas, Rack Pasivo, Arriendo, Figuras 7–11 y Tabla 9.", "Implementado en PoC"],
+            ["Modelo de Datos Híbrido (3FN + JSON / PG16 U3)", "Sección 4.1–4.3: SQLite dev.db (4 tablas en español), Figura 12, Tabla 10 y schema_stageplan_pg16.sql.", "Implementado en PoC / Proyectado U3"],
+            ["Seguridad, RBAC, Anti-IDOR y OWASP Top 10", "Sección 5.1–5.2: Tablas 11–12 (Zod, bcrypt 12, bloqueo 423, Anti-IDOR 404, errorHandler).", "Implementado en PoC / Proyectado U3"],
+            ["Plan de Pruebas TDD, Rendimiento y Calidad", "Sección 6.1–6.4: Tablas 13–14, 81/81 tests Vitest PASS (11 suites) y benchmark 0,0286 ms.", "Ejecutado y Verificado"]
         ],
-        [2.25, 3.35, 0.9]
+        [2.25, 3.15, 1.1]
     )
 
-    # ANEXO B: CÓDIGO MERMAID
-    c71.add_p("Anexo B. Código Fuente Mermaid de los Diagramas Clave (Reproducibilidad Documental)", bold=True, color=COLOR_TITLE, size=11.0, space_before=6, space_after=4)
-    c71.add_code(
+    b.add_h2("Anexo B. Código Fuente Mermaid de los Diagramas Principales")
+    b.add_code(
         "flowchart LR\n"
-        "  C[Cliente Terreno Vue 3 + jsPDF Offline] -->|HTTPS TLS 1.3| P[Proxy Nginx/Caddy :443]\n"
-        "  P -->|Static| F[@stageplan/frontend]\n"
-        "  P -->|REST /api/*| B[@stageplan/backend Express :3000]\n"
-        "  B --> S[@stageplan/shared 11 Módulos + Zod]\n"
-        "  B -->|Prisma ACID| D[(PostgreSQL 16 :5432 3FN + JSONB GIN)]\n\n"
+        "  C[Navegador FOH: Vue 3 + Router + PDF Dual-Page] -->|HTTP Local / HTTPS U3| B[@stageplan/backend Express :3000]\n"
+        "  C --> S[@stageplan/shared 11 Modulos + Zod + 81 Tests]\n"
+        "  B --> S\n"
+        "  B -->|Prisma ORM| D[(SQLite 3 dev.db: 4 Tablas 3FN + JSON)]\n"
+        "  D -.->|Migracion U3| P[(PostgreSQL 16: 12 Tablas + JSONB GIN)]\n\n"
         "erDiagram\n"
         "  USUARIOS ||--o{ RECINTOS : posee\n"
         "  USUARIOS ||--o{ CALCULOS_RIDER : ejecuta\n"
         "  RECINTOS ||--o{ CALCULOS_RIDER : contiene\n"
         "  USUARIOS ||--o{ ENLACES_COMPARTIDOS : genera\n"
         "  CALCULOS_RIDER ||--o{ ENLACES_COMPARTIDOS : comparte",
-        title="Código Mermaid reproducible (Arquitectura 4+1 y DER):"
-    )
-
-    # ANEXO C: BANCO DE 20 PREGUNTAS PARA DEFENSA ORAL (CRITERIO 2.1.6.15)
-    c71.add_p("Anexo C. Banco de 21 Preguntas Técnicas y Respuestas Fundamentadas para Defensa Oral (Criterio 2.1.6.15)", bold=True, color=COLOR_TITLE, size=11.0, space_before=6, space_after=4)
-    c71.add_table(
-        "Tabla 16. Preparación integral del estudiante para preguntas de comisión evaluadora.",
-        ["#", "Pregunta Probable del Docente", "Respuesta Técnica Fundamentada"],
-        [
-            ["1", "¿Por qué Scrumban + PSP y no Scrum puro?", "En desarrollo individual Scrum puro genera sobrecarga ceremonial; Scrumban aporta Sprints de 14d + WIP=1 y PSP reemplaza Code Review con 70 tests TDD Vitest."],
-            ["2", "¿Cuál es la ruta crítica del proyecto?", "T01→T02→T04→T05→T06→T08→T09→T10→T12→T13→T15→T18→T20; todo retraso en el motor SEC o API desplaza el Plano 2D y cierre."],
-            ["3", "¿Por qué usar un monorepo con @stageplan/shared?", "Ejecuta las mismas fórmulas físicas y contratos Zod en cliente offline (0,0286 ms) y servidor Express sin duplicar lógica ni generar discrepancias."],
-            ["4", "¿Qué norma avala las 5 vistas de arquitectura?", "ISO/IEC/IEEE 42010:2022 bajo el modelo 4+1 de Kruchten (Escenarios, Lógica, Desarrollo, Procesos y Física)."],
-            ["5", "¿Cómo aplica SEC RIC N° 03 y RIC N° 10?", "Doble criterio en electrical.ts: caída monofásica ΔV = (2·L·I·ρ)/S ≤ 3% y ampacidad con +20% holgura, más postes guía R ≥ 6d."],
-            ["6", "¿Por qué incluir Postes Guía en las esquinas?", "Impiden curvas de 90° vivos que fracturan cobre multifilar Clase 5 y generan puntos calientes Joule, cumpliendo RIC N° 10 y despejando la pista."],
-            ["7", "¿Por qué un clúster mono central de subs a piso?", "A distancia < λ/2 (< 1.7 m a 100 Hz) se acoplan en fase otorgando +6 dB acústicos gratuitos sin forzar amplificadores ni causar cancelaciones acústicas."],
-            ["8", "¿Cómo funciona el Efecto Haas en líneas Delay?", "Suma al tiempo de vuelo del sonido (v = 331.3 + 0.606·T) un margen Haas para que el público localice el origen sonoro en el escenario frontal."],
-            ["9", "¿Qué pasa con 3 cajas pasivas de 8 Ω en paralelo?", "Zeq = 8/3 = 2.67 Ω < 3.2 Ω seguro; se dispara DANGER_PROTECT_SHORT para evitar corte térmico o destrucción del Power."],
-            ["10", "¿Qué demuestra el simulador Pioneer DJM?", "Que mantener 1 solo bajo activo (12:00) y el segundo en Low Kill (-∞ a 7:00) evita +6 dB en graves que cuadruplican potencia de pico y causan CLIP."],
-            ["11", "¿Cómo dimensiona el sistema los cables de audio necesarios?", "Calcula la distancia desde la cabina hacia el PA frontal y torres de delay, determinando la cantidad y metraje exacto de cables XLR y Speakon NL4 sin cruces peligrosos por la pista."],
-            ["12", "¿Cómo valida el cobertura y distancias?", "Calcula atenuación por distancia y tipo de muro contrastando el nivel resultante contra el límite nocturno (48 dBA) o diurno (60 dBA)."],
-            ["13", "¿Cómo integra la Ley del Saco (Ley 20.949)?", "contingency-and-logistics.ts alerta automáticamente cualquier equipo > 25 kg exigiendo manipulación entre 2 operarios o carro."],
-            ["14", "¿Por qué base de datos híbrida SQLite + JSON?", "Para el MVP, 4 tablas 3FN en SQLite aseguran integridad referencial y portabilidad total con dev.db (auditable en DB Browser), mientras campos JSON absorben el cálculo sin sobrediseñar tablas intermedias."],
-            ["15", "¿Cómo mitiga OWASP A01 (IDOR)?", "authMiddleware extrae req.user.id del JWT y los controladores validan ownerId === req.user.id antes de responder, retornando HTTP 403 + log."],
-            ["16", "¿Cómo previene Inyección SQL y XSS?", "Consultas parametrizadas con Prisma ORM, validación Zod en frontera y auto-escapado de Vue 3 sin uso de v-html."],
-            ["17", "¿Por qué generar el PDF en el cliente (jsPDF)?", "Garantiza operatividad ágil en modo local en parcelas sin señal 4G/5G y elimina vectores SSRF en el servidor."],
-            ["18", "¿Qué cobertura tienen las pruebas automatizadas?", "70 tests unitarios en 10 archivos Vitest pasando al 100% en 113 ms cubriendo todos los módulos de ingeniería."],
-            ["19", "¿Qué latencia arrojó el benchmark real?", "0,0286 ms promedio (p95 = 0,0479 ms) en 1.000 ejecuciones completas en Node v24, muy por debajo del SLA de 50 ms."],
-            ["20", "¿Cómo escalaría STAGE PLAN a SaaS multi-empresa?", "Agregando tabla organizations sobre el aislamiento ownerId/RBAC ya existente, Docker Compose y réplica de lectura PostgreSQL."],
-            ["21", "¿Por qué ya presenta un prototipo funcional con 70 tests en Unidad 2?", "Para acreditar en nivel Destacado los criterios 2.1.3.5 (prototipo interactivo real) y 2.1.6.13 (plan de pruebas ejecutado) mediante una PoC validada, manteniendo el despliegue productivo VPS/PG16/k6/ZAP acotado a la Unidad 3."]
-        ],
-        [0.35, 2.25, 3.9]
+        title="Código Mermaid reproducible (Arquitectura Monorepo/Datos y DER 4 tablas):"
     )
 
     out_entrega = os.path.join(ENTREGA_DIR, "Proyecto_Integrado_U2_Mauricio_Vega_G10_FINAL.docx")

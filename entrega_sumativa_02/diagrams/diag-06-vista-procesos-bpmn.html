@@ -40,7 +40,7 @@
 <rect x="20" y="225" width="1120" height="215" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
 <text x="34" y="243" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">CARRIL 2: MOTOR DETERMINISTA STAGE PLAN (VALIDACIÓN Y CÁLCULO)</text>
 <rect x="20" y="450" width="1120" height="190" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
-<text x="34" y="468" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">CARRIL 3: SALIDA OPERACIONAL &amp; PERSISTENCIA (POSTGRESQL / PDF OFFLINE)</text>
+<text x="34" y="468" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">CARRIL 3: SALIDA OPERACIONAL &amp; PERSISTENCIA (SQLITE PoC / PDF DUAL-PAGE)</text>
 <circle cx="70" cy="120" r="18" fill="#ecfdf5" stroke="#059669" stroke-width="2.2"/>
 <text x="70" y="152" fill="#059669" font-size="9" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">INICIO</text>
 <rect x="120" y="80" width="165" height="80" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
@@ -50,7 +50,7 @@
 <rect x="320" y="80" width="185" height="80" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
 <text x="412.5" y="102" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">2. Configurar Equipos</text>
 <text x="412.5" y="118" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Tops/Subs Activa o Pasiva</text>
-<text x="412.5" y="132" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Powers + Luces DMX x1</text>
+<text x="412.5" y="132" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Powers + Arriendo CLP</text>
 <rect x="320" y="285" width="185" height="85" rx="7" fill="#eff6ff" stroke="#1F497D" stroke-width="1.4" />
 <text x="412.5" y="307" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">3. Validación Zod</text>
 <text x="412.5" y="323" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Rango 1..500m, Watts &gt; 0</text>
@@ -59,19 +59,19 @@
 <rect x="685" y="255" width="200" height="70" rx="7" fill="#fef2f2" stroke="#c81e1e" stroke-width="1.4" />
 <text x="785.0" y="277" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Alerta / Rebalanceo</text>
 <text x="785.0" y="293" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Dividir L1/L2/L3 + Calibre</text>
-<text x="785.0" y="307" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Sugerir Postes Guía RIC 10</text>
+<text x="785.0" y="307" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Sugerir Rack Powers y RIC 10</text>
 <rect x="685" y="345" width="200" height="75" rx="7" fill="#ecfdf5" stroke="#059669" stroke-width="1.4" />
 <text x="785.0" y="367" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Cálculo Aprobado OK</text>
 <text x="785.0" y="383" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Delays Haas + Cluster +6dB</text>
-<text x="785.0" y="397" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Metraje DMX y Pioneer DJM</text>
+<text x="785.0" y="397" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Rack Pasivo + Cotización CLP</text>
 <rect x="320" y="505" width="230" height="85" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
-<text x="435.0" y="527" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">4. Persistir en PostgreSQL 16</text>
-<text x="435.0" y="543" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Tablas 3FN + JSONB Snapshot</text>
-<text x="435.0" y="557" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Trigger SEC Validado</text>
-<rect x="685" y="505" width="230" height="85" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
-<text x="800.0" y="527" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">5. Render Layout 2D + PDF</text>
-<text x="800.0" y="543" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Mapa SVG con Postes Guía</text>
-<text x="800.0" y="557" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">PDF Offline Modo Avión</text>
+<text x="435.0" y="527" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">4. Persistir en SQLite 3 (dev.db)</text>
+<text x="435.0" y="543" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">4 Tablas 3FN + JSON Snapshot</text>
+<text x="435.0" y="557" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Proy. U3: PostgreSQL 16</text>
+<rect x="685" y="505" width="240" height="85" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
+<text x="805.0" y="527" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">5. Plano CAD + PDF Dual-Page</text>
+<text x="805.0" y="543" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vista Completa todas capas</text>
+<text x="805.0" y="557" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">PDF (2 Págs) + PNG 300 DPI</text>
 <circle cx="1030" cy="547" r="18" fill="#fef2f2" stroke="#c81e1e" stroke-width="3.5"/>
 <text x="1030" y="582" fill="#c81e1e" font-size="9" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">FIN MONTAJE</text>
 <line x1="88" y1="120" x2="120" y2="120" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
@@ -97,9 +97,9 @@
 <line x1="550" y1="547" x2="685" y2="547" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
 <rect x="595.1" y="532.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
 <text x="617.5" y="542.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Render</text>
-<line x1="915" y1="547" x2="1012" y2="547" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
-<rect x="944.0" y="532.0" width="39.0" height="13" rx="2" fill="#f8fafc"/>
-<text x="963.5" y="542.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Listo</text>
+<line x1="925" y1="547" x2="1012" y2="547" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
+<rect x="949.0" y="532.0" width="39.0" height="13" rx="2" fill="#f8fafc"/>
+<text x="968.5" y="542.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Listo</text>
 </svg>
 </body>
 </html>

@@ -1,100 +1,61 @@
-# GUION DE PRESENTACIÓN Y DEFENSA: STAGE PLAN (v4.0)
-## Caso de Estudio: Productora y Arriendo de Audio DISTORSIONCL SPA
-### Asignatura: Proyecto Integrado (TIHV43) — INACAP
+# GUION DE PRESENTACIÓN Y DEFENSA PRIVADO: STAGE PLAN (v4.0)
+**Caso de Estudio:** Productora y Arriendo de Audio *DISTORSIONCL SPA*  
+**Asignatura:** Proyecto Integrado (`TIHV43`) — INACAP Sede Maipú — Sección C1 · Grupo G10  
+**Estudiante:** Mauricio Vega Castillo | **Docente:** Manuel Rojas
+
+> *(Documento privado de preparación para la exposición oral ante comisión docente. No se adjunta en el informe Word oficial.)*
 
 ---
 
 ## 3 PILARES ESTRATÉGICOS PARA DEFENDER ANTE LA COMISIÓN
-1. **No es un CRUD genérico; es un Sistema Experto de Ingeniería Preventiva:** Transforma variables simples ingresadas por el cliente (medidas del lugar, constructor multilote de cajas activas/pasivas con Watts RMS y Peak, enchufe de casa de 10A/16A o generador comercial de 3.500W) en decisiones automáticas de electroacústica y electrotecnia que previenen equipos quemados, generadores apagados en pleno drop, desbalance tonal y sonido saturado ("chicharriento").
-2. **Contraste entre Complejidad Física Interna y UX Accesible ("Hard Techno Industrial"):** Por dentro resuelve cálculos deterministas de ingeniería de audio: retardos temporales en milisegundos para sincronización de torres (Efecto Haas: $t = d/343$), ley de Ohm en paralelo de impedancias Speakon, división automática en **2 Líneas de Fuerza Eléctrica** (Línea 1 Subs vs Línea 2 Tops) y caída de tensión dinámica ($\Delta V \le 3\%$) bajo pliego SEC RIC N° 03. Por fuera ofrece una interfaz de alto contraste pensada para baja visión en cabinas oscuras, con **Plano 2D**, botones `[i]` explicativos, botón de copia rápida a **WhatsApp** y descarga de **Ficha Técnica PDF en memoria del navegador**.
-3. **Calidad Demostrable con 70 Pruebas Unitarias Automatizadas (Vitest TDD):** Cada cálculo acústico, eléctrico, de impedancia, ruteo de cables de poder y señal (`XLR`, `Speakon NL4`, `IEC C13`, `PowerCON`) y rollos de cinta Gaffer de 50m está verificado automáticamente con **70 de 70 tests aprobados (100% Pass en 10 suites)**.
+
+1. **Sistema Experto de Ingeniería Preventiva (no es un CRUD genérico):** Transforma parámetros simples del evento (medidas del salón o parcela, lotes combinados activos/pasivos, red 10A/16A o generador comercial) en cálculos deterministas de electroacústica, electrotecnia SEC RIC N° 03/10, rack de potencias para pasivos y presupuesto operativo en CLP.
+2. **Estética Studio Cockpit 100% Zoom + Plano CAD Blueprint por Capas:** Por dentro ejecuta cálculos físicos estrictos (`@stageplan/shared`, `0,0286 ms`); por fuera entrega un entorno Dark Mode FOH libre de desplazamiento vertical global al 100% de zoom, con plano vectorial por 5 capas exclusivas (sin saturación visual al configurar), capa consolidada completa en `/reporte`, simulador Pioneer DJM, descarga PNG (300 DPI) y PDF Dual-Page offline.
+3. **Calidad Verificable con 81 Pruebas Unitarias TDD (Vitest):** Las 11 suites en `@stageplan/shared` pasan al 100% (`81/81` en `186 ms`), verificando fórmulas SEC, impedancia Speakon, rack de potencias (`PA-01..PA-06`), división de líneas L1/L2/L3, retardos Haas, rutas DMX y Ley del Saco.
 
 ---
 
-## ESTRUCTURA PASO A PASO (8 A 10 MINUTOS)
+## ESTRUCTURA DE PRESENTACIÓN (8 A 10 MINUTOS)
 
 ### LÁMINA 1: Portada e Identidad del Proyecto
-**Qué dices:**
-> "Buenos días profesor y comisión. Hoy presento **Stage Plan (v4.0)**, un sistema experto de pre-producción electroacústica, constructor híbrido multilote, distribución espacial 2D y seguridad eléctrica desarrollado para la productora **DISTORSIONCL SPA**."
->
-> "A diferencia de un sistema administrativo tradicional, Stage Plan resuelve un problema físico y operativo crítico en eventos electrónicos y fiestas en salones o parcelas: cómo lograr que el sonido suene potente, equilibrado y nítido en toda la pista combinando cajas activas y pasivas de diferente potencia sin romper conos, sin quemar amplificadores por baja impedancia, sin botar el automático de la casa y sin que el generador colapse en el golpe del bombo."
+> "Buenos días profesor Manuel Rojas. Presento **Stage Plan (v4.0)**, plataforma web de pre-producción electroacústica, seguridad eléctrica SEC y gestión logística desarrollada para **DISTORSIONCL SPA** en **INACAP Sede Maipú** (Sección C1, Grupo G10). Resuelve un problema concreto en eventos en salones y parcelas: garantizar sonido potente y nítido combinando cajas activas y pasivas sin quemar etapas de potencia, sin botar automáticos y sin apagar generadores en los golpes de graves."
+
+### LÁMINA 2: Diagnóstico del Problema en Terreno
+> "Al levantar requerimientos con Amaro Artiaga identificamos cinco fallos recurrentes cuando se trabaja con dimensionamiento empírico sin cálculo normativo:
+> 1. **Colapso de suministro en el drop:** Sobrecarga de circuitos de 10A (~1.760W continuos seguros) o generadores comerciales de 3.500W pico (cuya capacidad continua estable para audio ronda los ~2.142W tras el factor AVR del 72%).
+> 2. **Saturación en mezclas híbridas:** Combinar cajas activas frontales con pasivas de menor potencia sin ajustar ganancia ni dimensionar adecuadamente el rack de potencias externa.
+> 3. **Protección de amplificadores por impedancia:** Cargas pasivas en paralelo bajo 3,2 Ω activan el modo `PROTECT` del amplificador.
+> 4. **Cancelación de graves:** Ubicar subwoofers separados en vez de agruparlos en clúster mono central a piso (+6 dB).
+> 5. **Operación en parcelas sin cobertura móvil:** Necesidad de llevar la memoria técnica y el plano CAD resueltos en PDF offline."
+
+### LÁMINA 3: Arquitectura Modular y Capacidades v4.0 (Demo en Vivo)
+> - **Vista 0 (`/auth`) y Vista 1 (`/recinto`):** Login seguro y 8 presets rápidos más evaluación normativa de ruido vecinal D.S. N° 38 MMA.
+> - **Vista 2 (`/equipos`):** Lotes Activo/Pasivo con **Rack de Potencias Sugerido** (headroom 1,6× RMS, impedancia 4/8 Ω, modelos *Crown / Powersoft / Lab Gruppen* y carga AC 220V sumada a la validación SEC).
+> - **Vista 3 (`/plano-2d`):** Plano CAD Blueprint por **5 capas exclusivas** (inicia limpio en *Arquitectura & Audio*), postes guía SEC RIC N° 10 ($R \ge 6d$), simulador hardware **Pioneer DJM** y **Plan B**.
+> - **Vista 4 (`/reporte`):** Previsualización del plano con **todas las capas activas (`Vista Completa`)**, descarga **PNG 300 DPI**, **Cotizador de Arriendo CLP** (Propios vs. Arriendo) y exportación **PDF Dual-Page** (Pág. 1 Memoria SEC + costos; Pág. 2 Lámina CAD horizontal).
 
 ---
 
-### LÁMINA 2: Diagnóstico del Problema (Los 5 Porqués en Terreno)
-**Qué dices:**
-> "Al levantar requerimientos con DISTORSIONCL SPA identificamos 5 fallos recurrentes cuando se monta 'al ojo':
-> 1. **Colapso de energía en el drop:** Conectan cajas y sub-bajos a un enchufe doméstico de 10A (que solo soporta 1.760W continuos seguros) o a un generador comercial de '3.500 Watts' sin considerar que ese valor es pico de arranque y que para audio continuo solo entrega ~2.140W estables antes de que el regulador AVR caiga bajo 195V y apague las cajas.
-> 2. **Saturación y mezcla desigual de cajas:** Al combinar por ejemplo 2 cajas activas frontales con 1 caja pasiva de menor potencia, la caja débil satura y distorsiona si no se ajusta y empareja su nivel de volumen (ganancia).
-> 3. **Cortocircuito de amplificadores por impedancia:** Conectan cajas pasivas en puente (*Speakon Link*) bajando la carga bajo 3.2 Ohms, lo que activa la protección PROTECT del amplificador y apaga la música.
-> 4. **Cancelación de graves ('Pasillo de la Muerte'):** Separan los subwoofers a izquierda y derecha en vez de agruparlos en bloque central a piso.
-> 5. **Falta de conectividad en parcelas:** En zonas como Curacaví, Lampa o Pirque no hay señal móvil 4G/5G, por lo que el sonidista necesita llevar toda la ingeniería resuelta en un **Reporte Operativo PDF Offline** y compartir el resumen por WhatsApp antes de salir."
+## BANCO PRIVADO DE 21 PREGUNTAS Y RESPUESTAS PARA DEFENSA ORAL
 
----
-
-### LÁMINA 3: Alcance, Constructor Multilote e Inteligencia v4.0
-**Qué dices:**
-> "Stage Plan v4.0 incorpora 6 innovaciones deterministas de ingeniería:
-> - **Constructor Híbrido Multilote (RMS + Peak):** Permite ingresar lotes combinados de cajas activas y pasivas con su potencia continua y pico. El algoritmo detecta automáticamente el par más potente para el frente principal (A, B a 0 dB) y envía las unidades adicionales o impares a delay lateral con ajuste preciso de ganancia para no saturarlas.
-> - **División en 2 Líneas de Fuerza:** Separa automáticamente la instalación en Línea 1 (Sub-bajos, alto consumo de corriente) y Línea 2 (Tops + Cabina DJ), calculando el amperaje y los Watts por separado.
-> - **Calculadora de Impedancia Speakon:** Aplica la ley de Ohm en paralelo y alerta en rojo si la resistencia cae bajo 3.2 Ohms (riesgo cortocircuito/PROTECT).
-> - **Plano 2D con Mapa de Calor SPL:** Proyecta la presión sonora en la pista con gradientes radiales de color (rojo >105 dB, verde 96-102 dB sweet spot, azul <90 dB).
-> - **Auditoría de Balance Tonal y Cobertura:** Diagnostica la relación de potencia entre cajas de medios-agudos y subwoofers para garantizar una presión sonora homogénea en toda la pista.
-> - **Resumen WhatsApp en 1 Clic y Reporte PDF Offline:** Resumen técnico al portapapeles y ficha PDF completa descargable para terreno."
-
----
-
-### LÁMINA 4: Arquitectura Monorepo TypeScript y Motor Determinista
-**Qué dices:**
-> "Construimos una arquitectura limpia basada en un **Monorepo TypeScript** con tres paquetes:
-> 1. **`@stageplan/shared`:** Núcleo matemático puro, desacoplado de la vista, que concentra los cálculos de presión sonora ($SPL$), propagación acústica en recintos cerrados, impedancia Speakon en paralelo, ley de Ohm, separación de 2 líneas de fuerza y dimensionamiento bajo normas **SEC Pliegos RIC N° 03 y RIC N° 10**.
-> 2. **`@stageplan/frontend`:** Interfaz en Vue 3 + Vite + TailwindCSS con estética **Hard Techno Industrial** de alto contraste, plano 2D reactivo con Mapa de Calor SPL dinámico, tipografía ampliada para baja visión, glosario interactivo `[i]` y botón de copia a WhatsApp.
-> 3. **`@stageplan/backend`:** API REST en Node.js, Express y Prisma ORM sobre SQLite embebido (`dev.db`, directamente inspeccionable en DB Browser) con validación Zod y protección estricta anti-IDOR."
-
----
-
-### LÁMINA 5: Inteligencia Acústica 2D y Calibración de Mixer DJM
-**Qué dices:**
-> "Cuando el usuario ingresa una combinación de equipos (por ejemplo 2 cajas activas frontales, 1 caja pasiva de delay y 2 sub-bajos en cluster):
-> - Ubica las cajas **A y B** en el Frente Principal en trípodes a 2.2m operando a **0 dB Unity (perilla a las 12:00)**.
-> - Envía la caja pasiva **C** como torre de delay lateral con **retardo Haas (+3.0 ms)** y **-2.2 dB de atenuación de ganancia** para emparejar la presión sonora sin saturarla.
-> - Agrupa los subwoofers en un **Mono Cluster Central** en piso, ganando **+6 dB acústicos gratis** por acoplamiento mutuo y eliminando cancelaciones.
-> - Además, entrega la **Tabla de Calibración Visual del Mixer DJM**: `Fader` al 10, `Trim` en `+3 a +6 dB` (ámbar), `Master` en `0 a +3 dB` (`+4 a +7 dBu` limpios, cero rojos) y la regla de transición con 2 canales (**un solo bajo a la vez / Low EQ Kill** para evitar barro y cancelaciones entre bombos)."
-
----
-
-### LÁMINA 6: Las Reglas Críticas de Terreno y Seguridad SEC
-**Qué dices:**
-> "El sistema audita automáticamente las reglas de seguridad en terreno:
-> 1. **Crossover HPF a 80–90 Hz en Cajas Top:** Libera ~40% de potencia desperdiciada en los tops y evita cancelaciones con el subwoofer.
-> 2. **Ángulo de Apertura Horizontal:** Calcula la rotación hacia afuera para cruzar la dispersión de los parlantes sin cancelaciones de fase ni zonas muertas.
-> 3. **Impedancia Mínima Speakon (3.2 Ω):** Bloquea conexiones en paralelo que puedan forzar a los amplificadores a modo de protección.
-> 4. **División en 2 Líneas de Fuerza:** Previene que el consumo del bombo apague la mixer del DJ o las cajas de agudos.
-> 5. **Caída de Tensión y Puesta a Tierra:** Exige cable de 2.5 mm² o 4.0 mm² bajo norma SEC RIC 03 y conectar barra de puesta a tierra al chasis del generador en parcelas."
-
----
-
-### LÁMINA 7: Calidad de Software (70 Tests en Vitest) y Conclusión
-**Qué dices:**
-> "Para demostrar rigor de ingeniería de software, ejecutamos una suite automatizada en **Vitest** con **70 pruebas unitarias aprobadas al 100%** en 10 archivos de test (en solo 113 ms), validando desde el motor eléctrico SEC y el ruteo de cables hasta la ley de Ohm de impedancia pasiva, la división de 2 líneas de fuerza, la caída de tensión y la protección de generadores.
->
-> En conclusión, **Stage Plan** transforma física acústica y normativa eléctrica SEC en una herramienta práctica, accesible y lista para operar en terreno sin internet. Muchas gracias."
-
----
-
-## PREGUNTAS CLAVE DE LA COMISIÓN Y RESPUESTAS DE ALTO NIVEL
-
-### 1. "¿Cómo maneja el sistema la combinación de cajas activas y pasivas de diferente potencia (por ejemplo 2 activas y 1 pasiva)?"
-* **Respuesta:** "A través de nuestro algoritmo de distribución inteligente en el módulo `hybrid-roster.ts`. El sistema ordena las cajas por su potencia RMS: asigna las 2 unidades de mayor potencia al frente estéreo principal (A, B a 0 dB), y las unidades adicionales o impares (como la 3ª caja pasiva) las destina automáticamente como torres de refuerzo (delay) con retardo Haas en milisegundos y un factor de atenuación de ganancia proporcional a la diferencia de potencia. Así se evita que la caja más pequeña alcance el clip prematuramente o se queme."
-
-### 2. "¿Por qué un generador de 3.500 Watts no aguanta 3.000 Watts de audio?"
-* **Respuesta:** "Porque los '3.500 Watts' del sticker comercial son potencia pico de arranque (*Surge Watts*). Su potencia continua real ronda los 2.975W, y en audio electrónico los golpes del subwoofer producen escalones bruscos de corriente que frenan el motor y desestabilizan el regulador de voltaje del generador (AVR). Nuestro validador eléctrico aplica un factor de seguridad del 72% sobre la potencia continua (~2.142W seguros) para garantizar un margen dinámico y evitar que las cajas se apaguen por bajo voltaje (<195V)."
-
-### 3. "¿Qué pasa si se conectan 3 cajas pasivas de 8 Ohms en paralelo a un solo canal de potencia?"
-* **Respuesta:** "La ley de Ohm indica que $1 / Z = 1/8 + 1/8 + 1/8 = 3/8$, lo que resulta en una impedancia equivalente de $2.67\ \Omega$. Casi todos los amplificadores de audio profesional están diseñados para una carga mínima de $4\ \Omega$ (o $3.2\ \Omega$ con tolerancia). Al bajar a $2.67\ \Omega$, la corriente demandada excede el límite seguro de los transistores de salida, lo que activa el circuito de protección térmica/cortocircuito (*PROTECT*) apagando el canal. Stage Plan detecta esto inmediatamente, muestra una alerta roja con advertencia de corte y recomienda distribuir las cajas en canales de amplificación independientes."
-
-### 4. "¿Por qué utilizas SQLite en el MVP y cómo almacenas la información?"
-* **Respuesta:** "Para el MVP funcional elegimos **SQLite 3 (`dev.db`) con Prisma ORM**. Diseñamos 4 tablas normalizadas en tercera forma normal completamente en español (`usuarios`, `recintos`, `calculos_rider`, `enlaces_compartidos`) para garantizar integridad referencial estricta (`ON DELETE CASCADE`), y utilizamos campos `JSON` nativos para guardar los snapshots del rider y del cálculo sin sobrecargar la base de datos con tablas intermedias innecesarias. La gran ventaja operativa es que el archivo `dev.db` es 100% portable, no depende de servicios de red externos que puedan fallar en la defensa, y puedo auditar los datos directamente arrastrando el archivo a **DB Browser for SQLite**, donde se ven las tablas y columnas en español con nombres claros como `ancho_metros`, `distancia_electrica_metros` y `resultados_calculados`."
-
-### 5. "¿Cómo garantizas que el sistema funcione en terreno si en las parcelas no hay internet?"
-* **Respuesta:** "Mantuvimos la solución simple y eficaz: todo el motor matemático (`@stageplan/shared`) se ejecuta en el navegador del cliente con JavaScript compilado, y la ficha técnica se compila en memoria con `jsPDF`. Así, el técnico puede ingresar medidas, calcular cables, ver el plano 2D y descargar su PDF directamente en su teléfono o laptop sin depender de la señal móvil en terreno."
+1. **¿Por qué eligió Scrumban + PSP en vez de Scrum tradicional?** Porque Scrum puro exige ceremonias pensadas para equipos numerosos; Scrumban aporta Sprints de 14 días con límite `WIP = 1`, y PSP reemplaza la revisión por pares mediante compilación estricta (`vue-tsc` + `tsc`) y 81 pruebas automatizadas en Vitest.
+2. **¿Cuál es la ruta crítica del cronograma?** `T01 → T02 → T04 → T05 → T06 → T08 → T09 → T10 → T12 → T13 → T15 → T18 → T20` (holgura = 0 días).
+3. **¿Por qué separar `@stageplan/shared` en un monorepo?** Para ejecutar exactamente las mismas fórmulas físicas y esquemas Zod tanto en el navegador offline (`0,0286 ms`) como en el backend Express sin duplicar lógica.
+4. **¿Qué estándar respalda las 5 vistas arquitectónicas?** La norma **ISO/IEC/IEEE 42010:2022** aplicada mediante el modelo **4+1 de Kruchten** (Escenarios, Lógica, Desarrollo, Procesos y Física).
+5. **¿Cómo aplica la normativa SEC RIC N° 03 y RIC N° 10 en el código?** Evaluando doble criterio en `electrical.ts`: caída de tensión monofásica $\Delta V = \frac{2 \cdot L \cdot I \cdot \rho}{S} \le 3\%$ y ampacidad con $+20\%$ de holgura, además de postes guía esquineros con radio mínimo $R \ge 6d$.
+6. **¿Por qué incluir postes guía esquineros en el Plano 2D?** Doblar cables multifilares en ángulos de $90^\circ$ fatiga el cobre y genera calentamiento Joule; los postes aseguran $R \ge 6d$ según RIC N° 10 y mantienen despejada la pista.
+7. **¿Por qué los subwoofers van en un clúster central a piso?** Al agruparlos a menos de $\lambda/2$ (`< 1,7 m` a 100 Hz) sobre el suelo se acoplan en fase ganando $+6\text{ dB}$ acústicos sin consumo eléctrico adicional.
+8. **¿Cómo calcula el Efecto Haas en las torres Delay?** Suma al tiempo de vuelo acústico ($v = 331.3 + 0.606 \cdot T$) una compensación psicoacústica Haas (`+3.0 ms`), manteniendo la localización sonora en el escenario frontal.
+9. **¿Qué ocurre si se conectan 3 cajas pasivas de $8\ \Omega$ en paralelo?** La impedancia cae a $Z_{eq} = 8/3 = 2.67\ \Omega < 3.2\ \Omega$; el sistema activa la alerta roja `DANGER_PROTECT_SHORT` por riesgo de corte térmico en la etapa.
+10. **¿Cómo dimensiona el Rack de Potencias cuando hay cajas pasivas?** En `calculatePowerAmpSizing` agrupa tops y subs pasivos por canal, calcula la impedancia de carga (4 Ω vs 8 Ω según cableado), aplica un headroom de **1,6× RMS** (`PA-02..PA-03`), sugiere amplificadores comerciales y suma su consumo eléctrico continuo a la red 220V.
+11. **¿Qué demuestra el simulador Pioneer DJM?** Que se debe operar con un solo canal de graves activo (`0 dB`) y el entrante en *Low EQ Kill* (`-∞` a las 7:00), evitando sumar `+6 dB` en graves y disparar los 17 LEDs al rojo `CLIP`.
+12. **¿Por qué el plano 2D tiene 5 capas exclusivas en `/plano-2d` y vista completa en `/reporte`?** Al configurar, mostrar todas las líneas a la vez generaba ruido visual; las capas exclusivas facilitan editar cada subsistema limpio, mientras que en el reporte final se consolida la vista completa (`ALL`) para inspección integral en terreno y PDF.
+13. **¿Cómo funciona el módulo de Cotización de Arriendo CLP?** Permite alternar entre *Equipos Propios* y *Rider Arrendado*, estimando costo diario para tops, subs, racks de potencia, generador, luminarias DMX y técnicos de montaje, e incorporando el desglose en la Página 1 del PDF.
+14. **¿Cómo aplica la Ley del Saco (Ley N° 20.949)?** `contingency-and-logistics.ts` detecta cualquier bulto mayor a `25 kg` y agrega la directiva obligatoria de manipulación entre dos personas o carro.
+15. **¿Por qué usa SQLite `dev.db` en la PoC y PostgreSQL 16 en producción?** SQLite 3 con Prisma ORM (4 tablas 3FN en español + JSON) ofrece portabilidad total en local y auditoría directa en DB Browser; para Unidad 3 Prisma migra de forma transparente a PostgreSQL 16 (`schema_stageplan_pg16.sql` con 12 tablas, JSONB GIN, `audit_logs` y `pgcrypto`).
+16. **¿Cómo mitiga OWASP A01 (Broken Access Control / IDOR)?** Todo endpoint protegido exige JWT válido (`authMiddleware`) y filtra consultas Prisma con `ownerId === req.user.id`, retornando `HTTP 404` ante recursos ajenos para impedir además enumeración de UUIDs.
+17. **¿Cómo previene ataques de fuerza bruta sobre el login?** Mediante `express-rate-limit` (`10 req / 15 min` en `/api/auth/login`), hashing `bcrypt` (cost 12) y bloqueo temporal en base de datos por 15 minutos tras 5 intentos fallidos (`HTTP 423 Locked`).
+18. **¿Cómo previene Inyección SQL (A03) y XSS?** Prisma ORM parametriza todas las consultas, Zod valida entradas en frontera y Vue 3 escapa plantillas automáticamente sin utilizar `v-html`.
+19. **¿Por qué el PDF Dual-Page y el PNG 300 DPI se generan en el navegador?** Garantiza autonomía completa en parcelas sin señal móvil 4G/5G y elimina riesgos SSRF (A10) en el servidor.
+20. **¿Qué respaldan los 81 tests unitarios y el benchmark?** Cubren los 11 módulos del motor de ingeniería en `186 ms` (`81/81 PASS`), mientras que 1.000 ejecuciones completas promediaron `0,0286 ms` frente a un límite SLA de `50 ms`.
+21. **¿Qué queda acotado explícitamente para la fase de construcción (Unidad 3)?** El despliegue en VPS Ubuntu detrás de Nginx TLS 1.3, migración a PostgreSQL 16 con bitácora `audit_logs`, pruebas de carga `k6` y escaneo activo con `OWASP ZAP`.

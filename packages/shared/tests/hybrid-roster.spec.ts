@@ -2,8 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
   analyzeHybridRig,
   generateSmartAcousticPlacement,
+  calculatePowerAmpSizing,
   RigEquipmentItem,
   OutletPoint,
+  SpeakerBatchInput,
 } from '../src/calc-engine/hybrid-roster';
 
 describe('Hybrid Rig & Equipment Roster Engine (STAGE PLAN v3.4 - DISTORSIONCL SPA)', () => {
@@ -150,6 +152,77 @@ describe('Hybrid Rig & Equipment Roster Engine (STAGE PLAN v3.4 - DISTORSIONCL S
     // Subwoofers agrupados en bloque central (< 1.7m entre centros para suma coherente +6 dB)
     expect(sub1.zone).toBe('SUB_CENTER_CLUSTER');
     expect(Math.abs(sub2.posX - sub1.posX)).toBeLessThanOrEqual(1.7);
+  });
+});
+
+describe('Power Amp Sizing Engine (Cajas Pasivas & Headroom 1.6x)', () => {
+  it('PA-01: Sistema 100% activo retorna 0 amplificadores externos y 0W AC adicionales', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 't1', category: 'top_box', systemType: 'ACTIVE', quantity: 2, modelLabel: 'RCF 715', coneSizeInches: 15, rmsWatts: 700, peakWatts: 1400 },
+      { id: 's1', category: 'sub_bass', systemType: 'ACTIVE', quantity: 2, modelLabel: 'RCF 8003', coneSizeInches: 18, rmsWatts: 1100, peakWatts: 2200 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'INDEPENDENT_CHANNELS');
+    expect(res.hasPassiveSpeakers).toBe(false);
+    expect(res.hasPassiveUnits).toBe(false);
+    expect(res.totalAmplifiersCount).toBe(0);
+    expect(res.totalAdditionalAcPowerWatts).toBe(0);
+    expect(res.suggestedRackModels).toEqual([]);
+  });
+
+  it('PA-02: 2 tops pasivos de 8 Ω (400W RMS c/u) en canales independientes exigen 640W RMS/ch @ 8 Ω', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 't1', category: 'top_box', systemType: 'PASSIVE', quantity: 2, modelLabel: 'Top Pasivo 15"', coneSizeInches: 15, rmsWatts: 400, peakWatts: 800, impedanceOhms: 8 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'INDEPENDENT_CHANNELS');
+    expect(res.hasPassiveSpeakers).toBe(true);
+    expect(res.passiveTopsCount).toBe(2);
+    expect(res.totalAmplifiersCount).toBe(1);
+    expect(res.topsAmplifier?.loadImpedanceOhms).toBe(8);
+    expect(res.topsAmplifier?.wattsPerChannelRms).toBe(640);
+    expect(res.totalAdditionalAcPowerWatts).toBeGreaterThan(0);
+  });
+
+  it('PA-03: 4 tops pasivos de 8 Ω en paralelo (PARALLEL_SPEAKON_LINK) calculan carga de 4 Ω y 2 cajas/canal', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 't1', category: 'top_box', systemType: 'PASSIVE', quantity: 4, modelLabel: 'Top Pasivo 12"', coneSizeInches: 12, rmsWatts: 350, peakWatts: 700, impedanceOhms: 8 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'PARALLEL_SPEAKON_LINK');
+    expect(res.topsAmplifier?.loadImpedanceOhms).toBe(4);
+    expect(res.topsAmplifier?.wattsPerChannelRms).toBe(Math.round(2 * 350 * 1.6));
+    expect(res.topsAmplifier?.suggestedCommercialModel).toContain('Crown XTi 4002');
+  });
+
+  it('PA-04: 2 subwoofers pasivos de 1200W RMS recomiendan etapa gama alta Powersoft X4 / FP10000Q', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 's1', category: 'sub_bass', systemType: 'PASSIVE', quantity: 2, modelLabel: 'Sub Doble 18"', coneSizeInches: 18, rmsWatts: 1200, peakWatts: 2400, impedanceOhms: 8 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'INDEPENDENT_CHANNELS');
+    expect(res.subsAmplifier).toBeDefined();
+    expect(res.subsAmplifier?.wattsPerChannelRms).toBe(Math.round(1200 * 1.6));
+    expect(res.subsAmplifier?.suggestedCommercialModel).toContain('Powersoft X4');
+  });
+
+  it('PA-05: Sistema mixto (Tops pasivos + Subs pasivos + Tops activos) exige 2 amplificadores en rack', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 't1', category: 'top_box', systemType: 'ACTIVE', quantity: 2, modelLabel: 'PA Activo', coneSizeInches: 15, rmsWatts: 600, peakWatts: 1200 },
+      { id: 't2', category: 'top_box', systemType: 'PASSIVE', quantity: 2, modelLabel: 'Delay Pasivo', coneSizeInches: 12, rmsWatts: 300, peakWatts: 600, impedanceOhms: 8 },
+      { id: 's1', category: 'sub_bass', systemType: 'PASSIVE', quantity: 2, modelLabel: 'Sub Pasivo 18"', coneSizeInches: 18, rmsWatts: 800, peakWatts: 1600, impedanceOhms: 8 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'INDEPENDENT_CHANNELS');
+    expect(res.totalAmplifiersCount).toBe(2);
+    expect(res.suggestedRackModels.length).toBe(2);
+    expect(res.passiveTopsCount).toBe(2);
+    expect(res.passiveSubsCount).toBe(2);
+  });
+
+  it('PA-06: Mantiene consistencia entre alias de interfaz (hasPassiveUnits y technicalRackDirective)', () => {
+    const batches: SpeakerBatchInput[] = [
+      { id: 't1', category: 'top_box', systemType: 'PASSIVE', quantity: 2, modelLabel: 'Top 12"', coneSizeInches: 12, rmsWatts: 350, peakWatts: 700, impedanceOhms: 8 },
+    ];
+    const res = calculatePowerAmpSizing(batches, 'INDEPENDENT_CHANNELS');
+    expect(res.hasPassiveUnits).toBe(res.hasPassiveSpeakers);
+    expect(res.technicalRackDirective).toBe(res.technicalSummaryDirective);
+    expect(res.technicalRackDirective).toContain(`${res.totalAdditionalAcPowerWatts}W`);
   });
 });
 

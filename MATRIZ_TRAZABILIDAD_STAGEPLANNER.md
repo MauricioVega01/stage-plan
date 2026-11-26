@@ -1,26 +1,26 @@
 # Matriz de Trazabilidad y Casos de Prueba Oficiales: STAGE PLAN (v4.0)
-**Proyecto de Título / Integrado: Analista Programador — INACAP**
+**Proyecto Integrado (TIHV43) — Analista Programador — INACAP Sede Maipú (Sección C1 · Grupo G10)**
 
-Esta matriz vincula los Requerimientos Funcionales (RF), Historias de Usuario (HU), Casos de Prueba de Aceptación (con valores numéricos exactos de ingeniería) y Casos de Uso según el Master Plan Oficial v4.0 de STAGE PLAN.
+Esta matriz vincula los Requerimientos Funcionales (RF), Historias de Usuario (HU), Casos de Prueba de Aceptación y Casos de Uso del sistema STAGE PLAN v4.0, respaldados por **81 pruebas unitarias automatizadas en 11 suites Vitest (100% PASS)**.
 
 ---
 
-## 1. Mapeo de Trazabilidad Principal (70 Tests Unitarios Automatizados en Vitest)
+## 1. Mapeo de Trazabilidad Principal (81 Tests Unitarios Automatizados en Vitest)
 
-| Requisito Funcional | Historia de Usuario | Módulo / Engine | Caso de Uso | Criterio de Aceptación y Caso Numérico Exacto (Master Plan v4.0) |
+| Requisito Funcional | Historia de Usuario | Módulo / Engine | Caso de Uso | Criterio de Aceptación y Caso Verificado |
 |---|---|---|---|---|
-| **RF01** | **HU01** | `auth` / JWT | CU01 | Validación de credenciales cifradas (Argon2/bcrypt), emisión de JWT en memoria + cookie HttpOnly, bloqueo tras 5 fallos, mitigación IDOR en rutas privadas. |
-| **RF02 & RF04** | **HU02** | `calc-engine/electrical` | CU02, CU04 | **Caso Cableado y Caída de Tensión (SEC RIC 03/10):** Carga $1.800\text{ W}$, $220\text{ V}$, $L = 30\text{ m}$, holgura $20\%$, $\Delta V_{\max} = 3\%$ ($6.6\text{ V}$):<br>• $I_{\text{nominal}} = 8.18\text{ A}$<br>• $I_{\text{diseño}} = 9.82\text{ A}$<br>• Sección comercial adoptada: **$2.5\text{ mm}^2$**<br>• Metraje sugerido ($+10\%$): **$33\text{ m}$**<br>• Caída real con $2.5\text{ mm}^2$: **$4.12\text{ V}$ ($1.87\%$)** |
-| **RF03 & RF04** | **HU03** | `calc-engine/electrical` | CU03, CU04 | **Caso Eléctrico y Suministro:**<br>**(a) Circuito:** $2.000\text{ W}$ en disyuntor de $10\text{ A}$ ($220\text{ V}$) $\rightarrow I_{\text{nom}} = 9.09\text{ A}$, $I_{\text{dis}} = 10.91\text{ A} \rightarrow$ **ALERTA CRÍTICA** ($> 100\%$).<br>**(b) Generador:** $5\text{ kVA}$ ($FP=0.8 \rightarrow 4.0\text{ kW}$) con carga de $3.5\text{ kW} \rightarrow P_{\text{dis}} = 4.2\text{ kW} \rightarrow$ **ALERTA CRÍTICA** sobrecarga.<br>**(c) Generador Comercial 3500W:** Aplica 72% de factor de seguridad AVR ($2.142\text{ W}$ útiles). |
-| **RF03 & v4** | **HU03b** | `calc-engine/hybrid-roster` | CU03, CU04 | **Caso Impedancia Speakon en Paralelo:**<br>**(a)** 2 cajas $8\ \Omega \rightarrow Z_{\text{eq}} = 4.0\ \Omega \rightarrow$ Seguro (Verde).<br>**(b)** 3 cajas $8\ \Omega \rightarrow Z_{\text{eq}} = 2.67\ \Omega < 3.2\ \Omega \rightarrow$ **ALERTA ROJA PROTECT** por riesgo de cortocircuito en transistores. |
-| **RF03 & v4** | **HU03c** | `calc-engine/hybrid-roster` | CU03, CU04 | **Caso División en 2 Líneas de Fuerza:**<br>Separa automáticamente la instalación en **Línea 1 (Fuerza Subs)** y **Línea 2 (Tops + DJ)** con cálculo independiente de Watts y Amperes para prevenir caídas de tensión en cabina. |
-| **RF03 & v4** | **HU04** | `calc-engine/hybrid-roster` | CU03, CU04 | **Caso Constructor Multilote Asymmetric Rigging & Gain Matching:**<br>2 cajas Activas de 500W RMS + 1 Pasiva de 300W RMS:<br>• Ubica Activas en Frente Principal ($A, B$ a 0 dB Unity).<br>• Ubica Pasiva en Torre Delay Lateral $C$ con retardo Haas y **Gain Matching (-2.2 dB)** para proteger cono. |
-| **RF04 & RF05** | **HU05** | `calc-engine/stage-acoustic` | CU04, CU05 | **Caso Acústico SPL, Cobertura y Mapa de Calor 2D:**<br>Sensibilidad $98\text{ dB @ 1W/1m}$, $500\text{ W}$, fondo a $16\text{ m}$:<br>• SPL a $1\text{ m} = 125.0\text{ dB}$, a $4\text{ m} = 113.0\text{ dB}$, al fondo = $100.9\text{ dB}$.<br>• Mapa de calor interactivo con gradientes radiales SVG (Rojo $>105\text{ dBA}$, Verde $96-102\text{ dBA}$, Azul $<90\text{ dBA}$). |
-| **RF05 & v4** | **HU05b** | `calc-engine/stage-acoustic` | CU04, CU05 | **Caso Diagnósticos Avanzados (Top/Sub & dimensionamiento acústico y eléctrico):**<br>**(a) Ratio Top/Sub:** Detecta cuellos de botella por déficit de subgraves si la relación RMS Sub/Top $< 1.0$.<br>**(b) Balance de Cobertura Frontal/Delay:** Proyecta la atenuación de SPL hacia el fondo del recinto para calibrar torres de refuerzo.
-| **RF06** | **HU06** | `reports` (jsPDF) & Clipboard | CU05 | **Caso Exportación y Movilidad:**<br>• Reporte Operativo PDF Offline con 5 secciones completas y advertencia SEC.<br>• Botón rápido de copia a WhatsApp para compartir resumen técnico en terreno. |
-| **RF07** | **HU07** | `history` (Prisma/PostgreSQL) | CU06 | Historial centralizado versionado por recinto y cálculo. Clonación rápida de riders anteriores. Control de acceso estricto anti-IDOR. |
+| **RF01** | **HU01** | `auth` / JWT / Prisma | CU-01 | Validación de credenciales (`bcrypt` 12 rondas), JWT firmado (`12h`), limitación de tasa (`10/15m`), bloqueo temporal tras 5 intentos (`HTTP 423 Locked`) y control Anti-IDOR por `ownerId` (`HTTP 404` en recursos ajenos). |
+| **RF02 & RF04** | **HU02** | `calc-engine/electrical` | CU-02 | **Caso Cableado y Caída de Tensión (SEC RIC 03/10):** Carga 1.800 W, 220 V, L = 30 m, holgura 20%, caída máx 3% (6,6 V): corriente diseño 9,82 A, sección comercial adoptada 2,5 mm², caída real 4,12 V (1,87%). |
+| **RF03 & RF04** | **HU03** | `calc-engine/electrical` | CU-03 | **Caso Eléctrico y Suministro:** Circuito 10 A con 2.000 W (10,91 A diseño) dispara alerta crítica; generador 5 kVA (FP 0,8 = 4.0 kW) frente a 4,2 kW diseño dispara sobrecarga; generador comercial 3500W aplica factor seguro 72% AVR (~2.142 W). |
+| **RF03 & v4** | **HU03b** | `calc-engine/hybrid-roster` | CU-04 | **Caso Impedancia Speakon y Rack de Potencias Pasivas (`calculatePowerAmpSizing`):** 2 cajas 8 Ω en paralelo = 4,0 Ω (seguro); 3 cajas 8 Ω en paralelo = 2,67 Ω (< 3,2 Ω → `DANGER_PROTECT_SHORT`). Para lotes pasivos dimensiona etapas 19" con headroom 1,6× RMS, sugiere modelo comercial y suma su consumo AC 220V al balance SEC. |
+| **RF03 & v4** | **HU03c** | `calc-engine/hybrid-roster` | CU-03 | **División en Líneas Eléctricas L1/L2/L3:** Separa automáticamente Línea 1 (Subs), Línea 2 (Tops + Cabina DJ) y Línea 3 (Iluminación DMX) con cálculo independiente de Watts y Amperes. |
+| **RF03 & v4** | **HU04** | `calc-engine/hybrid-roster` | CU-04 | **Asymmetric Rigging & Gain Matching:** Combina lotes activos y pasivos asignando las 2 cajas principales al frente estéreo (`A, B @ 0 dB`) y las adicionales a torre delay lateral con retardo Haas y atenuación proporcional en dB. |
+| **RF04 & RF05** | **HU05** | `calc-engine/stage-acoustic-engine` | CU-02, CU-06 | **Acústica SPL, Retardos Haas y Plano 2D Blueprint:** Atenuación por distancia (Sabine RT60 / campo libre), mapa de calor SPL calibrado y separación en 5 capas exclusivas en `/plano-2d` con postes guía SEC RIC N° 10 (R ≥ 6d) y Vista Completa (`ALL`) en `/reporte`. |
+| **RF05 & v4** | **HU05b** | `calc-engine/stage-acoustic-engine` | CU-06 | **Balance Top/Sub y Norma D.S. N° 38 MMA:** Detecta déficit de subgraves si la relación Sub/Top es insuficiente y proyecta dBA hacia la vivienda vecina según horario diurno/nocturno y tipo de cerramiento. |
+| **RF06** | **HU06** | `pdfReport.ts` & `ViewReportSummary.vue` | CU-08 | **Cotizador Arriendo CLP, PNG 300 DPI y PDF Dual-Page:** Alterna entre *Equipos Propios* y *Rider Arrendado CLP*, captura el plano CAD completo (`ALL`) a PNG 300 DPI y genera PDF oficial de 2 páginas (Pág. 1 Memoria SEC + costos; Pág. 2 Lámina CAD horizontal). |
+| **RF07** | **HU07** | `backend` (Prisma/SQLite) | CU-01 | Persistencia en `dev.db` (4 tablas 3FN en español + columnas JSON) con historial consultable por propietario y proyección de migración a PostgreSQL 16 (Unidad 3). |
 
 ---
 
-## 2. Aprobado para Implementación
-Tanto el diseño arquitectónico como la formulación de ingeniería cumplen al 100% los requerimientos de la rúbrica de titulación de INACAP y están respaldados por **70 pruebas unitarias aprobadas**.
+## 2. Cobertura de Verificación
+El conjunto de requerimientos funcionales se encuentra trazado y cubierto por **81 pruebas unitarias aprobadas en 11 archivos** (`npm test`), validación estática sin errores (`vue-tsc` + `tsc`) y compilación de producción Vite verificada.

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Arquitectura Tecnológica, Despliegue Seguro y Capacidad Offline-First</title>
+<title>Arquitectura Tecnológica, Despliegue PoC Local / VPS U3 y Operación Terreno</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 22px 26px; color: #1e293b; }
@@ -13,7 +13,7 @@
 </head>
 <body>
   <div class="eyebrow">CRITERIO 2.1.2.3 &amp; 2.1.2.4 · VISTA FÍSICA Y DESPLIEGUE 4+1</div>
-  <h1>Arquitectura Tecnológica, Despliegue Seguro y Capacidad Offline-First</h1>
+  <h1>Arquitectura Tecnológica, Despliegue PoC Local / VPS U3 y Operación Terreno</h1>
   <svg viewBox="0 0 1160 660" xmlns="http://www.w3.org/2000/svg">
 
 <defs>
@@ -35,87 +35,97 @@
 </defs>
 
 <rect width="100%" height="100%" fill="#f8fafc"/>
-<rect x="20" y="20" width="250" height="610" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
-<text x="34" y="38" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">NODO CLIENTE TERRENO (OFFLINE-FIRST)</text>
-<rect x="40" y="70" width="210" height="110" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
-<rect x="50" y="78" width="56" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
-<text x="78.0" y="88.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CLIENT</text>
-<text x="145.0" y="108" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Smartphone / Laptop FOH</text>
-<text x="145.0" y="124" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Chrome Mobile / Safari</text>
-<text x="145.0" y="138" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">PWA + jsPDF Client-Side</text>
-<text x="145.0" y="152" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Modo Avión en Parcelas</text>
-<rect x="40" y="230" width="210" height="120" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
-<rect x="50" y="238" width="56" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
-<text x="78.0" y="248.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">EDGE</text>
-<text x="145.0" y="268" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Renderizado Reactivo Local</text>
-<text x="145.0" y="284" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Motor @stageplan/shared</text>
-<text x="145.0" y="298" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Cálculo &lt; 2 ms en Memoria</text>
-<text x="145.0" y="312" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">LayoutSvg2D + Pioneer DJM</text>
-<rect x="40" y="400" width="210" height="100" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.4" />
-<rect x="50" y="408" width="59.5" height="15" rx="3" fill="#d97706" fill-opacity="0.12" stroke="#d97706" stroke-width="0.8"/>
-<text x="79.75" y="418.5" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">OFFLINE</text>
-<text x="145.0" y="438" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Salida Operacional Terreno</text>
-<text x="145.0" y="454" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Ficha PDF Vectorial SEC</text>
-<text x="145.0" y="468" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Resumen Texto WhatsApp</text>
-<rect x="305" y="20" width="835" height="610" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
-<text x="319" y="38" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">INFRAESTRUCTURA SERVIDOR CLOUD / VPS LINUX UBUNTU 22.04 LTS</text>
-<rect x="335" y="110" width="190" height="105" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
+<rect x="20" y="20" width="260" height="610" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
+<text x="34" y="38" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">NODO CLIENTE TERRENO (AUTÓNOMO)</text>
+<rect x="38" y="65" width="224" height="115" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
+<rect x="48" y="73" width="56" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
+<text x="76.0" y="83.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">CLIENT</text>
+<text x="150.0" y="103" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Smartphone / Laptop FOH</text>
+<text x="150.0" y="119" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Chrome / Edge (Zoom 100%)</text>
+<text x="150.0" y="133" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vue Router 4 (5 Vistas)</text>
+<text x="150.0" y="147" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Composable + localStorage</text>
+<rect x="38" y="225" width="224" height="125" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
+<rect x="48" y="233" width="56" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
+<text x="76.0" y="243.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">EDGE</text>
+<text x="150.0" y="263" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Motor Reactivo en Memoria</text>
+<text x="150.0" y="279" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Núcleo @stageplan/shared</text>
+<text x="150.0" y="293" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Cálculo &lt; 1 ms sin red</text>
+<text x="150.0" y="307" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Blueprint 2D + Pioneer DJM</text>
+<rect x="38" y="395" width="224" height="115" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.4" />
+<rect x="48" y="403" width="85.5" height="15" rx="3" fill="#d97706" fill-opacity="0.12" stroke="#d97706" stroke-width="0.8"/>
+<text x="90.75" y="413.5" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">OFFLINE PDF</text>
+<text x="150.0" y="433" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Salida Operacional Terreno</text>
+<text x="150.0" y="449" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">PDF Dual-Page (Memoria + CAD)</text>
+<text x="150.0" y="463" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Exportación PNG 300 DPI</text>
+<text x="150.0" y="477" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Resumen WhatsApp 1-Clic</text>
+<rect x="310" y="20" width="830" height="610" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
+<text x="324" y="38" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">ENTORNO SERVIDOR: MVP LOCAL U2 (SQLite) Y PROYECCIÓN PRODUCCIÓN U3 (VPS TLS 1.3)</text>
+<rect x="335" y="110" width="195" height="110" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
 <rect x="345" y="118" width="79.0" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
 <text x="384.5" y="128.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">PROXY :443</text>
-<text x="430.0" y="148" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Reverse Proxy Nginx</text>
-<text x="430.0" y="164" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">TLS 1.3 + HSTS Forzado</text>
-<text x="430.0" y="178" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Único Puerto Expuesto :443</text>
-<text x="430.0" y="192" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Terminación SSL</text>
-<rect x="590" y="70" width="240" height="125" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
-<rect x="600" y="78" width="66.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
-<text x="633.0" y="88.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">FRONTEND</text>
-<text x="710.0" y="108" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Frontend SPA (@stageplan/frontend)</text>
-<text x="710.0" y="124" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vue 3.5 + Vite 6.1 + Tailwind</text>
-<text x="710.0" y="138" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Pinia Store + Zod Validation</text>
-<text x="710.0" y="152" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Sirve Bundle Estático</text>
-<rect x="590" y="260" width="240" height="175" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
-<rect x="600" y="268" width="98.5" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
-<text x="649.25" y="278.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">BACKEND :3000</text>
-<text x="710.0" y="298" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">API REST (@stageplan/backend)</text>
-<text x="710.0" y="314" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Node.js v24 + Express 4.21 :3000</text>
-<text x="710.0" y="328" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Helmet + CORS + RateLimit (200/15m)</text>
-<text x="710.0" y="342" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">JWT + Bcrypt(12) + Anti-IDOR</text>
-<text x="710.0" y="356" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Prisma ORM Client</text>
-<rect x="885" y="260" width="230" height="175" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
-<rect x="895" y="268" width="85.5" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
-<text x="937.75" y="278.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">PERSISTENCE</text>
-<text x="1000.0" y="298" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">PostgreSQL 16 (:5432)</text>
-<text x="1000.0" y="314" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">12 Tablas Relacionales 3FN</text>
-<text x="1000.0" y="328" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Documentos JSONB + Índices GIN</text>
-<text x="1000.0" y="342" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Triggers SEC RIC N° 10</text>
-<text x="1000.0" y="356" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Audit Logs Forenses</text>
-<rect x="590" y="485" width="525" height="110" rx="7" fill="#eff6ff" stroke="#1F497D" stroke-width="1.4" />
-<rect x="600" y="493" width="98.5" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
-<text x="649.25" y="503.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SHARED KERNEL</text>
-<text x="852.5" y="523" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Motor Compartido Isomórfico (@stageplan/shared · 11 Módulos)</text>
-<text x="852.5" y="539" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">electrical.ts · cabling.ts · acoustics.ts · hybrid-roster.ts · lighting-dmx.ts</text>
-<text x="852.5" y="553" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">power-distribution.ts · dj-setup-audio.ts · stage-acoustic-engine.ts · schemas.ts (Zod)</text>
-<line x1="250" y1="125" x2="335" y2="150" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
-<rect x="249.3" y="106" width="85.39999999999999" height="13" rx="2" fill="#f8fafc"/>
-<text x="292" y="116" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">HTTPS TLS 1.3</text>
-<line x1="525" y1="140" x2="590" y2="130" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<text x="432.5" y="148" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Reverse Proxy Nginx</text>
+<text x="432.5" y="164" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Proyección U3: TLS 1.3 + HSTS</text>
+<text x="432.5" y="178" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Único Puerto Expuesto :443</text>
+<text x="432.5" y="192" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">En PoC U2: Vite :5173 local</text>
+<rect x="585" y="65" width="250" height="130" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
+<rect x="595" y="73" width="66.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
+<text x="628.0" y="83.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">FRONTEND</text>
+<text x="710.0" y="103" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Frontend SPA (@stageplan/frontend)</text>
+<text x="710.0" y="119" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vue 3.5 + Vite 6.1 + Tailwind 3.4</text>
+<text x="710.0" y="133" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vue Router 4 + useStagePlanState</text>
+<text x="710.0" y="147" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Bundle estático modular</text>
+<rect x="585" y="240" width="250" height="190" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
+<rect x="595" y="248" width="98.5" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
+<text x="644.25" y="258.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">BACKEND :3000</text>
+<text x="710.0" y="278" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">API REST (@stageplan/backend)</text>
+<text x="710.0" y="294" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Node.js v24 + Express 4.21 :3000</text>
+<text x="710.0" y="308" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Helmet + CORS + RateLimit (10/15m)</text>
+<text x="710.0" y="322" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Bcrypt(12) + Bloqueo 423 (5 fallos)</text>
+<text x="710.0" y="336" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">JWT (12h) + Anti-IDOR (HTTP 404)</text>
+<rect x="875" y="195" width="245" height="115" rx="7" fill="#ecfdf5" stroke="#059669" stroke-width="1.4" />
+<rect x="885" y="203" width="98.5" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
+<text x="934.25" y="213.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SQLITE POC U2</text>
+<text x="997.5" y="233" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">PoC Local U2: SQLite 3 (dev.db)</text>
+<text x="997.5" y="249" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Prisma ORM 6.4 (ACID)</text>
+<text x="997.5" y="263" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">4 Tablas 3FN en Español</text>
+<text x="997.5" y="277" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Documentos JSON auditables</text>
+<rect x="875" y="330" width="245" height="115" rx="7" fill="#eff6ff" stroke="#1F497D" stroke-width="1.4" stroke-dasharray="5,4"/>
+<rect x="885" y="338" width="105.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
+<text x="937.5" y="348.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">TARGET PG16 U3</text>
+<text x="997.5" y="368" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Proy. U3: PostgreSQL 16 (:5432)</text>
+<text x="997.5" y="384" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">12 Tablas 3FN + JSONB (GIN)</text>
+<text x="997.5" y="398" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">audit_logs + pgcrypto + Triggers</text>
+<text x="997.5" y="412" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Migración transparente Prisma</text>
+<rect x="585" y="485" width="535" height="110" rx="7" fill="#eff6ff" stroke="#1F497D" stroke-width="1.4" />
+<rect x="595" y="493" width="98.5" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
+<text x="644.25" y="503.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SHARED KERNEL</text>
+<text x="852.5" y="523" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Núcleo Isomórfico (@stageplan/shared · 11 Módulos TS + 81 Tests Vitest)</text>
+<text x="852.5" y="539" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">electrical.ts · cabling.ts · acoustics.ts · hybrid-roster.ts (PowerAmp + Speakon)</text>
+<text x="852.5" y="553" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">lighting-dmx.ts · power-distribution.ts · dj-setup-audio.ts · schemas.ts (Zod)</text>
+<line x1="262" y1="125" x2="335" y2="150" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
+<rect x="258.2" y="106" width="79.6" height="13" rx="2" fill="#f8fafc"/>
+<text x="298" y="116" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">HTTPS / HTTP</text>
+<line x1="530" y1="140" x2="585" y2="130" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
 <rect x="535.1" y="120.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
 <text x="557.5" y="130.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Static</text>
-<path d="M 525 180 L 555 180 L 555 320 L 590 320" fill="none" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
-<rect x="518.1" y="239" width="73.8" height="13" rx="2" fill="#f8fafc"/>
-<text x="555" y="249" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">REST /api/*</text>
-<line x1="830" y1="345" x2="885" y2="345" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="826.4" y="330.0" width="62.199999999999996" height="13" rx="2" fill="#f8fafc"/>
-<text x="857.5" y="340.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">TCP :5432</text>
-<line x1="145" y1="180" x2="145" y2="230" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
-<rect x="125.5" y="190.0" width="39.0" height="13" rx="2" fill="#f8fafc"/>
-<text x="145.0" y="200.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Local</text>
-<line x1="145" y1="350" x2="145" y2="400" stroke="#d97706" stroke-width="1.5"  marker-end="url(#arr)"/>
-<rect x="116.8" y="360.0" width="56.4" height="13" rx="2" fill="#f8fafc"/>
-<text x="145.0" y="370.0" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Blob PDF</text>
-<line x1="710" y1="435" x2="710" y2="485" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
-<rect x="687.6" y="445.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
-<text x="710.0" y="455.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Import</text>
+<path d="M 530 185 L 558 185 L 558 320 L 585 320" fill="none" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
+<rect x="521.1" y="239" width="73.8" height="13" rx="2" fill="#f8fafc"/>
+<text x="558" y="249" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">REST /api/*</text>
+<line x1="835" y1="280" x2="875" y2="250" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
+<rect x="832.6" y="250.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
+<text x="855.0" y="260.0" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Prisma</text>
+<line x1="835" y1="360" x2="875" y2="385" stroke="#1F497D" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arr-navy)"/>
+<rect x="826.8" y="357.5" width="56.4" height="13" rx="2" fill="#f8fafc"/>
+<text x="855.0" y="367.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">U3 :5432</text>
+<line x1="150" y1="180" x2="150" y2="225" stroke="#059669" stroke-width="1.5"  marker-end="url(#arr-green)"/>
+<rect x="130.5" y="187.5" width="39.0" height="13" rx="2" fill="#f8fafc"/>
+<text x="150.0" y="197.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Local</text>
+<line x1="150" y1="350" x2="150" y2="395" stroke="#d97706" stroke-width="1.5"  marker-end="url(#arr)"/>
+<rect x="121.8" y="357.5" width="56.4" height="13" rx="2" fill="#f8fafc"/>
+<text x="150.0" y="367.5" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Blob PDF</text>
+<line x1="710" y1="430" x2="710" y2="485" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
+<rect x="687.6" y="442.5" width="44.8" height="13" rx="2" fill="#f8fafc"/>
+<text x="710.0" y="452.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">Import</text>
 </svg>
 </body>
 </html>

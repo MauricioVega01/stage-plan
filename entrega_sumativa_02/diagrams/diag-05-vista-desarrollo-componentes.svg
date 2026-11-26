@@ -22,20 +22,21 @@
 <rect x="20" y="20" width="1120" height="620" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
 <text x="34" y="38" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">MONOREPO STAGE PLAN (NPM WORKSPACES · TYPESCRIPT STRICT)</text>
 <rect x="45" y="60" width="325" height="550" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
-<text x="59" y="78" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">@stageplan/frontend (Vue 3.5 + Vite 6.1)</text>
-<rect x="65" y="105" width="285" height="85" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
+<text x="59" y="78" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">@stageplan/frontend (Vue 3.5 + Vite 6.4)</text>
+<rect x="65" y="105" width="285" height="95" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
 <rect x="75" y="113" width="66.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
 <text x="108.0" y="123.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">UI SHELL</text>
-<text x="207.5" y="143" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">App.vue &amp; Pinia Store</text>
-<text x="207.5" y="159" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Wizard 5 Pasos (0..4)</text>
-<text x="207.5" y="173" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Estado Reactivo Local</text>
-<rect x="65" y="210" width="285" height="95" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
-<rect x="75" y="218" width="79.0" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
-<text x="114.5" y="228.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SVG ENGINE</text>
-<text x="207.5" y="248" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">LayoutSvg2D.vue</text>
-<text x="207.5" y="264" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Plano Escala Dinámica</text>
-<text x="207.5" y="278" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Postes Guía SEC RIC 10</text>
-<text x="207.5" y="292" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Cluster + Delays Haas</text>
+<text x="207.5" y="143" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Router (5 Vistas) + Estado</text>
+<text x="207.5" y="159" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">ViewAuth, ViewVenue, ViewAudioPower</text>
+<text x="207.5" y="173" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">ViewAcousticCanvas, ViewReportSummary</text>
+<text x="207.5" y="187" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">useStagePlanState.ts + localStorage</text>
+<rect x="65" y="215" width="285" height="95" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
+<rect x="75" y="223" width="79.0" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
+<text x="114.5" y="233.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SVG ENGINE</text>
+<text x="207.5" y="253" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">LayoutSvg2D.vue (Blueprint CAD)</text>
+<text x="207.5" y="269" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">5 Capas Exclusivas + Vista Completa</text>
+<text x="207.5" y="283" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Postes Guía SEC RIC 10 + SPL</text>
+<text x="207.5" y="297" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Captura PNG 300 DPI (Canvas)</text>
 <rect x="65" y="325" width="285" height="95" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.4" />
 <rect x="75" y="333" width="72.5" height="15" rx="3" fill="#d97706" fill-opacity="0.12" stroke="#d97706" stroke-width="0.8"/>
 <text x="111.25" y="343.5" fill="#d97706" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SIMULATOR</text>
@@ -43,12 +44,13 @@
 <text x="207.5" y="379" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Réplica Hardware DJM</text>
 <text x="207.5" y="393" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Vúmetros 17 LEDs + Low Kill</text>
 <text x="207.5" y="407" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Perilla Master 12:00/2:00</text>
-<rect x="65" y="440" width="285" height="85" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
-<rect x="75" y="448" width="85.5" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
-<text x="117.75" y="458.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">PDF OFFLINE</text>
-<text x="207.5" y="478" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">services/pdfReport.ts</text>
-<text x="207.5" y="494" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">jsPDF + jspdf-autotable</text>
-<text x="207.5" y="508" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Generación 100% Offline</text>
+<rect x="65" y="435" width="285" height="90" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.4" />
+<rect x="75" y="443" width="98.5" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
+<text x="124.25" y="453.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">PDF DUAL-PAGE</text>
+<text x="207.5" y="473" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">services/pdfReport.ts</text>
+<text x="207.5" y="489" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">jsPDF + jspdf-autotable</text>
+<text x="207.5" y="503" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">PDF Dual-Page (Memoria + CAD 2D)</text>
+<text x="207.5" y="517" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Ejecución 100% Offline en cliente</text>
 <rect x="415" y="60" width="320" height="550" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
 <text x="429" y="78" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">@stageplan/shared (Núcleo Isomórfico)</text>
 <rect x="435" y="105" width="280" height="90" rx="7" fill="#eff6ff" stroke="#1F497D" stroke-width="1.4" />
@@ -72,32 +74,32 @@
 <rect x="445" y="423" width="79.0" height="15" rx="3" fill="#059669" fill-opacity="0.12" stroke="#059669" stroke-width="0.8"/>
 <text x="484.5" y="433.5" fill="#059669" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">TDD VITEST</text>
 <text x="575.0" y="453" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">tests/ (Vitest v3.2.7)</text>
-<text x="575.0" y="469" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">10 archivos .spec.ts</text>
-<text x="575.0" y="483" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">70 Pruebas Unitarias TDD</text>
+<text x="575.0" y="469" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">11 archivos .spec.ts</text>
+<text x="575.0" y="483" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">81 Pruebas Unitarias TDD</text>
 <text x="575.0" y="497" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">100% PASS Quality Gate</text>
 <rect x="780" y="60" width="335" height="550" rx="9" fill="rgba(31,73,125,0.03)" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="6,4"/>
 <text x="794" y="78" fill="#475569" font-size="9.5" font-weight="700" font-family="Consolas, monospace" letter-spacing="0.06em">@stageplan/backend (Express + Prisma)</text>
-<rect x="800" y="105" width="295" height="105" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
+<rect x="800" y="105" width="295" height="110" rx="7" fill="#ffffff" stroke="#c81e1e" stroke-width="1.4" />
 <rect x="810" y="113" width="66.0" height="15" rx="3" fill="#c81e1e" fill-opacity="0.12" stroke="#c81e1e" stroke-width="0.8"/>
 <text x="843.0" y="123.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">SECURITY</text>
 <text x="947.5" y="143" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">server.ts &amp; Middlewares</text>
-<text x="947.5" y="159" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Helmet + CORS + RateLimit</text>
-<text x="947.5" y="173" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">authMiddleware (JWT Verify)</text>
-<text x="947.5" y="187" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Protección Anti-IDOR</text>
+<text x="947.5" y="159" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Helmet + CORS + RateLimit (10/15m)</text>
+<text x="947.5" y="173" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">authMiddleware (JWT 12h) + errorHandler</text>
+<text x="947.5" y="187" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Anti-IDOR ownerId (HTTP 404)</text>
 <rect x="800" y="235" width="295" height="130" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
 <rect x="810" y="243" width="66.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
 <text x="843.0" y="253.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">API REST</text>
 <text x="947.5" y="273" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">REST Controllers</text>
-<text x="947.5" y="289" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">AuthController (/api/auth/*)</text>
+<text x="947.5" y="289" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">AuthController (Bloqueo 423 / 5x)</text>
 <text x="947.5" y="303" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">VenueController (/api/venues/*)</text>
-<text x="947.5" y="317" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">CalculationController</text>
+<text x="947.5" y="317" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">CalculationController (v4.0.0)</text>
 <rect x="800" y="390" width="295" height="135" rx="7" fill="#ffffff" stroke="#1F497D" stroke-width="1.4" />
 <rect x="810" y="398" width="79.0" height="15" rx="3" fill="#1F497D" fill-opacity="0.12" stroke="#1F497D" stroke-width="0.8"/>
 <text x="849.5" y="408.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">DATA LAYER</text>
-<text x="947.5" y="428" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Prisma ORM + PostgreSQL 16</text>
-<text x="947.5" y="444" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">prisma/schema.prisma</text>
-<text x="947.5" y="458" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Consultas Parametrizadas</text>
-<text x="947.5" y="472" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Relacional 3FN + JSONB</text>
+<text x="947.5" y="428" fill="#1e293b" font-size="12" font-weight="700" font-family="Segoe UI, system-ui, sans-serif" text-anchor="middle">Prisma ORM + SQLite / PG16</text>
+<text x="947.5" y="444" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">prisma/schema.prisma (SQLite dev.db)</text>
+<text x="947.5" y="458" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">4 Tablas 3FN en español + JSON</text>
+<text x="947.5" y="472" fill="#475569" font-size="9.5" font-family="Consolas, monospace" text-anchor="middle">Proy. U3: PostgreSQL 16 (12 tablas)</text>
 <line x1="350" y1="150" x2="435" y2="150" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
 <rect x="370.1" y="135.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
 <text x="392.5" y="145.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">import</text>
@@ -110,9 +112,9 @@
 <line x1="800" y1="320" x2="715" y2="300" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
 <rect x="732.2" y="295.0" width="50.6" height="13" rx="2" fill="#f8fafc"/>
 <text x="757.5" y="305.0" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">ejecuta</text>
-<line x1="945" y1="210" x2="945" y2="235" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
-<rect x="922.6" y="207.5" width="44.8" height="13" rx="2" fill="#f8fafc"/>
-<text x="945.0" y="217.5" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">filtra</text>
+<line x1="945" y1="215" x2="945" y2="235" stroke="#c81e1e" stroke-width="1.5"  marker-end="url(#arr-red)"/>
+<rect x="922.6" y="210.0" width="44.8" height="13" rx="2" fill="#f8fafc"/>
+<text x="945.0" y="220.0" fill="#c81e1e" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">filtra</text>
 <line x1="945" y1="365" x2="945" y2="390" stroke="#1F497D" stroke-width="1.5"  marker-end="url(#arr-navy)"/>
 <rect x="928.4" y="362.5" width="33.2" height="13" rx="2" fill="#f8fafc"/>
 <text x="945.0" y="372.5" fill="#1F497D" font-size="8.5" font-weight="700" font-family="Consolas, monospace" text-anchor="middle">ACID</text>
