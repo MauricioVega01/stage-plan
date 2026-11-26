@@ -201,8 +201,8 @@
               </button>
             </div>
 
-            <!-- Contenedor Miniatura del Plano SVG CAD -->
-            <div class="w-full bg-[#050608] rounded-lg border border-zinc-800/90 overflow-hidden shadow-inner max-h-[260px] flex items-center justify-center p-1">
+            <!-- Contenedor del Plano SVG CAD Completo (Todas las Capas) -->
+            <div class="w-full bg-[#050608] rounded-lg border border-zinc-800/90 overflow-y-auto shadow-inner max-h-[380px] p-1">
               <LayoutSvg2D
                 :venue-width="venue.widthMeters || 10"
                 :venue-depth="venue.depthMeters || 16"
@@ -211,7 +211,8 @@
                 :roster-nodes="hybridAnalysis.roster"
                 :power-plan="powerDistributionPlan"
                 :lighting-analysis="lightingDmxAnalysis"
-                class="scale-95 origin-center w-full"
+                initial-layer="ALL"
+                class="w-full"
               />
             </div>
           </div>

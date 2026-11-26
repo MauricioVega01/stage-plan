@@ -508,7 +508,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { PowerDistributionPlan, LightingAndDmxAnalysis } from '@stageplan/shared';
 
 export interface MapRosterNode {
@@ -520,6 +520,8 @@ export interface MapRosterNode {
   delayMs?: number;
   posY?: number;
 }
+
+export type CadLayerId = 'AUDIO_ARCH' | 'ACOUSTIC_SPL' | 'POWER_SEC' | 'SIGNAL' | 'ALL';
 
 const props = withDefaults(
   defineProps<{
@@ -533,6 +535,7 @@ const props = withDefaults(
     rosterNodes?: MapRosterNode[];
     powerPlan?: PowerDistributionPlan | null;
     lightingAnalysis?: LightingAndDmxAnalysis | null;
+    initialLayer?: CadLayerId;
   }>(),
   {
     venueWidth: 10,
@@ -545,12 +548,20 @@ const props = withDefaults(
     rosterNodes: () => [],
     powerPlan: null,
     lightingAnalysis: null,
+    initialLayer: 'AUDIO_ARCH',
   }
 );
 
-export type CadLayerId = 'AUDIO_ARCH' | 'ACOUSTIC_SPL' | 'POWER_SEC' | 'SIGNAL' | 'ALL';
+const activeLayer = ref<CadLayerId>(props.initialLayer || 'AUDIO_ARCH');
 
-const activeLayer = ref<CadLayerId>('AUDIO_ARCH');
+watch(
+  () => props.initialLayer,
+  (newVal) => {
+    if (newVal) {
+      activeLayer.value = newVal;
+    }
+  }
+);
 
 const layerOptions = [
   { id: 'AUDIO_ARCH' as const, icon: '📐', label: 'Arquitectura & Audio' },
