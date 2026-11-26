@@ -1,9 +1,4 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import ViewAuth from '../views/ViewAuth.vue';
-import ViewVenue from '../views/ViewVenue.vue';
-import ViewAudioPower from '../views/ViewAudioPower.vue';
-import ViewAcousticCanvas from '../views/ViewAcousticCanvas.vue';
-import ViewReportSummary from '../views/ViewReportSummary.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -13,31 +8,31 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/auth',
     name: 'auth',
-    component: ViewAuth,
+    component: () => import('../views/ViewAuth.vue'),
     meta: { stepId: 0, title: 'Consola Técnica & Acceso' },
   },
   {
     path: '/recinto',
     name: 'recinto',
-    component: ViewVenue,
+    component: () => import('../views/ViewVenue.vue'),
     meta: { stepId: 1, title: 'Geometría del Recinto' },
   },
   {
     path: '/equipos',
     name: 'equipos',
-    component: ViewAudioPower,
+    component: () => import('../views/ViewAudioPower.vue'),
     meta: { stepId: 2, title: 'Equipos de Audio & Energía' },
   },
   {
     path: '/plano-2d',
     name: 'plano-2d',
-    component: ViewAcousticCanvas,
+    component: () => import('../views/ViewAcousticCanvas.vue'),
     meta: { stepId: 3, title: 'Plano 2D CAD & Acústica' },
   },
   {
     path: '/reporte',
     name: 'reporte',
-    component: ViewReportSummary,
+    component: () => import('../views/ViewReportSummary.vue'),
     meta: { stepId: 4, title: 'Memoria Técnica & Despacho' },
   },
 ];

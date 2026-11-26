@@ -371,13 +371,6 @@ const demoPresets: DemoPreset[] = [
   },
 ];
 
-// Sincronizar automáticamente el paso del wizard cuando cambie la ruta en vue-router
-router.afterEach((to) => {
-  if (to.meta?.stepId !== undefined) {
-    currentStep.value = to.meta.stepId as WizardStepId;
-  }
-});
-
 // ----------------------------------------------------------------------------
 // PERSISTENCIA LOCALSTORAGE AUTOMÁTICA
 // ----------------------------------------------------------------------------

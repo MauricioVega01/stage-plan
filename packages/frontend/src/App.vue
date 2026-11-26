@@ -18,11 +18,25 @@
 </template>
 
 <script setup lang="ts">
-import { useStagePlanState } from './composables/useStagePlanState';
+import { watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useStagePlanState, type WizardStepId } from './composables/useStagePlanState';
 import StudioHeader from './components/layout/StudioHeader.vue';
 import StudioFooter from './components/layout/StudioFooter.vue';
 
 const { currentStep } = useStagePlanState();
+const route = useRoute();
+
+// Sincronizar reactivamente el indicador activo con la URL actual
+watch(
+  () => route.meta?.stepId,
+  (stepId) => {
+    if (typeof stepId === 'number') {
+      currentStep.value = stepId as WizardStepId;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
