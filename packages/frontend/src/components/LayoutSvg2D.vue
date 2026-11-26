@@ -1,20 +1,20 @@
 <template>
-  <div class="bg-[#0f0f13] border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+  <div class="bg-[#0a0b11] border border-zinc-800/90 rounded-xl p-2.5 sm:p-3 shadow-xl space-y-2.5">
     <!-- Header de Controles y Filtros del Plano -->
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-      <div class="flex items-center space-x-2.5">
-        <span class="inline-block w-3 h-3 bg-red-600 rounded-full animate-ping"></span>
-        <h3 class="text-sm font-black tracking-wider text-white uppercase font-mono">
-          Plano 2D Escala Proporcional (Audio + Fuerza Eléctrica SEC + Postes Guía)
+    <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-zinc-800/80 pb-2">
+      <div class="flex items-center space-x-2">
+        <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full animate-ping"></span>
+        <h3 class="text-xs font-black tracking-wider text-white uppercase font-mono">
+          Plano 2D CAD (Audio + Fuerza SEC + Postes Guía)
         </h3>
       </div>
-      <div class="flex flex-wrap items-center gap-1.5">
+      <div class="flex flex-wrap items-center gap-1">
         <button
           type="button"
           @click="showHeatmap = !showHeatmap"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
+          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
           :class="showHeatmap
-            ? 'bg-red-600 text-white border-red-400 shadow-lg shadow-red-950/50'
+            ? 'bg-red-600 text-white border-red-400 shadow-md shadow-red-950/50'
             : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-red-500'"
         >
           <span>🔥</span>
@@ -23,9 +23,9 @@
         <button
           type="button"
           @click="showPowerCables = !showPowerCables"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
+          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
           :class="showPowerCables
-            ? 'bg-amber-600 text-white border-amber-400 shadow-lg shadow-amber-950/50'
+            ? 'bg-amber-600 text-white border-amber-400 shadow-md shadow-amber-950/50'
             : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-amber-500'"
         >
           <span>⚡</span>
@@ -34,9 +34,9 @@
         <button
           type="button"
           @click="showPowerStrips = !showPowerStrips"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
+          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
           :class="showPowerStrips
-            ? 'bg-emerald-600 text-white border-emerald-400 shadow-lg shadow-emerald-950/50'
+            ? 'bg-emerald-600 text-white border-emerald-400 shadow-md shadow-emerald-950/50'
             : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-emerald-500'"
         >
           <span>🔌</span>
@@ -45,35 +45,35 @@
         <button
           type="button"
           @click="showAudioSignal = !showAudioSignal"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
+          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
           :class="showAudioSignal
-            ? 'bg-cyan-600 text-white border-cyan-400 shadow-lg shadow-cyan-950/50'
+            ? 'bg-cyan-600 text-white border-cyan-400 shadow-md shadow-cyan-950/50'
             : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-cyan-500'"
         >
           <span>🎛️</span>
-          <span>Audio (XLR/Speakon)</span>
+          <span>Audio (XLR)</span>
         </button>
         <button
           type="button"
           @click="showCornerGuides = !showCornerGuides"
-          class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
+          class="px-2 py-0.5 rounded text-[10px] font-black uppercase font-mono border transition flex items-center gap-1 cursor-pointer"
           :class="showCornerGuides
-            ? 'bg-sky-600 text-white border-sky-400 shadow-lg shadow-sky-950/50'
+            ? 'bg-sky-600 text-white border-sky-400 shadow-md shadow-sky-950/50'
             : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-sky-500'"
           title="Guías esquineras y postes de radio de curvatura para cables de fuerza y señal (SEC RIC 10)"
         >
           <span>📍</span>
-          <span>Postes Guía ({{ cornerGuidePosts.length }})</span>
+          <span>Postes ({{ cornerGuidePosts.length }})</span>
         </button>
-        <div class="text-[11px] text-zinc-200 font-mono bg-zinc-900 px-2.5 py-1 rounded border border-zinc-700 font-bold">
-          📏 {{ venueWidth }}m × {{ venueDepth }}m (Escala 1:{{ Math.round((venueWidth * 10) / viewBoxWidth) || 1 }})
+        <div class="text-[10px] text-zinc-200 font-mono bg-[#121520] px-2 py-0.5 rounded border border-zinc-800 font-bold">
+          📏 {{ venueWidth }}m × {{ venueDepth }}m
         </div>
       </div>
     </div>
 
     <!-- Contenedor SVG reactivo con Aspect Ratio Dinámico -->
     <div
-      class="relative w-full bg-[#050505] rounded-xl overflow-hidden border-2 border-zinc-800 flex items-center justify-center p-2 sm:p-3 shadow-inner"
+      class="relative w-full bg-[#06070a] rounded-lg overflow-hidden border border-zinc-800/90 flex items-center justify-center p-1.5 sm:p-2 shadow-inner"
       :style="{ aspectRatio: `${viewBoxWidth} / ${viewBoxHeight}` }"
     >
       <svg
